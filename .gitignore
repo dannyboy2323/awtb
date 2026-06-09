@@ -2,8 +2,10 @@
 
 # dependencies
 /node_modules
+/studio/node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
@@ -12,8 +14,9 @@
 /.next/
 /out/
 
-# production
-/build
+# sanity
+/.sanity/
+/dist/
 
 # misc
 .DS_Store
@@ -25,8 +28,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
 .env
+.env.*
+!.env.example
 
 # vercel
 .vercel
@@ -34,3 +38,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env*
