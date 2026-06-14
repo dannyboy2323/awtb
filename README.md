@@ -398,6 +398,33 @@ git pull origin main
 
 ---
 
+## Example PR Workflow
+
+The full PR workflow:
+
+```bash
+npm run type-check
+npm test
+```
+
+If both pass, commit and push:
+
+```bash
+git add -A
+git commit -m "fix: remove unused imports flagged by eslint"
+git push -u origin fix/lint-warnings
+```
+
+The pre-push hook will run automatically (type-check, lint, test) — should take ~3 seconds. Then go to GitHub, open the PR, wait for CI to go green, squash and merge, then sync local main:
+
+```bash
+git checkout main
+git pull origin main
+git branch -d fix/lint-warnings
+```
+
+---
+
 ## Deployment
 
 Deployment is fully automatic via Vercel:
