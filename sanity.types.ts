@@ -127,6 +127,124 @@ export type Button = {
   link?: Link;
 };
 
+export type StoryPage = {
+  _type: "storyPage";
+  panels: Array<
+    {
+      _key: string;
+    } & Panel
+  >;
+  prose: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "normal" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "blockquote";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }>;
+};
+
+export type Panel = {
+  _type: "panel";
+  image: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  alt: string;
+  caption?: string;
+};
+
+export type StoryReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "story";
+};
+
+export type SiteSettings = {
+  _id: string;
+  _type: "siteSettings";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  featuredStory?: StoryReference;
+  deskBackgroundImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+};
+
+export type Story = {
+  _id: string;
+  _type: "story";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title: string;
+  slug: Slug;
+  orderRank?: string;
+  publishedAt: string;
+  postcard: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  pages: Array<
+    {
+      _key: string;
+    } & StoryPage
+  >;
+};
+
+export type Slug = {
+  _type: "slug";
+  current: string;
+  source?: string;
+};
+
 export type Settings = {
   _id: string;
   _type: "settings";
@@ -165,22 +283,6 @@ export type Settings = {
     metadataBase?: string;
     _type: "image";
   };
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x: number;
-  y: number;
-  height: number;
-  width: number;
 };
 
 export type Page = {
@@ -248,12 +350,6 @@ export type Person = {
     alt?: string;
     _type: "image";
   };
-};
-
-export type Slug = {
-  _type: "slug";
-  current: string;
-  source?: string;
 };
 
 export type SanityAssistInstructionTask = {
@@ -500,14 +596,19 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Settings
+  | StoryPage
+  | Panel
+  | StoryReference
+  | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
+  | Story
+  | Slug
+  | Settings
   | Page
   | PersonReference
   | Post
   | Person
-  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
