@@ -1,6 +1,5 @@
 import { CogIcon, DocumentIcon, ImageIcon } from "@sanity/icons";
 import type { StructureBuilder, StructureResolver } from "sanity/structure";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 /**
  * Custom Studio sidebar structure for Postcard Stories.

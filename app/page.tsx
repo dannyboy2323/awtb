@@ -1,18 +1,18 @@
-import {Suspense} from 'react'
-import Link from 'next/link'
-import {PortableText} from '@portabletext/react'
-
-import {AllPosts} from '@/app/components/Posts'
-import GetStartedCode from '@/app/components/GetStartedCode'
-import SideBySideIcons from '@/app/components/SideBySideIcons'
-import {settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
-import {dataAttr} from '@/sanity/lib/utils'
+import { Suspense } from "react";
+import Link from "next/link";
+import { PortableText } from "@portabletext/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AllPosts } from "@/app/components/Posts";
+import GetStartedCode from "@/app/components/GetStartedCode";
+import SideBySideIcons from "@/app/components/SideBySideIcons";
+import { settingsQuery } from "@/sanity/lib/queries";
+import { sanityFetch } from "@/sanity/lib/live";
+import { dataAttr } from "@/sanity/lib/utils";
 
 export default async function Page() {
-  const {data: settings} = await sanityFetch({
+  const { data: settings } = await sanityFetch({
     query: settingsQuery,
-  })
+  });
 
   return (
     <>
@@ -52,8 +52,8 @@ export default async function Page() {
                 <div
                   data-sanity={dataAttr({
                     id: settings._id,
-                    type: 'settings',
-                    path: 'description',
+                    type: "settings",
+                    path: "description",
                   }).toString()}
                 >
                   <PortableText value={settings.description} />
@@ -92,5 +92,5 @@ export default async function Page() {
         </div>
       </div>
     </>
-  )
+  );
 }

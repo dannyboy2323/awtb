@@ -1,6 +1,10 @@
 {
-  "name": "frontend",
+  "name": "awtb",
   "private": true,
+  "workspaces": [
+    "app",
+    "sanity"
+  ],
   "scripts": {
     "prebuild": "sanity typegen generate",
     "build": "next build",
