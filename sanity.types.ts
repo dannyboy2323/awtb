@@ -930,6 +930,132 @@ export type PagesSlugsResult = Array<{
   slug: string;
 }>;
 
+// Source: lib/queries.ts
+// Variable: allStoriesQuery
+// Query: *[_type == "story" && defined(publishedAt)] | order(orderRank asc) {    _id,    title,    "slug": slug.current,    publishedAt,    postcard  }
+export type AllStoriesQueryResult = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+  publishedAt: string;
+  postcard: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+}>;
+
+// Source: lib/queries.ts
+// Variable: featuredStoryQuery
+// Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    postcard  }
+export type FeaturedStoryQueryResult = {
+  _id: string;
+  title: string;
+  slug: string;
+  postcard: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+} | null;
+
+// Source: lib/queries.ts
+// Variable: storyCoverQuery
+// Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    coverImage,    "pageCount": count(pages)  }
+export type StoryCoverQueryResult = {
+  _id: string;
+  title: string;
+  slug: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  };
+  pageCount: number;
+} | null;
+
+// Source: lib/queries.ts
+// Variable: storyPageQuery
+// Query: *[_type == "story" && slug.current == $slug][0] {    title,    "page": pages[$pageIndex] {      panels[] {        image,        alt,        caption      },      prose    },    "pageCount": count(pages)  }
+export type StoryPageQueryResult = {
+  title: string;
+  page: Array<{
+    panels: Array<{
+      image: {
+        asset?: SanityImageAssetReference;
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+      };
+      alt: string;
+      caption: string | null;
+    }>;
+    prose: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: "span";
+        _key: string;
+      }>;
+      style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+      listItem?: "bullet" | "number";
+      markDefs?: Array<{
+        href?: string;
+        _type: "link";
+        _key: string;
+      }>;
+      level?: number;
+      _type: "block";
+      _key: string;
+    }>;
+  }>;
+  pageCount: number;
+} | null;
+
+// Source: lib/queries.ts
+// Variable: siteSettingsQuery
+// Query: *[_type == "siteSettings"][0] {    featuredStory-> {      _id, title, "slug": slug.current, postcard    },    deskBackgroundImage  }
+export type SiteSettingsQueryResult = {
+  featuredStory: {
+    _id: string;
+    title: string;
+    slug: string;
+    postcard: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: "image";
+    };
+  } | null;
+  deskBackgroundImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+} | null;
+
+// Source: lib/queries.ts
+// Variable: allStorySlugsQuery
+// Query: *[_type == "story" && defined(slug.current)] {    "slug": slug.current,    "pageCount": count(pages)  }
+export type AllStorySlugsQueryResult = Array<{
+  slug: string;
+  pageCount: number;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -942,5 +1068,11 @@ declare module "@sanity/client" {
     '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult;
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult;
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult;
+    '\n  *[_type == "story" && defined(publishedAt)] | order(orderRank asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    publishedAt,\n    postcard\n  }\n': AllStoriesQueryResult;
+    '\n  *[_type == "story" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    postcard\n  }\n': FeaturedStoryQueryResult;
+    '\n  *[_type == "story" && slug.current == $slug][0] {\n    _id,\n    title,\n    "slug": slug.current,\n    coverImage,\n    "pageCount": count(pages)\n  }\n': StoryCoverQueryResult;
+    '\n  *[_type == "story" && slug.current == $slug][0] {\n    title,\n    "page": pages[$pageIndex] {\n      panels[] {\n        image,\n        alt,\n        caption\n      },\n      prose\n    },\n    "pageCount": count(pages)\n  }\n': StoryPageQueryResult;
+    '\n  *[_type == "siteSettings"][0] {\n    featuredStory-> {\n      _id, title, "slug": slug.current, postcard\n    },\n    deskBackgroundImage\n  }\n': SiteSettingsQueryResult;
+    '\n  *[_type == "story" && defined(slug.current)] {\n    "slug": slug.current,\n    "pageCount": count(pages)\n  }\n': AllStorySlugsQueryResult;
   }
 }
