@@ -1,4 +1,3 @@
-[![CI](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml/badge.svg)](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml)
 
 # Postcard Stories
 
