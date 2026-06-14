@@ -1,6 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons'
-import type {Link} from '../../../sanity.types'
+import type {Link} from '../../../../sanity.types'
 
 /**
  * Link schema object. This link object lets the user first select the type of link and then

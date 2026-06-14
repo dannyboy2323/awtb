@@ -1,6 +1,6 @@
 import {UserIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
-import type {Person} from '../../../sanity.types'
+import type {Person} from '../../../../sanity.types'
 
 /**
  * Person schema.  Define and edit the fields for the 'person' content type.

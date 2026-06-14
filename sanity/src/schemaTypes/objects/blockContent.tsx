@@ -1,5 +1,5 @@
 import {defineArrayMember, defineType, defineField} from 'sanity'
-import type {Link} from '../../../sanity.types'
+import type {Link} from '../../../../sanity.types'
 
 /**
  * This is the schema definition for the rich text fields used for

@@ -1,7 +1,7 @@
 import {DocumentTextIcon} from '@sanity/icons'
 import {format, parseISO} from 'date-fns'
 import {defineField, defineType} from 'sanity'
-import type {Post} from '../../../sanity.types'
+import type {Post} from '../../../../sanity.types'
 
 /**
  * Post schema.  Define and edit the fields for the 'post' content type.
