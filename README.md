@@ -4,6 +4,7 @@
 > inside, graphic-novel panels and prose are presented side by side, page by page.
 
 [![CI](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml/badge.svg)](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml)
+[![Docs](https://github.com/dannyboy2323/awtb/actions/workflows/docs.yml/badge.svg)](https://github.com/dannyboy2323/awtb/actions/workflows/docs.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Sanity](https://img.shields.io/badge/CMS-Sanity-F03E2F?logo=sanity&logoColor=white)](https://www.sanity.io/)
