@@ -1,0 +1,40 @@
+name: Documentation
+description: Missing, incorrect, or outdated documentation
+title: "docs: "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of documentation issue
+      options:
+        - Missing documentation (topic not covered)
+        - Incorrect documentation (wrong information)
+        - Outdated documentation (information has changed)
+        - Unclear documentation (confusing or ambiguous)
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Where is the documentation issue?
+      placeholder: "README.md → Getting Started → Environment Variables"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What is wrong or missing?
+      placeholder: "The README says to run `vercel env pull` but doesn't mention that sensitive vars won't be included."
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix or addition
+      placeholder: "Add a note explaining which vars are sensitive and must be added manually from the Upstash console."

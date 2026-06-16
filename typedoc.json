@@ -1,0 +1,28 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "lib",
+    "sanity/lib",
+    "components/public",
+    "components/shared",
+    "app/api"
+  ],
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "**/node_modules/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/setup.ts",
+    "sanity.types.ts"
+  ],
+  "out": "docs-generated",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "name": "Postcard Stories — API Docs",
+  "includeVersion": false,
+  "disableSources": false,
+  "categorizeByGroup": true,
+  "hideGenerator": true,
+  "searchInComments": true
+}
