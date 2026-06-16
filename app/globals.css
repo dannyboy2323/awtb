@@ -41,3 +41,14 @@
   --color-gray-950: #13141b;
   --default-transition-duration: 250ms;
 }
+
+/* ----------------------- Desk Hero Background ----------------------- */
+.desk-hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
