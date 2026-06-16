@@ -1,5 +1,4 @@
-
-# Postcard Stories
+# Adventures With The Bull
 
 > A graphic-novel storytelling platform. Readers enter each story through a postcard;
 > inside, graphic-novel panels and prose are presented side by side, page by page.
@@ -42,7 +41,7 @@
 
 ## About
 
-Postcard Stories is a Next.js application backed by an embedded Sanity Studio. Non-technical
+AWTB is a Next.js application backed by an embedded Sanity Studio. Non-technical
 editors manage content — postcards, cover images, graphic-novel panels, and prose — entirely
 through the Studio at `/studio`. Publishing a story triggers a webhook that revalidates the
 production cache within seconds, so readers always see the latest content without a redeploy.
