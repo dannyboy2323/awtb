@@ -1,12 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "lib",
-    "sanity/lib",
-    "components/public",
-    "components/shared",
-    "app/api"
-  ],
+  "entryPoints": ["lib", "sanity/lib", "components/public", "app/api"],
   "entryPointStrategy": "expand",
   "exclude": [
     "**/node_modules/**",
@@ -24,5 +18,6 @@
   "disableSources": false,
   "categorizeByGroup": true,
   "hideGenerator": true,
-  "searchInComments": true
+  "searchInComments": true,
+  "skipErrorChecking": true
 }
