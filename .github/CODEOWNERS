@@ -1,0 +1,47 @@
+# CODEOWNERS — Postcard Stories
+#
+# Each line defines a file pattern and one or more owners.
+# Owners are automatically requested for review when a PR
+# touches matching files. GitHub requires at least one
+# owner approval before a PR can be merged (when combined
+# with branch protection rules).
+#
+# Syntax: <pattern> <@user or @org/team>
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ─── Global default ───────────────────────────────────────────────────────────
+# Every file not matched by a more specific rule requires review from the
+# primary maintainer.
+*                               @dannyboy2323
+
+# ─── Sanity schema ────────────────────────────────────────────────────────────
+# Schema changes affect live content and the Studio UI — require explicit sign-off.
+/sanity/src/schemaTypes/        @dannyboy2323
+/sanity/sanity.config.ts        @dannyboy2323
+
+# ─── Infrastructure & configuration ───────────────────────────────────────────
+# Changes to these files affect all environments and deployments.
+/next.config.ts                 @dannyboy2323
+/vercel.json                    @dannyboy2323
+/.github/                       @dannyboy2323
+/package.json                   @dannyboy2323
+/package-lock.json              @dannyboy2323
+
+# ─── Environment & secrets ────────────────────────────────────────────────────
+/.env.example                   @dannyboy2323
+
+# ─── CI/CD ────────────────────────────────────────────────────────────────────
+/.github/workflows/             @dannyboy2323
+
+# ─── Public assets ────────────────────────────────────────────────────────────
+# The desk image URL map is generated — changes should be reviewed to ensure
+# the upload script was run correctly and all 37 images are present.
+/public/desk-image-urls.json    @dannyboy2323
+
+# ─── Core library files ───────────────────────────────────────────────────────
+/lib/                           @dannyboy2323
+/sanity/lib/                    @dannyboy2323
+
+# ─── API routes ───────────────────────────────────────────────────────────────
+# Webhook and revalidation routes are security-sensitive.
+/app/api/                       @dannyboy2323
