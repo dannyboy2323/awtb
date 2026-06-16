@@ -3,7 +3,7 @@ name: Generate Docs → Wiki
 on:
   push:
     branches: [main]
-  workflow_dispatch: # allows manual trigger from GitHub Actions UI
+  workflow_dispatch:
 
 jobs:
   docs:
@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 10
 
     permissions:
-      contents: write # needed to push to the wiki repo
+      contents: write
 
     steps:
       - name: Checkout code
@@ -25,6 +25,13 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate Next.js types (required for PageProps/LayoutProps)
+        run: npx next typegen
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: production
+          NEXT_PUBLIC_SANITY_API_VERSION: "2026-06-01"
 
       - name: Generate TypeDoc documentation
         run: npm run docs
@@ -42,7 +49,6 @@ jobs:
 
       - name: Copy generated docs to wiki
         run: |
-          # Clear existing auto-generated docs (keep any manually written wiki pages)
           rm -rf wiki/api
           mkdir -p wiki/api
           cp -r docs-generated/* wiki/api/
