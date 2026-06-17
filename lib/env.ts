@@ -24,7 +24,6 @@ export const env = createEnv({
    */
   server: {
     // Sentry
-    SENTRY_DSN: z.string().url(),
     SENTRY_ORG: z.string().min(1),
     SENTRY_PROJECT: z.string().min(1),
     SENTRY_AUTH_TOKEN: z.string().min(1),
@@ -52,6 +51,10 @@ export const env = createEnv({
    * Safe to expose to the browser.
    */
   client: {
+    // Sentry
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url(),
+
+    // Sanity
     NEXT_PUBLIC_SANITY_PROJECT_ID: z.string().min(1),
     NEXT_PUBLIC_SANITY_DATASET: z.string().min(1),
     NEXT_PUBLIC_SANITY_API_VERSION: z.string().min(1),
@@ -64,7 +67,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     // Sentry
-    SENTRY_DSN: process.env.SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     SENTRY_ORG: process.env.SENTRY_ORG,
     SENTRY_PROJECT: process.env.SENTRY_PROJECT,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
