@@ -16,6 +16,7 @@ import { urlForImage } from "@/sanity/lib/utils";
 import DeskHero from "@/components/public/DeskHero";
 import PostcardGrid from "@/components/public/PostcardGrid";
 
+
 export default async function LandingPage() {
   // Resolve the featured story slug from Edge Config (< 1ms, edge-replicated)
   const featuredSlug = await getFeaturedStorySlug();
