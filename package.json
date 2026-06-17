@@ -6,6 +6,7 @@
     "sanity"
   ],
   "scripts": {
+    "analyze": "ANALYZE=true next build --webpack",
     "prebuild": "sanity typegen generate",
     "build": "next build",
     "predev": "npm run typegen",
@@ -59,6 +60,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.9",
     "@playwright/test": "^1.60.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
