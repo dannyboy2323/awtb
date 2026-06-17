@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
 /**
  * /api/revalidate route tests.
- * Tests HMAC validation and rate limiting behaviour.
+ * Tests HMAC validation behaviour.
  */
 
 describe("/api/revalidate", () => {
@@ -16,9 +16,11 @@ describe("/api/revalidate", () => {
       body: JSON.stringify({ _type: "story" }),
     });
 
-    await expect(validateSanityWebhook(mockReq as any)).rejects.toThrow(
-      "SANITY_WEBHOOK_SECRET is not set",
-    );
+    await expect(
+      validateSanityWebhook(
+        mockReq as unknown as Parameters<typeof validateSanityWebhook>[0],
+      ),
+    ).rejects.toThrow("SANITY_WEBHOOK_SECRET is not set");
 
     process.env.SANITY_WEBHOOK_SECRET = original;
   });
@@ -33,8 +35,10 @@ describe("/api/revalidate", () => {
       body: JSON.stringify({ _type: "story" }),
     });
 
-    await expect(validateSanityWebhook(mockReq as any)).rejects.toThrow(
-      "Invalid webhook signature",
-    );
+    await expect(
+      validateSanityWebhook(
+        mockReq as unknown as Parameters<typeof validateSanityWebhook>[0],
+      ),
+    ).rejects.toThrow("Invalid webhook signature");
   });
 });
