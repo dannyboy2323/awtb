@@ -19,7 +19,7 @@ export default async function Header() {
 
           <nav>
             <ul
-              role="list"
+              
               className="flex items-center gap-4 md:gap-6 leading-5 text-xs sm:text-base tracking-tight font-mono"
             >
               <li>
