@@ -51,6 +51,10 @@ export const env = createEnv({
    * Safe to expose to the browser.
    */
   client: {
+    // PostHog
+    NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: z.string().min(1),
+    NEXT_PUBLIC_POSTHOG_HOST: z.string().url(),
+
     // Sentry
     NEXT_PUBLIC_SENTRY_DSN: z.string().url(),
 
@@ -66,6 +70,11 @@ export const env = createEnv({
    * Required by @t3-oss/env-nextjs for Next.js compatibility.
    */
   runtimeEnv: {
+    // PostHog
+    NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN:
+      process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+
     // Sentry
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     SENTRY_ORG: process.env.SENTRY_ORG,

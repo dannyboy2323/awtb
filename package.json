@@ -30,6 +30,7 @@
     "docs:check": "typedoc --emit none"
   },
   "dependencies": {
+    "@flags-sdk/posthog": "^0.2.2",
     "@portabletext/react": "^6.2.0",
     "@sanity/client": "^7.22.1",
     "@sanity/image-url": "^2.1.1",
@@ -48,10 +49,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "flags": "^4.2.0",
     "lucide-react": "^1.20.0",
     "next": "^16.2.7",
     "next-sanity": "^13.0.8",
     "postcss": "^8.5.15",
+    "posthog-js": "^1.390.2",
+    "posthog-node": "^5.38.0",
     "radix-ui": "^1.6.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
