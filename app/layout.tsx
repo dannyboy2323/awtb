@@ -1,3 +1,5 @@
+import { PostHogProvider } from "@/components/shared/PostHogProvider";
+
 import "./globals.css";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -81,7 +83,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </>
           )}
           <SanityLive onError={handleError} />
-          <main>{children}</main>
+          <PostHogProvider>
+            <main>{children}</main>
+          </PostHogProvider>
         </section>
         <SpeedInsights />
       </body>
