@@ -23,6 +23,9 @@ export const env = createEnv({
    * Never exposed to the browser.
    */
   server: {
+    // Clerk
+    CLERK_SECRET_KEY: z.string().min(1),
+
     // Sentry
     SENTRY_ORG: z.string().min(1),
     SENTRY_PROJECT: z.string().min(1),
@@ -51,6 +54,9 @@ export const env = createEnv({
    * Safe to expose to the browser.
    */
   client: {
+    // Clerk
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+
     // PostHog
     NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: z.string().min(1),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().url(),
@@ -70,6 +76,11 @@ export const env = createEnv({
    * Required by @t3-oss/env-nextjs for Next.js compatibility.
    */
   runtimeEnv: {
+    // Clerk
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+
     // PostHog
     NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN:
       process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,

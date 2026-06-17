@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import { PostHogProvider } from "@/components/shared/PostHogProvider";
 
 import "./globals.css";
@@ -71,27 +72,29 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const { isEnabled: isDraftMode } = await draftMode();
 
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}
-    >
-      <body>
-        <section className="min-h-screen">
-          <Toaster />
-          {isDraftMode && (
-            <>
-              <DraftModeToast />
-              <VisualEditing />
-            </>
-          )}
-          <SanityLive onError={handleError} />
-          <PostHogProvider>
-            <main>{children}</main>
-          </PostHogProvider>
-        </section>
-        <SpeedInsights />
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}
+      >
+        <body>
+          <section className="min-h-screen">
+            <Toaster />
+            {isDraftMode && (
+              <>
+                <DraftModeToast />
+                <VisualEditing />
+              </>
+            )}
+            <SanityLive onError={handleError} />
+            <PostHogProvider>
+              <main>{children}</main>
+            </PostHogProvider>
+          </section>
+          <SpeedInsights />
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
