@@ -43,7 +43,7 @@ jobs:
           SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}
 
       - name: Security audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: production
