@@ -126,6 +126,10 @@ The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push an
 E2E tests are not run in CI by default (they require a running server and take longer).
 Run them locally before merging significant UI changes.
 
+A separate `AI Docs Maintenance` workflow (`.github/workflows/ai-docs.yml`) runs on every
+push to `main` (excluding doc-only changes). It uses Claude to review code diffs against
+the docs in `docs/` and opens a PR if any documentation appears to be out of date.
+
 ---
 
 ## Pre-Push Hook

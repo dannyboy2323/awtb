@@ -142,6 +142,17 @@ Dashboard: [app.checklyhq.com](https://app.checklyhq.com)
 
 ---
 
+## AI Docs Maintenance
+
+A GitHub Actions workflow (`.github/workflows/ai-docs.yml`) runs on every push to `main`
+and uses Claude to review code changes against the `/docs` directory. If any documentation
+is found to be inaccurate or missing information, Claude updates the relevant files and
+opens a pull request for human review before merging.
+
+The workflow requires `ANTHROPIC_API_KEY` to be set as a repository secret.
+
+---
+
 ## Sanity Webhook Configuration
 
 The production webhook is registered at:

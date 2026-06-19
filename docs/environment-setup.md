@@ -88,6 +88,12 @@ git rm --cached .env.local
 | ---------------- | -------- | --------------------- |
 | `RESEND_API_KEY` | Yes      | resend.com → API Keys |
 
+### Anthropic AI
+
+| Variable             | Required | Where to find                                |
+| -------------------- | -------- | -------------------------------------------- |
+| `ANTHROPIC_API_KEY`  | Yes      | platform.claude.com → Settings → API Keys   |
+
 ### Monitoring (Checkly)
 
 | Variable             | Required | Where to find                                   |
@@ -132,5 +138,6 @@ The GitHub Actions CI workflow has access to these secrets (set in GitHub Settin
 
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
 - `SANITY_WEBHOOK_SECRET`
+- `ANTHROPIC_API_KEY`
 
 All other CI steps use hardcoded non-sensitive values (`production` dataset, etc.).
