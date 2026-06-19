@@ -1,24 +1,24 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import { PostHogProvider } from "@/components/shared/PostHogProvider";
+import { ClerkProvider } from '@clerk/nextjs'
+import { PostHogProvider } from '@/components/shared/PostHogProvider'
 
-import "./globals.css";
+import './globals.css'
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/next'
 
-import type { Metadata } from "next";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
-import { draftMode } from "next/headers";
-import { toPlainText } from "next-sanity";
-import { VisualEditing } from "next-sanity/visual-editing";
-import { Toaster } from "sonner";
+import type { Metadata } from 'next'
+import { Inter, IBM_Plex_Mono } from 'next/font/google'
+import { draftMode } from 'next/headers'
+import { toPlainText } from 'next-sanity'
+import { VisualEditing } from 'next-sanity/visual-editing'
+import { Toaster } from 'sonner'
 
-import DraftModeToast from "@/app/components/DraftModeToast";
-import * as demo from "@/sanity/lib/demo";
-import { sanityFetch, SanityLive } from "@/sanity/lib/live";
-import { settingsQuery } from "@/sanity/lib/queries";
-import { resolveOpenGraphImage } from "@/sanity/lib/utils";
-import { handleError } from "@/app/client-utils";
+import DraftModeToast from '@/app/components/DraftModeToast'
+import * as demo from '@/sanity/lib/demo'
+import { sanityFetch, SanityLive } from '@/sanity/lib/live'
+import { settingsQuery } from '@/sanity/lib/queries'
+import { resolveOpenGraphImage } from '@/sanity/lib/utils'
+import { handleError } from '@/app/client-utils'
 
 /**
  * Generate metadata for the page.
@@ -29,16 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
     query: settingsQuery,
     // Metadata should never contain stega
     stega: false,
-  });
-  const title = settings?.title || demo.title;
-  const description = settings?.description || demo.description;
+  })
+  const title = settings?.title || demo.title
+  const description = settings?.description || demo.description
 
-  const ogImage = resolveOpenGraphImage(settings?.ogImage);
-  let metadataBase: URL | undefined = undefined;
+  const ogImage = resolveOpenGraphImage(settings?.ogImage)
+  let metadataBase: URL | undefined = undefined
   try {
     metadataBase = settings?.ogImage?.metadataBase
       ? new URL(settings.ogImage.metadataBase)
-      : undefined;
+      : undefined
   } catch {
     // ignore
   }
@@ -52,31 +52,28 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },
-  };
+  }
 }
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
+  variable: '--font-inter',
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  weight: ["400"],
-  subsets: ["latin"],
-  display: "swap",
-});
+  variable: '--font-ibm-plex-mono',
+  weight: ['400'],
+  subsets: ['latin'],
+  display: 'swap',
+})
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const { isEnabled: isDraftMode } = await draftMode();
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+  const { isEnabled: isDraftMode } = await draftMode()
 
   return (
     <ClerkProvider>
-      <html
-        lang="en"
-        className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}
-      >
+      <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
         <body>
           <section className="min-h-screen">
             <Toaster />
@@ -96,5 +93,5 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </body>
       </html>
     </ClerkProvider>
-  );
+  )
 }

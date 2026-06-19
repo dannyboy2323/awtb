@@ -1,7 +1,7 @@
 name: Feature Request
 description: Propose new functionality or an improvement to existing behaviour
-title: "feat: "
-labels: ["enhancement", "needs-triage"]
+title: 'feat: '
+labels: ['enhancement', 'needs-triage']
 assignees: []
 
 body:
@@ -25,7 +25,7 @@ body:
     attributes:
       label: Proposed solution
       description: How do you think this should work?
-      placeholder: "Add a shareable URL for each story page so readers can link directly to page 3 of a story."
+      placeholder: 'Add a shareable URL for each story page so readers can link directly to page 3 of a story.'
     validations:
       required: true
 

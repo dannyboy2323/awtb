@@ -1,7 +1,7 @@
 name: Documentation
 description: Missing, incorrect, or outdated documentation
-title: "docs: "
-labels: ["documentation"]
+title: 'docs: '
+labels: ['documentation']
 assignees: []
 
 body:
@@ -21,7 +21,7 @@ body:
     id: location
     attributes:
       label: Where is the documentation issue?
-      placeholder: "README.md → Getting Started → Environment Variables"
+      placeholder: 'README.md → Getting Started → Environment Variables'
     validations:
       required: true
 
@@ -37,4 +37,4 @@ body:
     id: suggestion
     attributes:
       label: Suggested fix or addition
-      placeholder: "Add a note explaining which vars are sensitive and must be added manually from the Upstash console."
+      placeholder: 'Add a note explaining which vars are sensitive and must be added manually from the Upstash console.'

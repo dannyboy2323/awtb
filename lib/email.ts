@@ -17,22 +17,22 @@
  * ```
  */
 
-import { Resend } from "resend";
-import type { ReactNode } from "react";
+import { Resend } from 'resend'
+import type { ReactNode } from 'react'
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 /** Default from address — update to your verified domain in Resend */
-const DEFAULT_FROM = "noreply@awtb.vercel.app";
+const DEFAULT_FROM = 'noreply@awtb.vercel.app'
 
 interface SendEmailOptions {
-  to: string | string[];
-  subject: string;
-  react?: ReactNode;
-  html?: string;
-  text?: string;
-  from?: string;
-  replyTo?: string;
+  to: string | string[]
+  subject: string
+  react?: ReactNode
+  html?: string
+  text?: string
+  from?: string
+  replyTo?: string
 }
 
 /**
@@ -48,13 +48,13 @@ export async function sendEmail(options: SendEmailOptions) {
     html: options.html,
     text: options.text,
     replyTo: options.replyTo,
-  });
+  })
 
   if (error) {
-    throw new Error(`Resend error: ${error.message}`);
+    throw new Error(`Resend error: ${error.message}`)
   }
 
-  return data;
+  return data
 }
 
-export { resend };
+export { resend }

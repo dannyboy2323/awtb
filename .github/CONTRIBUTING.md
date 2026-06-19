@@ -72,15 +72,15 @@ git checkout -b feat/your-feature-name
 
 Use one of these branch prefixes:
 
-| Prefix | Use for |
-|---|---|
-| `feat/` | New features |
-| `fix/` | Bug fixes |
-| `docs/` | Documentation only |
-| `chore/` | Tooling, deps, config |
-| `refactor/` | Code restructuring |
-| `test/` | Adding or fixing tests |
-| `perf/` | Performance improvements |
+| Prefix      | Use for                  |
+| ----------- | ------------------------ |
+| `feat/`     | New features             |
+| `fix/`      | Bug fixes                |
+| `docs/`     | Documentation only       |
+| `chore/`    | Tooling, deps, config    |
+| `refactor/` | Code restructuring       |
+| `test/`     | Adding or fixing tests   |
+| `perf/`     | Performance improvements |
 
 ### 2. Make your changes
 
@@ -142,17 +142,17 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 
 ### Types
 
-| Type | When to use |
-|---|---|
-| `feat` | Adding new functionality |
-| `fix` | Fixing a bug |
-| `docs` | Documentation changes only |
-| `style` | Formatting, whitespace — no logic change |
+| Type       | When to use                                   |
+| ---------- | --------------------------------------------- |
+| `feat`     | Adding new functionality                      |
+| `fix`      | Fixing a bug                                  |
+| `docs`     | Documentation changes only                    |
+| `style`    | Formatting, whitespace — no logic change      |
 | `refactor` | Restructuring code without changing behaviour |
-| `test` | Adding or correcting tests |
-| `chore` | Build scripts, dependencies, CI, tooling |
-| `perf` | Performance improvement |
-| `ci` | CI configuration changes |
+| `test`     | Adding or correcting tests                    |
+| `chore`    | Build scripts, dependencies, CI, tooling      |
+| `perf`     | Performance improvement                       |
+| `ci`       | CI configuration changes                      |
 
 ### Examples
 

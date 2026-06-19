@@ -1,7 +1,7 @@
 name: Bug Report
 description: Something is broken or behaving unexpectedly
-title: "bug: "
-labels: ["bug", "needs-triage"]
+title: 'bug: '
+labels: ['bug', 'needs-triage']
 assignees: []
 
 body:
@@ -16,7 +16,7 @@ body:
     attributes:
       label: What happened?
       description: A clear description of the bug.
-      placeholder: "When I click the postcard on the landing page, the link goes to a 404..."
+      placeholder: 'When I click the postcard on the landing page, the link goes to a 404...'
     validations:
       required: true
 
@@ -24,7 +24,7 @@ body:
     id: expected
     attributes:
       label: What did you expect to happen?
-      placeholder: "I expected to be taken to the story cover page."
+      placeholder: 'I expected to be taken to the story cover page.'
     validations:
       required: true
 
@@ -68,7 +68,7 @@ body:
     id: browser
     attributes:
       label: Browser & version
-      placeholder: "Safari 17.4 / Chrome 124 / Firefox 125"
+      placeholder: 'Safari 17.4 / Chrome 124 / Firefox 125'
     validations:
       required: true
 

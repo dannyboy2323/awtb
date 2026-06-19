@@ -18,7 +18,7 @@
  * ```
  */
 
-import { PostHog } from "posthog-node";
+import { PostHog } from 'posthog-node'
 
 /**
  * Server-side PostHog client.
@@ -28,4 +28,4 @@ export const serverPostHog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_PROJECT
   host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   flushAt: 1,
   flushInterval: 0,
-});
+})

@@ -28,8 +28,8 @@
 ```yaml
 name: Bug Report
 description: Something is broken or behaving unexpectedly
-title: "bug: "
-labels: ["bug", "needs-triage"]
+title: 'bug: '
+labels: ['bug', 'needs-triage']
 assignees: []
 
 body:
@@ -44,7 +44,7 @@ body:
     attributes:
       label: What happened?
       description: A clear description of the bug.
-      placeholder: "When I click the postcard on the landing page, the link goes to a 404..."
+      placeholder: 'When I click the postcard on the landing page, the link goes to a 404...'
     validations:
       required: true
 
@@ -52,7 +52,7 @@ body:
     id: expected
     attributes:
       label: What did you expect to happen?
-      placeholder: "I expected to be taken to the story cover page."
+      placeholder: 'I expected to be taken to the story cover page.'
     validations:
       required: true
 
@@ -96,7 +96,7 @@ body:
     id: browser
     attributes:
       label: Browser & version
-      placeholder: "Safari 17.4 / Chrome 124 / Firefox 125"
+      placeholder: 'Safari 17.4 / Chrome 124 / Firefox 125'
     validations:
       required: true
 
@@ -129,8 +129,8 @@ body:
 ```yaml
 name: Feature Request
 description: Propose new functionality or an improvement to existing behaviour
-title: "feat: "
-labels: ["enhancement", "needs-triage"]
+title: 'feat: '
+labels: ['enhancement', 'needs-triage']
 assignees: []
 
 body:
@@ -154,7 +154,7 @@ body:
     attributes:
       label: Proposed solution
       description: How do you think this should work?
-      placeholder: "Add a shareable URL for each story page so readers can link directly to page 3 of a story."
+      placeholder: 'Add a shareable URL for each story page so readers can link directly to page 3 of a story.'
     validations:
       required: true
 
@@ -210,8 +210,8 @@ body:
 ```yaml
 name: Content / CMS Issue
 description: Problem with Sanity Studio, schema fields, or the editor workflow
-title: "cms: "
-labels: ["cms", "needs-triage"]
+title: 'cms: '
+labels: ['cms', 'needs-triage']
 assignees: []
 
 body:
@@ -226,7 +226,7 @@ body:
     id: description
     attributes:
       label: What is the issue?
-      placeholder: "When I upload a panel image larger than 5MB, the Studio silently fails with no error message."
+      placeholder: 'When I upload a panel image larger than 5MB, the Studio silently fails with no error message.'
     validations:
       required: true
 
@@ -264,7 +264,7 @@ body:
     id: expected
     attributes:
       label: Expected behaviour
-      placeholder: "An error message should appear explaining the file size limit."
+      placeholder: 'An error message should appear explaining the file size limit.'
     validations:
       required: true
 
@@ -272,7 +272,7 @@ body:
     id: browser
     attributes:
       label: Browser & version
-      placeholder: "Safari 17 / Chrome 124"
+      placeholder: 'Safari 17 / Chrome 124'
 
   - type: textarea
     id: additional
@@ -289,8 +289,8 @@ body:
 ```yaml
 name: Performance Issue
 description: Slow load times, large assets, or Core Web Vitals regressions
-title: "perf: "
-labels: ["performance", "needs-triage"]
+title: 'perf: '
+labels: ['performance', 'needs-triage']
 assignees: []
 
 body:
@@ -304,7 +304,7 @@ body:
     id: description
     attributes:
       label: What is slow or broken?
-      placeholder: "The landing page hero takes 4+ seconds to display on a 4G mobile connection."
+      placeholder: 'The landing page hero takes 4+ seconds to display on a 4G mobile connection.'
     validations:
       required: true
 
@@ -312,7 +312,7 @@ body:
     id: url
     attributes:
       label: URL affected
-      placeholder: "https://awtb.vercel.app/"
+      placeholder: 'https://awtb.vercel.app/'
     validations:
       required: true
 
@@ -356,8 +356,8 @@ body:
 ```yaml
 name: Documentation
 description: Missing, incorrect, or outdated documentation
-title: "docs: "
-labels: ["documentation"]
+title: 'docs: '
+labels: ['documentation']
 assignees: []
 
 body:
@@ -377,7 +377,7 @@ body:
     id: location
     attributes:
       label: Where is the documentation issue?
-      placeholder: "README.md → Getting Started → Environment Variables"
+      placeholder: 'README.md → Getting Started → Environment Variables'
     validations:
       required: true
 
@@ -393,7 +393,7 @@ body:
     id: suggestion
     attributes:
       label: Suggested fix or addition
-      placeholder: "Add a note explaining which vars are sensitive and must be added manually from the Upstash console."
+      placeholder: 'Add a note explaining which vars are sensitive and must be added manually from the Upstash console.'
 ```
 
 ---
@@ -405,8 +405,8 @@ body:
 ```yaml
 name: Chore / Dependency
 description: Dependency upgrades, tooling changes, CI improvements, or infrastructure work
-title: "chore: "
-labels: ["chore"]
+title: 'chore: '
+labels: ['chore']
 assignees: []
 
 body:
@@ -414,7 +414,7 @@ body:
     id: description
     attributes:
       label: What needs to be done?
-      placeholder: "Upgrade next-sanity from 13.x to 14.x following the migration guide."
+      placeholder: 'Upgrade next-sanity from 13.x to 14.x following the migration guide.'
     validations:
       required: true
 
@@ -437,7 +437,7 @@ body:
     id: motivation
     attributes:
       label: Why is this needed?
-      placeholder: "next-sanity 14 adds support for Sanity v6 and drops the styled-components dependency, reducing bundle size."
+      placeholder: 'next-sanity 14 adds support for Sanity v6 and drops the styled-components dependency, reducing bundle size.'
     validations:
       required: true
 
@@ -445,7 +445,7 @@ body:
     id: risks
     attributes:
       label: Known risks or breaking changes
-      placeholder: "The Live Content API signature changed — sanityFetch calls will need to be updated."
+      placeholder: 'The Live Content API signature changed — sanityFetch calls will need to be updated.'
 ```
 
 ---

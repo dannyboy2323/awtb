@@ -14,21 +14,21 @@
  * ```
  */
 
-import { pgTable, serial, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, boolean } from 'drizzle-orm/pg-core'
 
 /**
  * Example users table — extend or replace for your project.
  * Clerk handles authentication; this table stores app-specific user data.
  */
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  clerkId: text("clerk_id").notNull().unique(),
-  email: text("email").notNull().unique(),
-  name: text("name"),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  clerkId: text('clerk_id').notNull().unique(),
+  email: text('email').notNull().unique(),
+  name: text('name'),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
 
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert

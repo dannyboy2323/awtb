@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
-import {linkResolver} from '@/sanity/lib/utils'
-import {DereferencedLink} from '@/sanity/lib/types'
+import { linkResolver } from '@/sanity/lib/utils'
+import { DereferencedLink } from '@/sanity/lib/types'
 
 interface ResolvedLinkProps {
   link: DereferencedLink
@@ -9,7 +9,7 @@ interface ResolvedLinkProps {
   className?: string
 }
 
-export default function ResolvedLink({link, children, className}: ResolvedLinkProps) {
+export default function ResolvedLink({ link, children, className }: ResolvedLinkProps) {
   // resolveLink() is used to determine the type of link and return the appropriate URL.
   const resolvedLink = linkResolver(link)
 

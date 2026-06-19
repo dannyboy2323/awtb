@@ -1,7 +1,7 @@
 name: Performance Issue
 description: Slow load times, large assets, or Core Web Vitals regressions
-title: "perf: "
-labels: ["performance", "needs-triage"]
+title: 'perf: '
+labels: ['performance', 'needs-triage']
 assignees: []
 
 body:
@@ -15,7 +15,7 @@ body:
     id: description
     attributes:
       label: What is slow or broken?
-      placeholder: "The landing page hero takes 4+ seconds to display on a 4G mobile connection."
+      placeholder: 'The landing page hero takes 4+ seconds to display on a 4G mobile connection.'
     validations:
       required: true
 
@@ -23,7 +23,7 @@ body:
     id: url
     attributes:
       label: URL affected
-      placeholder: "https://awtb.vercel.app/"
+      placeholder: 'https://awtb.vercel.app/'
     validations:
       required: true
 

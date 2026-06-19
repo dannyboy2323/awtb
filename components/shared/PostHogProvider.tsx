@@ -11,31 +11,31 @@
  *
  * Must be rendered in a Client Component — mounted in app/layout.tsx.
  */
-"use client";
+'use client'
 
-import posthog from "posthog-js";
-import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, Suspense } from "react";
+import posthog from 'posthog-js'
+import { PostHogProvider as PHProvider, usePostHog } from 'posthog-js/react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useEffect, Suspense } from 'react'
 
 function PostHogPageView() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const ph = usePostHog();
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const ph = usePostHog()
 
   useEffect(() => {
     if (pathname && ph) {
-      let url = window.location.origin + pathname;
-      const search = searchParams?.toString();
-      if (search) url += `?${search}`;
-      ph.capture("$pageview", { $current_url: url });
+      let url = window.location.origin + pathname
+      const search = searchParams?.toString()
+      if (search) url += `?${search}`
+      ph.capture('$pageview', { $current_url: url })
     }
-  }, [pathname, searchParams, ph]);
+  }, [pathname, searchParams, ph])
 
-  return null;
+  return null
 }
 
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     capture_pageview: false, // we handle this manually above
@@ -43,7 +43,7 @@ if (typeof window !== "undefined") {
     session_recording: {
       maskAllInputs: true,
     },
-  });
+  })
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
@@ -54,5 +54,5 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       </Suspense>
       {children}
     </PHProvider>
-  );
+  )
 }

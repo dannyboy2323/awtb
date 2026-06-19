@@ -6,9 +6,9 @@ type Props = {
     firstName: string | null
     lastName: string | null
     picture?: {
-      asset?: {_ref: string}
-      hotspot?: {x: number; y: number}
-      crop?: {top: number; bottom: number; left: number; right: number}
+      asset?: { _ref: string }
+      hotspot?: { x: number; y: number }
+      crop?: { top: number; bottom: number; left: number; right: number }
       alt?: string
     }
   }
@@ -16,13 +16,13 @@ type Props = {
   small?: boolean
 }
 
-export default function Avatar({person, date, small = false}: Props) {
-  const {firstName, lastName, picture} = person
+export default function Avatar({ person, date, small = false }: Props) {
+  const { firstName, lastName, picture } = person
 
   return (
     <div className="flex items-center font-mono">
       {picture?.asset?._ref ? (
-        <div className={`${small ? 'h-6 w-6 mr-2' : 'h-9 w-9 mr-4'}`}>
+        <div className={`${small ? 'mr-2 h-6 w-6' : 'mr-4 h-9 w-9'}`}>
           <Image
             id={picture.asset._ref}
             alt={picture?.alt || ''}

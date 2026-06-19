@@ -2,10 +2,10 @@
 const config = {
   semi: false,
   singleQuote: true,
-  trailingComma: "es5",
+  trailingComma: 'es5',
   printWidth: 100,
   tabWidth: 2,
-  plugins: ["prettier-plugin-tailwindcss"],
-};
+  plugins: ['prettier-plugin-tailwindcss', 'prettier-plugin-packagejson'],
+}
 
-module.exports = config;
+module.exports = config

@@ -8,7 +8,7 @@
  *
  */
 
-import {PortableText, type PortableTextComponents, type PortableTextBlock} from 'next-sanity'
+import { PortableText, type PortableTextComponents, type PortableTextBlock } from 'next-sanity'
 import ResolvedLink from '@/app/components/ResolvedLink'
 import Image from '@/app/components/SanityImage'
 
@@ -21,7 +21,7 @@ export default function CustomPortableText({
 }) {
   const components: PortableTextComponents = {
     types: {
-      image: ({value}) => {
+      image: ({ value }) => {
         if (!value?.asset?._ref) {
           return null
         }
@@ -41,13 +41,13 @@ export default function CustomPortableText({
       },
     },
     block: {
-      h1: ({children, value}) => (
+      h1: ({ children, value }) => (
         // Add an anchor to the h1
         <h1 className="group relative">
           {children}
           <a
             href={`#${value?._key}`}
-            className="absolute left-0 top-0 bottom-0 -ml-6 flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-0 bottom-0 left-0 -ml-6 flex items-center opacity-0 transition-opacity group-hover:opacity-100"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -66,14 +66,14 @@ export default function CustomPortableText({
           </a>
         </h1>
       ),
-      h2: ({children, value}) => {
+      h2: ({ children, value }) => {
         // Add an anchor to the h2
         return (
           <h2 className="group relative">
             {children}
             <a
               href={`#${value?._key}`}
-              className="absolute left-0 top-0 bottom-0 -ml-6 flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-0 bottom-0 left-0 -ml-6 flex items-center opacity-0 transition-opacity group-hover:opacity-100"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +95,7 @@ export default function CustomPortableText({
       },
     },
     marks: {
-      link: ({children, value: link}) => {
+      link: ({ children, value: link }) => {
         return <ResolvedLink link={link}>{children}</ResolvedLink>
       },
     },

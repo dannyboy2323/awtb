@@ -1,7 +1,7 @@
-import {type PortableTextBlock} from 'next-sanity'
+import { type PortableTextBlock } from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'
-import {InfoSection} from '@/sanity.types'
+import { InfoSection } from '@/sanity.types'
 
 type InfoProps = {
   block: InfoSection
@@ -11,13 +11,13 @@ type InfoProps = {
   pageType: string
 }
 
-export default function CTA({block}: InfoProps) {
+export default function CTA({ block }: InfoProps) {
   return (
     <div className="container my-12">
       <div className="max-w-3xl">
         {block?.heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{block.heading}</h2>}
         {block?.subheading && (
-          <span className="block mt-4 mb-8 text-lg uppercase font-light text-gray-900/70">
+          <span className="mt-4 mb-8 block text-lg font-light text-gray-900/70 uppercase">
             {block.subheading}
           </span>
         )}
