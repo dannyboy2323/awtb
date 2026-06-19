@@ -23,6 +23,10 @@ export const env = createEnv({
    * Never exposed to the browser.
    */
   server: {
+    // Neon Postgres
+    DATABASE_URL: z.string().url(),
+    DATABASE_URL_UNPOOLED: z.string().url(),
+
     // Clerk
     CLERK_SECRET_KEY: z.string().min(1),
 
@@ -76,6 +80,10 @@ export const env = createEnv({
    * Required by @t3-oss/env-nextjs for Next.js compatibility.
    */
   runtimeEnv: {
+    // Neon Postgres
+    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
+
     // Clerk
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
