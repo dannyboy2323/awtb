@@ -18,6 +18,7 @@
 | Error Monitoring      | Sentry                                   |
 | Synthetic Monitoring  | Checkly                                  |
 | Email                 | Resend + React Email                     |
+| AI                    | Anthropic Claude                         |
 
 ## Data Flow
 
@@ -53,6 +54,13 @@ live in `emails/` and are previewed with `npm run email:dev` (opens at localhost
 - Transactional email: use `sendEmail()` from `lib/email.ts`
 - Mailing lists and broadcasts: use Resend Broadcasts via the Resend dashboard
 
+## AI
+
+Anthropic Claude is used for automated documentation maintenance via
+`scripts/ai-docs-check.mjs`, which runs on every push to `main` through the
+`ai-docs.yml` GitHub Actions workflow. Claude reviews the git diff and opens
+a PR if any documentation needs updating.
+
 ## Key Directories
 
 - `app/` — Next.js App Router pages and API routes
@@ -64,7 +72,7 @@ live in `emails/` and are previewed with `npm run email:dev` (opens at localhost
 - `lib/` — Server-side utilities (env, redis, email, posthog, flags, edge-config)
 - `sanity/lib/` — Sanity client, queries, utils, webhook validator
 - `sanity/src/` — Sanity schema and Studio configuration
-- `scripts/` — One-time scripts (upload-desk-images, init)
+- `scripts/` — Utility scripts (ai-docs-check, upload-desk-images, init)
 - `tests/unit/` — Vitest unit and component tests
 - `tests/e2e/` — Playwright E2E tests
 - `__checks__/` — Checkly production monitoring checks
