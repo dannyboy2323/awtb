@@ -6,11 +6,11 @@ Only the latest version deployed to production at
 [awtb.vercel.app](https://awtb.vercel.app) is actively maintained and receives
 security fixes.
 
-| Environment | Status |
-|---|---|
-| Production (`main` branch) | ✅ Actively maintained |
-| Preview deployments (PR branches) | ⚠️ Best effort |
-| Older deployments | ❌ Not supported |
+| Environment                       | Status                 |
+| --------------------------------- | ---------------------- |
+| Production (`main` branch)        | ✅ Actively maintained |
+| Preview deployments (PR branches) | ⚠️ Best effort         |
+| Older deployments                 | ❌ Not supported       |
 
 ---
 
@@ -102,15 +102,15 @@ reasonable opportunity to address it.
 
 For transparency, here is a summary of the security measures in place:
 
-| Control | Implementation |
-|---|---|
-| Webhook signature validation | HMAC-SHA256 via `next-sanity/webhook` `parseBody()` |
-| Webhook rate limiting | Upstash Redis sliding window (10 req / 60s per IP) |
-| Draft Mode protection | Sanity read token required; token validated server-side |
-| Studio access | Sanity authentication; CORS restricted to known origins |
-| Secret management | All secrets in Vercel environment variables; never in code |
-| Dependency scanning | `npm audit` on every CI run |
-| Branch protection | No direct pushes to `main`; CI must pass before merge |
+| Control                      | Implementation                                             |
+| ---------------------------- | ---------------------------------------------------------- |
+| Webhook signature validation | HMAC-SHA256 via `next-sanity/webhook` `parseBody()`        |
+| Webhook rate limiting        | Upstash Redis sliding window (10 req / 60s per IP)         |
+| Draft Mode protection        | Sanity read token required; token validated server-side    |
+| Studio access                | Sanity authentication; CORS restricted to known origins    |
+| Secret management            | All secrets in Vercel environment variables; never in code |
+| Dependency scanning          | `npm audit` on every CI run                                |
+| Branch protection            | No direct pushes to `main`; CI must pass before merge      |
 
 ---
 
@@ -138,4 +138,4 @@ so we can track it and assess our exposure.
 We appreciate everyone who responsibly discloses security issues.
 Researchers who report valid vulnerabilities will be listed here (with permission).
 
-*No reports yet — be the first!*
+_No reports yet — be the first!_

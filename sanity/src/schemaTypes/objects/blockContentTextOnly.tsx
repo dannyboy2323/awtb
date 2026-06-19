@@ -1,4 +1,4 @@
-import {defineArrayMember, defineType} from 'sanity'
+import { defineArrayMember, defineType } from 'sanity'
 
 export const blockContentTextOnly = defineType({
   title: 'Block Content (Simple - Text Only)',

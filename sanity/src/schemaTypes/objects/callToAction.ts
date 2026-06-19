@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from 'sanity'
 import {
   BulbOutlineIcon,
   ComposeSparklesIcon,
@@ -74,8 +74,8 @@ export const callToAction = defineType({
       title: 'Theme',
       options: {
         list: [
-          {title: 'Light', value: 'light'},
-          {title: 'Dark', value: 'dark'},
+          { title: 'Light', value: 'light' },
+          { title: 'Dark', value: 'dark' },
         ],
         layout: 'radio',
       },
@@ -91,12 +91,12 @@ export const callToAction = defineType({
       description: 'Does text content or image come first?',
       options: {
         list: [
-          {title: 'Text then Image', value: 'textFirst'},
-          {title: 'Image then Text', value: 'imageFirst'},
+          { title: 'Text then Image', value: 'textFirst' },
+          { title: 'Image then Text', value: 'imageFirst' },
         ],
         layout: 'radio',
       },
-      hidden: ({parent}) => !Boolean(parent?.image?.asset),
+      hidden: ({ parent }) => !Boolean(parent?.image?.asset),
       group: 'designSystem',
     }),
   ],
@@ -106,7 +106,7 @@ export const callToAction = defineType({
       image: 'image.asset',
     },
     prepare(selection) {
-      const {title, image} = selection
+      const { title, image } = selection
       return {
         title: title,
         subtitle: 'Call to Action',

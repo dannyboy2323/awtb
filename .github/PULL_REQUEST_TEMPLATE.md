@@ -33,8 +33,8 @@ Closes #
      Drag and drop images directly into this text area. -->
 
 | Before | After |
-|---|---|
-| | |
+| ------ | ----- |
+|        |       |
 
 ## Testing done
 

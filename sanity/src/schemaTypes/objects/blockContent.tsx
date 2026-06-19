@@ -1,5 +1,5 @@
-import {defineArrayMember, defineType, defineField} from 'sanity'
-import type {Link} from '../../../../sanity.types'
+import { defineArrayMember, defineType, defineField } from 'sanity'
+import type { Link } from '../../../../sanity.types'
 
 /**
  * This is the schema definition for the rich text fields used for
@@ -34,9 +34,9 @@ export const blockContent = defineType({
                 initialValue: 'href',
                 options: {
                   list: [
-                    {title: 'URL', value: 'href'},
-                    {title: 'Page', value: 'page'},
-                    {title: 'Post', value: 'post'},
+                    { title: 'URL', value: 'href' },
+                    { title: 'Page', value: 'page' },
+                    { title: 'Post', value: 'post' },
                   ],
                   layout: 'radio',
                 },
@@ -45,7 +45,7 @@ export const blockContent = defineType({
                 name: 'href',
                 title: 'URL',
                 type: 'url',
-                hidden: ({parent}) => parent?.linkType !== 'href' && parent?.linkType != null,
+                hidden: ({ parent }) => parent?.linkType !== 'href' && parent?.linkType != null,
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
                     const parent = context.parent as Link
@@ -59,8 +59,8 @@ export const blockContent = defineType({
                 name: 'page',
                 title: 'Page',
                 type: 'reference',
-                to: [{type: 'page'}],
-                hidden: ({parent}) => parent?.linkType !== 'page',
+                to: [{ type: 'page' }],
+                hidden: ({ parent }) => parent?.linkType !== 'page',
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
                     const parent = context.parent as Link
@@ -74,8 +74,8 @@ export const blockContent = defineType({
                 name: 'post',
                 title: 'Post',
                 type: 'reference',
-                to: [{type: 'post'}],
-                hidden: ({parent}) => parent?.linkType !== 'post',
+                to: [{ type: 'post' }],
+                hidden: ({ parent }) => parent?.linkType !== 'post',
                 validation: (Rule) =>
                   Rule.custom((value, context) => {
                     const parent = context.parent as Link

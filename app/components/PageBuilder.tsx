@@ -1,12 +1,12 @@
 'use client'
 
-import {SanityDocument} from 'next-sanity'
-import {useOptimistic} from 'next-sanity/hooks'
+import { SanityDocument } from 'next-sanity'
+import { useOptimistic } from 'next-sanity/hooks'
 
 import BlockRenderer from '@/app/components/BlockRenderer'
-import {GetPageQueryResult} from '@/sanity.types'
-import {dataAttr} from '@/sanity/lib/utils'
-import {PageBuilderSection} from '@/sanity/lib/types'
+import { GetPageQueryResult } from '@/sanity.types'
+import { dataAttr } from '@/sanity/lib/utils'
+import { PageBuilderSection } from '@/sanity/lib/types'
 
 type PageBuilderPageProps = {
   page: GetPageQueryResult
@@ -53,7 +53,7 @@ function RenderSections({
   )
 }
 
-function RenderEmptyState({page}: {page: GetPageQueryResult}) {
+function RenderEmptyState({ page }: { page: GetPageQueryResult }) {
   if (!page) {
     return null
   }
@@ -75,7 +75,7 @@ function RenderEmptyState({page}: {page: GetPageQueryResult}) {
   )
 }
 
-export default function PageBuilder({page}: PageBuilderPageProps) {
+export default function PageBuilder({ page }: PageBuilderPageProps) {
   const pageBuilderSections = useOptimistic<
     PageBuilderSection[] | undefined,
     SanityDocument<PageData>
@@ -92,7 +92,7 @@ export default function PageBuilder({page}: PageBuilderPageProps) {
     if (action.document.pageBuilder) {
       // Reconcile References. https://www.sanity.io/docs/enabling-drag-and-drop#ffe728eea8c1
       return action.document.pageBuilder.map(
-        (section) => currentSections?.find((s) => s._key === section?._key) || section,
+        (section) => currentSections?.find((s) => s._key === section?._key) || section
       )
     }
 

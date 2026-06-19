@@ -1,9 +1,9 @@
 export default function SideBySideIcons() {
   return (
-    <div className="relative flex gap-[0] -mt-16 group">
-      <div className="z-10 aspect-square w-32 h-32 flex justify-center items-center rounded-full border-white border-4 bg-white transform translate-x-2 group-hover:scale-110 group-hover:-translate-x-5 transition-all duration-300">
+    <div className="group relative -mt-16 flex gap-[0]">
+      <div className="z-10 flex aspect-square h-32 w-32 translate-x-2 transform items-center justify-center rounded-full border-4 border-white bg-white transition-all duration-300 group-hover:-translate-x-5 group-hover:scale-110">
         <svg
-          className="w-full duration-300 transition"
+          className="w-full transition duration-300"
           viewBox="0 0 400 400"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -23,19 +23,19 @@ export default function SideBySideIcons() {
           </defs>
         </svg>
       </div>
-      <div className="text-black opacity-0 text-4xl scale-50 font-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-in-out">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-50 text-4xl font-bold text-black opacity-0 transition-all duration-300 ease-in-out group-hover:scale-100 group-hover:opacity-100">
         +
       </div>
-      <div className="aspect-square w-32 h-32 border-white border-4 flex justify-center items-center rounded-full transform -translate-x-2 group-hover:scale-110 group-hover:translate-x-5 transition-all duration-300">
+      <div className="flex aspect-square h-32 w-32 -translate-x-2 transform items-center justify-center rounded-full border-4 border-white transition-all duration-300 group-hover:translate-x-5 group-hover:scale-110">
         <svg
-          className="w-full duration-300 transition"
+          className="w-full transition duration-300"
           viewBox="0 0 180 180"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <mask
             id="mask0_408_139"
-            style={{maskType: 'alpha'}}
+            style={{ maskType: 'alpha' }}
             maskUnits="userSpaceOnUse"
             x="0"
             y="0"

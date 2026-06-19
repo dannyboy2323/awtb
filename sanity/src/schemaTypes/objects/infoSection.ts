@@ -1,5 +1,5 @@
-import {defineField, defineType} from 'sanity'
-import {TextIcon} from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+import { TextIcon } from '@sanity/icons'
 
 export const infoSection = defineType({
   name: 'infoSection',
@@ -28,7 +28,7 @@ export const infoSection = defineType({
       title: 'heading',
       subtitle: 'subheading',
     },
-    prepare({title}) {
+    prepare({ title }) {
       return {
         title: title || 'Untitled Info Section',
         subtitle: 'Info Section',

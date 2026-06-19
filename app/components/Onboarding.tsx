@@ -6,11 +6,11 @@
  */
 
 import Link from 'next/link'
-import {useIsPresentationTool} from 'next-sanity/hooks'
-import {createDataAttribute} from 'next-sanity'
-import {uuid} from '@sanity/uuid'
+import { useIsPresentationTool } from 'next-sanity/hooks'
+import { createDataAttribute } from 'next-sanity'
+import { uuid } from '@sanity/uuid'
 
-import {studioUrl} from '@/sanity/lib/api'
+import { studioUrl } from '@/sanity/lib/api'
 
 type OnboardingMessageProps = {
   message: {
@@ -26,7 +26,7 @@ type OnboardingMessageProps = {
   path?: string
 }
 
-const OnboardingMessage = ({message, link, type, path}: OnboardingMessageProps) => {
+const OnboardingMessage = ({ message, link, type, path }: OnboardingMessageProps) => {
   const isPresentation = useIsPresentationTool()
 
   return (
@@ -39,7 +39,7 @@ const OnboardingMessage = ({message, link, type, path}: OnboardingMessageProps) 
       <div>
         {!isPresentation ? (
           <Link
-            className="inline-flex rounded-full gap-2 items-center bg-white text-brand hover:bg-brand focus:bg-brand hover:text-white focus:text-white py-3 px-6 transition-colors duration-200"
+            className="text-brand hover:bg-brand focus:bg-brand inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 transition-colors duration-200 hover:text-white focus:text-white"
             href={link.href}
             target="_blank"
           >
@@ -52,7 +52,7 @@ const OnboardingMessage = ({message, link, type, path}: OnboardingMessageProps) 
           </Link>
         ) : (
           <button
-            className="cursor-pointer inline-flex rounded-full gap-2 items-center bg-white text-brand hover:bg-blue focus:bg-blue py-3 px-6 transition-colors duration-200"
+            className="text-brand hover:bg-blue focus:bg-blue inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-6 py-3 transition-colors duration-200"
             data-sanity={createDataAttribute({
               id: uuid(),
               type,
@@ -74,7 +74,7 @@ const OnboardingMessage = ({message, link, type, path}: OnboardingMessageProps) 
 
 export default function Onboarding() {
   return (
-    <div className="max-w-2xl mx-auto grid grid-flow-row gap-6 py-12 text-center bg-brand text-white rounded-lg p-8">
+    <div className="bg-brand mx-auto grid max-w-2xl grid-flow-row gap-6 rounded-lg p-8 py-12 text-center text-white">
       <svg
         className="mx-auto h-10 w-10 text-gray-400"
         aria-hidden="true"
@@ -118,7 +118,7 @@ export default function Onboarding() {
 
 export function PageOnboarding() {
   return (
-    <div className="max-w-2xl mx-auto grid grid-flow-row gap-6 py-12 text-center bg-brand text-white rounded-lg p-8">
+    <div className="bg-brand mx-auto grid max-w-2xl grid-flow-row gap-6 rounded-lg p-8 py-12 text-center text-white">
       <svg
         className="mx-auto h-10 w-10 text-gray-400"
         aria-hidden="true"

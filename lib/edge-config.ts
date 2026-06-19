@@ -1,4 +1,4 @@
-import { get } from "@vercel/edge-config";
+import { get } from '@vercel/edge-config'
 
 /**
  * Reads the featured story slug from Vercel Edge Config.
@@ -6,10 +6,10 @@ import { get } from "@vercel/edge-config";
  */
 export async function getFeaturedStorySlug(): Promise<string | null> {
   try {
-    const slug = await get<string>("featuredStorySlug");
-    return slug ?? null;
+    const slug = await get<string>('featuredStorySlug')
+    return slug ?? null
   } catch {
     // Edge Config unavailable in local dev until EDGE_CONFIG is set
-    return null;
+    return null
   }
 }

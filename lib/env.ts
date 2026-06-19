@@ -14,8 +14,8 @@
  * ```
  */
 
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs'
+import { z } from 'zod'
 
 export const env = createEnv({
   /**
@@ -50,9 +50,7 @@ export const env = createEnv({
     KV_REST_API_TOKEN: z.string().min(1),
 
     // Node environment
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
+    NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
 
   /**
@@ -92,12 +90,10 @@ export const env = createEnv({
 
     // Clerk
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 
     // PostHog
-    NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN:
-      process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
+    NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 
     // Sentry
@@ -125,6 +121,5 @@ export const env = createEnv({
    * Skip validation during CI lint/typecheck runs that don't
    * have access to all secrets. The build step always validates.
    */
-  skipValidation:
-    process.env.CI === "true" && process.env.npm_lifecycle_event !== "build",
-});
+  skipValidation: process.env.CI === 'true' && process.env.npm_lifecycle_event !== 'build',
+})

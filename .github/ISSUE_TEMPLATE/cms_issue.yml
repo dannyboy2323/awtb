@@ -1,7 +1,7 @@
 name: Content / CMS Issue
 description: Problem with Sanity Studio, schema fields, or the editor workflow
-title: "cms: "
-labels: ["cms", "needs-triage"]
+title: 'cms: '
+labels: ['cms', 'needs-triage']
 assignees: []
 
 body:
@@ -16,7 +16,7 @@ body:
     id: description
     attributes:
       label: What is the issue?
-      placeholder: "When I upload a panel image larger than 5MB, the Studio silently fails with no error message."
+      placeholder: 'When I upload a panel image larger than 5MB, the Studio silently fails with no error message.'
     validations:
       required: true
 
@@ -54,7 +54,7 @@ body:
     id: expected
     attributes:
       label: Expected behaviour
-      placeholder: "An error message should appear explaining the file size limit."
+      placeholder: 'An error message should appear explaining the file size limit.'
     validations:
       required: true
 
@@ -62,7 +62,7 @@ body:
     id: browser
     attributes:
       label: Browser & version
-      placeholder: "Safari 17 / Chrome 124"
+      placeholder: 'Safari 17 / Chrome 124'
 
   - type: textarea
     id: additional

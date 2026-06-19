@@ -4,10 +4,6 @@
  * The landing page hero and story reader manage their own chrome.
  */
 
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
 }

@@ -1,5 +1,5 @@
-import { CogIcon, ImageIcon } from "@sanity/icons";
-import type { StructureBuilder, StructureResolver } from "sanity/structure";
+import { CogIcon, ImageIcon } from '@sanity/icons'
+import type { StructureBuilder, StructureResolver } from 'sanity/structure'
 
 /**
  * Custom Studio sidebar structure for Postcard Stories.
@@ -9,22 +9,20 @@ import type { StructureBuilder, StructureResolver } from "sanity/structure";
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
-    .title("Postcard Stories")
+    .title('Postcard Stories')
     .items([
       // Stories — the main content type
       S.listItem()
-        .title("Stories")
+        .title('Stories')
         .icon(ImageIcon)
-        .schemaType("story")
-        .child(S.documentTypeList("story").title("All Stories")),
+        .schemaType('story')
+        .child(S.documentTypeList('story').title('All Stories')),
 
       S.divider(),
 
       // Site Settings singleton — only one document allowed
       S.listItem()
-        .title("Site Settings")
+        .title('Site Settings')
         .icon(CogIcon)
-        .child(
-          S.document().schemaType("siteSettings").documentId("siteSettings"),
-        ),
-    ]);
+        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+    ])

@@ -1,7 +1,7 @@
-import {MetadataRoute} from 'next'
-import {sanityFetch} from '@/sanity/lib/live'
-import {sitemapData} from '@/sanity/lib/queries'
-import {headers} from 'next/headers'
+import { MetadataRoute } from 'next'
+import { sanityFetch } from '@/sanity/lib/live'
+import { sitemapData } from '@/sanity/lib/queries'
+import { headers } from 'next/headers'
 
 /**
  * This file creates a sitemap (sitemap.xml) for the application. Learn more about sitemaps in Next.js here: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap

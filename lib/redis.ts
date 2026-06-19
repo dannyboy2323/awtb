@@ -1,5 +1,5 @@
-import { Redis } from "@upstash/redis";
-import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from '@upstash/redis'
+import { Ratelimit } from '@upstash/ratelimit'
 
 /**
  * Upstash Redis client using Vercel KV integration variable names.
@@ -9,7 +9,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 export const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
   token: process.env.KV_REST_API_TOKEN!,
-});
+})
 
 /**
  * Rate limiter for the /api/revalidate webhook endpoint.
@@ -17,7 +17,7 @@ export const redis = new Redis({
  */
 export const webhookRatelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, "60 s"),
+  limiter: Ratelimit.slidingWindow(10, '60 s'),
   analytics: true,
-  prefix: "postcard-stories:webhook",
-});
+  prefix: 'postcard-stories:webhook',
+})
