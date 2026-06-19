@@ -23,6 +23,9 @@ export const env = createEnv({
    * Never exposed to the browser.
    */
   server: {
+    // Resend
+    RESEND_API_KEY: z.string().min(1),
+
     // Neon Postgres
     DATABASE_URL: z.string().url(),
     DATABASE_URL_UNPOOLED: z.string().url(),
@@ -80,6 +83,9 @@ export const env = createEnv({
    * Required by @t3-oss/env-nextjs for Next.js compatibility.
    */
   runtimeEnv: {
+    // Resend
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+
     // Neon Postgres
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_URL_UNPOOLED: process.env.DATABASE_URL_UNPOOLED,
