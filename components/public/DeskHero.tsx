@@ -192,6 +192,7 @@ export default function DeskHero({
               height={560}
               className="postcard-image"
               priority
+              style={{ width: "100%", height: "auto" }}
               sizes="(max-width: 480px) 92vw, (max-width: 768px) 88vw, (max-width: 1200px) 85vw, 800px"
             />
           </div>
