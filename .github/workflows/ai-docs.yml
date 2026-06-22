@@ -49,7 +49,7 @@ jobs:
 
       - name: Open PR with doc updates
         if: steps.changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "docs: AI-suggested documentation updates"
