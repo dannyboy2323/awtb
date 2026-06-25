@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
-    branches: [main]
+    branches: [main, staging]
 
 jobs:
   test:
@@ -18,18 +18,21 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
+
+      - name: Pin npm version
+        run: npm install -g npm@11
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: TypeScript check
         run: npm run type-check
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: production
-          NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
+          NEXT_PUBLIC_SANITY_API_VERSION: "2026-06-01"
 
       - name: Lint
         run: npm run lint
@@ -39,7 +42,7 @@ jobs:
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: production
-          NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
+          NEXT_PUBLIC_SANITY_API_VERSION: "2026-06-01"
           SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}
 
       - name: Security audit
@@ -47,4 +50,11 @@ jobs:
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: production
-          NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
+          NEXT_PUBLIC_SANITY_API_VERSION: "2026-06-01"
+
+      - name: Notify Vercel of check status
+        if: always()
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: CI
+          github_token: ${{ secrets.GITHUB_TOKEN }}
