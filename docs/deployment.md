@@ -142,6 +142,23 @@ Dashboard: [app.checklyhq.com](https://app.checklyhq.com)
 
 ---
 
+## CI Pipeline
+
+The CI workflow (`.github/workflows/ci.yml`) runs on pushes to `main` and `staging`, and
+on pull requests targeting either branch. It runs the following steps in order:
+
+1. TypeScript check
+2. Lint
+3. Security audit
+4. Notifies Vercel of the check status via `vercel/repository-dispatch`
+
+The workflow pins npm to version 11 and uses `npm install` rather than `npm ci`.
+
+The workflow requires `NEXT_PUBLIC_SANITY_PROJECT_ID`, `SANITY_WEBHOOK_SECRET`, and
+`GITHUB_TOKEN` to be set as repository secrets.
+
+---
+
 ## AI Docs Maintenance
 
 A GitHub Actions workflow (`.github/workflows/ai-docs.yml`) runs on every push to `main`
