@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js 22.x — `node -v`
-- npm 10.x — `npm -v`
+- npm 11.x — `npm -v`
 - Git with SSH configured
 - Access to the Vercel and Sanity organizations
 

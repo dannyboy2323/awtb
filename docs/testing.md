@@ -116,12 +116,16 @@ Run `npx checkly deploy` after adding or updating checks.
 
 ## CI Pipeline
 
-The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push and PR:
+The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push to `main` or
+`staging`, and on every PR targeting either branch:
 
 1. TypeScript check (`npm run type-check`)
 2. ESLint (`npm run lint`)
 3. Unit tests (`npm test`)
 4. Security audit (`npm audit --audit-level=critical`)
+5. Notify Vercel of check status (always runs, even on failure)
+
+Dependencies are installed with `npm install` after pinning npm to version 11.
 
 E2E tests are not run in CI by default (they require a running server and take longer).
 Run them locally before merging significant UI changes.
