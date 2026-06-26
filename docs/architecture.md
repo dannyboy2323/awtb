@@ -1,4 +1,4 @@
-The diff changes are limited to the CI workflow configuration: CI now runs on the `staging` branch in addition to `main`, npm is pinned to version 11, `npm ci` is replaced with `npm install`, and a Vercel status notification step is added. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
+The diff adds a story reader feature with several new components, a new route, CSS, and scripts. I need to update the Key Directories section to reflect the new components and scripts, and add the new route to the Data Flow description. The rest of the architecture doc remains accurate.
 
 # Architecture
 
@@ -30,6 +30,11 @@ Content API via `sanityFetch`, and read the featured story pointer from
 Vercel Edge Config via `getFeaturedStorySlug`. Sanity assets are served
 from the Sanity CDN. Database queries go through Drizzle ORM to Neon
 serverless Postgres via the pooled connection in `db/index.ts`.
+
+Story pages at `/stories/[slug]` fetch the full story (all pages and panels)
+from Sanity via `storyBySlugQuery` and pass the data to the client-side
+`StoryReader` component. Background images for the story reader are served
+from Vercel Blob CDN.
 
 ## Cache Invalidation
 
@@ -66,15 +71,18 @@ a PR if any documentation needs updating.
 ## Key Directories
 
 - `app/` — Next.js App Router pages and API routes
-- `components/public/` — Public-facing UI components (DeskHero, PostcardGrid)
+- `app/stories/[slug]/` — Story reader route; server component fetches story data from Sanity
+- `app/story-reader.css` — Visual styles for the story reader (Mignola-inspired journal layout)
+- `components/public/` — Public-facing UI components (DeskHero, PostcardGrid, StoryReader, StoryPage, PanelGrid, StoryNavBar)
 - `components/shared/` — Shared utilities (PostHogProvider)
 - `components/ui/` — shadcn/ui components
 - `db/` — Drizzle ORM schema (`schema.ts`) and client (`index.ts`)
 - `emails/` — React Email templates (WelcomeEmail, NotificationEmail)
 - `lib/` — Server-side utilities (env, redis, email, posthog, flags, edge-config)
+- `public/images/` — Static image assets (UI icons and tiles)
 - `sanity/lib/` — Sanity client, queries, utils, webhook validator
 - `sanity/src/` — Sanity schema and Studio configuration
-- `scripts/` — Utility scripts (ai-docs-check, upload-desk-images, init)
+- `scripts/` — Utility scripts (ai-docs-check, upload-desk-images, upload-story-bg, init)
 - `tests/unit/` — Vitest unit and component tests
 - `tests/e2e/` — Playwright E2E tests
 - `__checks__/` — Checkly production monitoring checks

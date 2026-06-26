@@ -1,3 +1,5 @@
+The diff adds a new `/stories/[slug]` route that is revalidated on demand by the Sanity webhook. The webhook filter in the deployment doc only lists `["story", "siteSettings"]` — "story" already covers this. The new route, CSS file, and components don't affect any deployment configuration documented here. The doc is accurate as written.
+
 # Deployment Guide
 
 ## Overview
