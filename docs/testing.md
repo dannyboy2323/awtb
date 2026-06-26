@@ -1,3 +1,5 @@
+The diff only modifies CSS background properties in `story-reader.css`. None of this affects the testing guide content. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

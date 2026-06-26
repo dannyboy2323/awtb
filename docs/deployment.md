@@ -1,3 +1,5 @@
+The diff only changes CSS background properties for the story reader — nothing in the deployment guide is affected. Returning the doc unchanged.
+
 # Deployment Guide
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff only modifies CSS background properties in `story-reader.css`. This change has no bearing on environment variables, setup instructions, or any content in `environment-setup.md`.
+
 # Environment Variable Setup
 
 ## Overview
