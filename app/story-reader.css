@@ -37,10 +37,11 @@
   /* Landscape journal photo background — full bleed, fixed to viewport */
   background-color: #1a1614; /* Fallback while image loads */
   background-image: url("https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp");
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: local;
+
+  background-size: 100vw auto;
+  background-position: top center;
+  background-repeat: repeat-y;
+  background-attachment: scroll;
 }
 
 /* ============================================================
