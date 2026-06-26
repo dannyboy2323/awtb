@@ -11,7 +11,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
-import { storyBySlugQuery } from "@/sanity/lib/queries";
+import {
+  storyBySlugQuery,
+  type StoryBySlugQueryResult,
+} from "@/sanity/lib/queries";
 import { SanityLive } from "@/sanity/lib/live";
 import StoryReader from "@/components/public/StoryReader";
 
@@ -22,14 +25,15 @@ interface StoryPageProps {
 /**
  * Generates page metadata (title, description) from Sanity story data.
  */
-export async function generateMetadata(
-  { params }: StoryPageProps
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: StoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { data: story } = await sanityFetch({
+  const { data } = await sanityFetch({
     query: storyBySlugQuery,
     params: { slug },
   });
+  const story = data as StoryBySlugQueryResult;
 
   if (!story) {
     return { title: "Story not found" };
@@ -49,10 +53,11 @@ export async function generateMetadata(
 export default async function StoryReaderPage({ params }: StoryPageProps) {
   const { slug } = await params;
 
-  const { data: story } = await sanityFetch({
+  const { data } = await sanityFetch({
     query: storyBySlugQuery,
     params: { slug },
   });
+  const story = data as StoryBySlugQueryResult;
 
   if (!story) {
     notFound();
@@ -62,10 +67,7 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
 
   return (
     <>
-      <StoryReader
-        title={story.title ?? "Untitled Story"}
-        pages={pages}
-      />
+      <StoryReader title={story.title ?? "Untitled Story"} pages={pages} />
       {/* Enables Live Content API for real-time Studio preview */}
       <SanityLive />
     </>

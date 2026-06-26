@@ -8,6 +8,11 @@
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
  *   warm aged-paper journal pages, ink-border panels. The journal reads like
  *   a physical object — spine shadow, paper grain, page numbers, subtle curl.
+ *   The background is a high-res photo of an open journal (hosted on Vercel Blob CDN).
+ *
+ * Background images (Vercel Blob CDN):
+ *   Landscape: https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp
+ *   Portrait:  https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp
  *
  * Color palette:
  *   --journal-bg:       #1a1614   (near-black surround, warm undertone)
@@ -28,9 +33,14 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #1a1614;
-  background-image:
-    radial-gradient(ellipse at 50% 0%, #2a231c 0%, transparent 60%);
+
+  /* Landscape journal photo background — full bleed, fixed to viewport */
+  background-color: #1a1614; /* Fallback while image loads */
+  background-image: url("https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: local;
 }
 
 /* ============================================================
@@ -46,7 +56,9 @@
   justify-content: space-between;
   padding: 0 1.5rem;
   height: 3.25rem;
-  background-color: #12100e;
+  background-color: rgba(18, 16, 14, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid #2a231c;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
@@ -73,7 +85,6 @@
   text-align: center;
   flex: 1;
   margin: 0;
-  /* Clamp to one line with ellipsis if very long */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -108,7 +119,7 @@
   flex-direction: column;
   align-items: center;
   padding: 4rem 2rem 6rem;
-  gap: 5rem; /* Space between spreads — evokes turning a page */
+  gap: 5rem;
 }
 
 /* ============================================================
@@ -126,12 +137,11 @@
   grid-template-columns: 1fr 2px 1fr;
   min-height: 680px;
 
-  /* Book drop shadow — deep and directional */
   box-shadow:
     0 4px 6px -2px rgba(0, 0, 0, 0.4),
     0 20px 60px -10px rgba(0, 0, 0, 0.7),
     0 40px 80px -20px rgba(0, 0, 0, 0.5),
-    /* Right page curl */ 8px 0 20px -8px rgba(0, 0, 0, 0.3) inset;
+    8px 0 20px -8px rgba(0, 0, 0, 0.3) inset;
 
   border-radius: 2px 4px 4px 2px;
 }
@@ -144,45 +154,31 @@
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
 
-  /* Aged paper — warm cream with subtle grain */
-  background-color: #f5edd8;
-  background-image:
-    /* Paper grain via subtle noise-like gradient */
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.012) 2px,
-      rgba(0, 0, 0, 0.012) 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 3px,
-      rgba(0, 0, 0, 0.008) 3px,
-      rgba(0, 0, 0, 0.008) 6px
-    );
+  /*
+   * Pages are transparent so the journal background image shows through.
+   * The background image provides the paper texture on each page.
+   * Set to #f5edd8 if you want an opaque paper fallback instead.
+   */
+  background-color: transparent;
 
   overflow: hidden;
 }
 
-/* Left page — slight inner shadow on the right edge (spine side) */
+/* Left page */
 .journal-page--left {
   border-radius: 2px 0 0 2px;
   box-shadow:
-    /* Spine shadow — the page catches shadow near the binding */
     inset -12px 0 20px -8px rgba(0, 0, 0, 0.12),
-    /* Outer left edge curl */ inset 2px 0 4px rgba(0, 0, 0, 0.04);
+    inset 2px 0 4px rgba(0, 0, 0, 0.04);
 }
 
-/* Right page — slight inner shadow on the left edge (spine side) */
+/* Right page */
 .journal-page--right {
   border-radius: 0 4px 4px 0;
   box-shadow:
-    /* Spine shadow on this page */
     inset 12px 0 20px -8px rgba(0, 0, 0, 0.1),
-    /* Right edge curl */ inset -2px 0 6px rgba(0, 0, 0, 0.06),
-    /* Bottom page curl */ inset 0 -4px 12px rgba(0, 0, 0, 0.04);
+    inset -2px 0 6px rgba(0, 0, 0, 0.06),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ============================================================
@@ -228,10 +224,6 @@
    PANEL GRID — LEFT PAGE
    ============================================================ */
 
-/**
- * 2 × 3 grid of square graphic novel panels.
- * Each panel has an ink border evoking a printed comic page.
- */
 .panel-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -247,22 +239,22 @@
   padding: 0;
   aspect-ratio: 1 / 1;
 
-  /* Ink border — thin, precise, like a printed panel */
   border: 2px solid #1c1a17;
 
-  /* Subtle inner shadow — ink depth */
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.15);
 
   overflow: hidden;
-  background-color: #1c1a17; /* Fallback if image missing */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #1c1a17;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .panel-slot--empty {
-  border-color: #d4c5a8;
-  background-color: #ede4cc;
+  border-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
   box-shadow: none;
 }
 
@@ -298,19 +290,17 @@
    ============================================================ */
 
 .panel-grid--scattered {
-  /* Preserve the grid for positioning, but allow transforms to overlap */
   gap: 1rem;
   padding: 1.5rem;
 }
 
 .panel-grid--scattered .panel-slot {
-  /* Each panel has its own transform via inline style from PanelGrid.tsx */
-  border: 3px solid #f5edd8; /* White photo border */
+  border: 3px solid #f5edd8;
   box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.2),
     0 6px 20px rgba(0, 0, 0, 0.25),
     0 12px 30px rgba(0, 0, 0, 0.15),
-    /* Inner border line — like a photo mat */ inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 
   transition:
     transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -318,7 +308,6 @@
 }
 
 .panel-grid--scattered .panel-slot:hover {
-  /* On hover, straighten the panel slightly and lift it */
   transform: rotate(0deg) translate(0, -4px) scale(1.03) !important;
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.25),
@@ -368,16 +357,11 @@
   color: #1c1a17;
   text-indent: 1.5em;
   margin: 0;
-
-  /* Subtle ink texture — letterpress effect */
   text-shadow: 0 0 0.5px rgba(28, 26, 23, 0.15);
-
-  /* Hyphenation for clean justified text */
   hyphens: auto;
   text-align: justify;
 }
 
-/* No indent on first paragraph after a heading */
 .prose-h2 + .prose-paragraph,
 .prose-h3 + .prose-paragraph {
   text-indent: 0;
@@ -427,7 +411,6 @@
   font-size: 0.9rem;
 }
 
-/* End-of-story ornament */
 .prose-end-mark {
   margin-top: 2rem;
   text-align: center;
@@ -435,15 +418,6 @@
   color: #c8922a;
   letter-spacing: 0.5em;
   opacity: 0.7;
-}
-
-/* ============================================================
-   BETWEEN-SPREAD DIVIDER
-   ============================================================ */
-
-.story-content > .journal-spread + .journal-spread {
-  /* Decorative page turn hint between spreads */
-  padding-top: 0;
 }
 
 /* ============================================================
@@ -468,6 +442,7 @@
 
   .story-reader {
     background: white;
+    background-image: none;
   }
 
   .journal-spread {
