@@ -255,34 +255,30 @@
 
 .postcard-container {
   display: block;
-  width: clamp(500px, 75vw, 1400px);
+  width: clamp(300px, 45vw, 840px);
 }
 
-/* Large landscape (≥1400px) */
 @media (min-width: 1400px) and (orientation: landscape) {
   .postcard-container {
-    width: clamp(800px, 65vw, 1400px);
+    width: clamp(480px, 39vw, 840px);
   }
 }
 
-/* Medium landscape (1024–1399px) */
 @media (min-width: 1024px) and (max-width: 1399px) and (orientation: landscape) {
   .postcard-container {
-    width: clamp(600px, 70vw, 1100px);
+    width: clamp(360px, 42vw, 660px);
   }
 }
 
-/* Small landscape / tablet (768–1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
   .postcard-container {
-    width: clamp(500px, 75vw, 800px);
+    width: clamp(300px, 45vw, 480px);
   }
 }
 
-/* Mobile portrait */
 @media (max-width: 767px) {
   .postcard-container {
-    width: clamp(320px, 88vw, 560px);
+    width: clamp(192px, 53vw, 336px);
   }
 }
 
