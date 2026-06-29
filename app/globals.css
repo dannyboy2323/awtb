@@ -87,7 +87,7 @@
 @media (max-width: 767px), (orientation: portrait) {
   .desk-hero {
     align-items: center;
-    padding-top: 30vh;
+    padding-top: 50vh;
   }
 }
 
