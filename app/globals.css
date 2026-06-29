@@ -1,8 +1,8 @@
-@import "./story-reader.css";
+@import './story-reader.css';
 
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -64,6 +64,243 @@
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.488 0.243 264.376);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.546 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.424 0.199 265.638);
+  --primary-foreground: oklch(0.97 0.014 254.604);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.623 0.214 259.815);
+  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+@import './story-reader.css';
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@plugin '@tailwindcss/typography';
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium tracking-tight;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@utility container {
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --shadow-layer: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+  --color-framework: #000;
+  --color-black: #0b0b0b;
+  --color-white: #fff;
+  --color-brand: #f50;
+  --color-blue: #0052ff;
+  --color-yellow: #cdea19;
+  --color-gray-50: #f6f6f8;
+  --color-gray-100: #eeeef1;
+  --color-gray-200: #e3e4e8;
+  --color-gray-300: #bbbdc9;
+  --color-gray-400: #9499ad;
+  --color-gray-500: #727892;
+  --color-gray-600: #515870;
+  --color-gray-700: #383d51;
+  --color-gray-800: #252837;
+  --color-gray-900: #1b1d27;
+  --color-gray-950: #13141b;
+  --default-transition-duration: 250ms;
+}
+
+/* ----------------------- Desk Hero Background ----------------------- */
+.desk-hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* ============================================================
+   DESK HERO — POSTCARD SIZING
+
+   The postcard sits centered over the open journal.
+   Values are intentionally large — the journal takes up ~70%
+   of the screen width so the postcard needs to fill that space.
+   ============================================================ */
+
+.postcard-container {
+  display: block;
+  width: clamp(500px, 75vw, 1400px);
+}
+
+/* Large landscape (≥1400px) */
+@media (min-width: 1400px) and (orientation: landscape) {
+  .postcard-container {
+    width: clamp(800px, 65vw, 1400px);
+  }
+}
+
+/* Medium landscape (1024–1399px) */
+@media (min-width: 1024px) and (max-width: 1399px) and (orientation: landscape) {
+  .postcard-container {
+    width: clamp(600px, 70vw, 1100px);
+  }
+}
+
+/* Small landscape / tablet (768–1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .postcard-container {
+    width: clamp(500px, 75vw, 800px);
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 767px) {
+  .postcard-container {
+    width: clamp(320px, 88vw, 560px);
+  }
+}
+
+.postcard-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.postcard-image {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  border-radius: 2px;
+  /* Drop shadow lifts the postcard off the desk */
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    0 32px 64px rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
