@@ -2,27 +2,34 @@
  * Story reader component unit tests.
  *
  * Tests cover:
- *   - StoryNavBar: renders title, toggles layout mode, disables stub buttons
- *   - PanelGrid: renders correct number of panels, handles empty slots
- *   - StoryReader: renders all pages, switches layout on toggle
+ *   - StoryReader: renders cover + all pages in spreads, lightbox opens/closes
+ *   - StoryPageContent: renders prose text and inline panel images
  *
- * These are unit tests using Vitest + Testing Library.
  * Run with: npm test
  */
 
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import StoryNavBar from "@/components/public/StoryNavBar";
-import PanelGrid from "@/components/public/PanelGrid";
-import StoryReader from "@/components/public/StoryReader";
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import StoryReader, { LightboxContext } from '@/components/public/StoryReader'
+import StoryPageContent from '@/components/public/StoryPage'
 
 // ----------------------------------------------------------------
-// Shared fixtures
+// Fixtures
 // ----------------------------------------------------------------
 
-const makePanel = (id: string, alt: string) => ({
-  _id: id,
-  alt,
+const COVER_IMAGE = {
+  asset: {
+    _id: 'asset-cover',
+    url: 'https://cdn.sanity.io/images/test/production/cover.webp',
+  },
+  alt: 'Story cover art',
+}
+
+const makePanelImageBlock = (id: string, alignment: 'left' | 'right') => ({
+  _type: 'panelImage',
+  _key: `panel-${id}`,
+  alignment,
+  alt: `Panel illustration ${id}`,
   caption: null,
   image: {
     asset: {
@@ -30,209 +37,137 @@ const makePanel = (id: string, alt: string) => ({
       url: `https://cdn.sanity.io/images/test/production/${id}.webp`,
       metadata: { dimensions: { width: 800, height: 800 } },
     },
-    hotspot: null,
-    crop: null,
   },
-});
+})
 
-const SAMPLE_PANELS = [
-  makePanel("panel-1", "A bull charging through city streets"),
-  makePanel("panel-2", "Close-up of worn boots on cobblestones"),
-  makePanel("panel-3", "Rain-soaked rooftop silhouette"),
-  makePanel("panel-4", "A prosecutor in a pinstripe suit"),
-  makePanel("panel-5", "Shadowy alley with a single lamp"),
-  makePanel("panel-6", "The bull looking over its shoulder"),
-];
+const makeProseBlock = (text: string, key: string) => ({
+  _type: 'block',
+  _key: key,
+  style: 'normal',
+  children: [{ _type: 'span', _key: `span-${key}`, text, marks: [] }],
+  markDefs: [],
+})
+
+const SAMPLE_PROSE = [
+  makePanelImageBlock('panel-1', 'left'),
+  makeProseBlock('The city never sleeps.', 'block-1'),
+  makePanelImageBlock('panel-2', 'right'),
+  makeProseBlock('He ran, but there was nowhere to hide.', 'block-2'),
+]
 
 const SAMPLE_PAGES = [
-  {
-    _id: "page-1",
-    _key: "key-1",
-    panels: SAMPLE_PANELS,
-    prose: [
-      {
-        _type: "block",
-        _key: "block-1",
-        style: "normal",
-        children: [{ _type: "span", text: "The city never sleeps." }],
-        markDefs: [],
-      },
-    ],
-  },
-  {
-    _id: "page-2",
-    _key: "key-2",
-    panels: SAMPLE_PANELS.slice(0, 3),
-    prose: [
-      {
-        _type: "block",
-        _key: "block-2",
-        style: "normal",
-        children: [{ _type: "span", text: "He ran, but there was nowhere to hide." }],
-        markDefs: [],
-      },
-    ],
-  },
-];
+  { _id: 'page-1', _key: 'key-1', prose: SAMPLE_PROSE },
+  { _id: 'page-2', _key: 'key-2', prose: [makeProseBlock('The end.', 'block-3')] },
+  { _id: 'page-3', _key: 'key-3', prose: [makeProseBlock('Epilogue.', 'block-4')] },
+]
 
 // ----------------------------------------------------------------
-// StoryNavBar tests
+// StoryReader tests
 // ----------------------------------------------------------------
 
-describe("StoryNavBar", () => {
-  it("renders the story title", () => {
+describe('StoryReader', () => {
+  it('renders without crashing', () => {
     render(
-      <StoryNavBar
-        title="Adventures With The Bull"
-        panelLayout="grid"
-        onPanelLayoutToggle={vi.fn()}
-      />
-    );
-    expect(screen.getByText("Adventures With The Bull")).toBeTruthy();
-  });
+      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} pages={SAMPLE_PAGES} />
+    )
+    expect(screen.getByRole('main')).toBeTruthy()
+  })
 
-  it("marks grid button as active when layout is grid", () => {
+  it('renders the cover image alt text', () => {
     render(
-      <StoryNavBar
-        title="Test"
-        panelLayout="grid"
-        onPanelLayoutToggle={vi.fn()}
-      />
-    );
-    const gridBtn = screen.getByLabelText("Switch to grid panel layout");
-    expect(gridBtn.getAttribute("aria-pressed")).toBe("true");
-  });
+      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} pages={SAMPLE_PAGES} />
+    )
+    expect(screen.getByAltText('Story cover art')).toBeTruthy()
+  })
 
-  it("marks scattered button as active when layout is scattered", () => {
-    render(
-      <StoryNavBar
-        title="Test"
-        panelLayout="scattered"
-        onPanelLayoutToggle={vi.fn()}
-      />
-    );
-    const scatteredBtn = screen.getByLabelText("Switch to scattered panel layout");
-    expect(scatteredBtn.getAttribute("aria-pressed")).toBe("true");
-  });
+  it('renders cover placeholder when no coverImage provided', () => {
+    render(<StoryReader title="No Cover Story" coverImage={null} pages={SAMPLE_PAGES} />)
+    expect(screen.getByText('No Cover Story')).toBeTruthy()
+  })
 
-  it("calls onPanelLayoutToggle when switching layout", () => {
-    const toggle = vi.fn();
-    render(
-      <StoryNavBar
-        title="Test"
-        panelLayout="grid"
-        onPanelLayoutToggle={toggle}
-      />
-    );
-    fireEvent.click(screen.getByLabelText("Switch to scattered panel layout"));
-    expect(toggle).toHaveBeenCalledTimes(1);
-  });
+  it('renders correct number of spreads', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    // 3 pages → spread 0: cover + page1, spread 1: page2 + page3
+    const spreads = document.querySelectorAll('.journal-spread')
+    expect(spreads.length).toBe(2)
+  })
 
-  it("stub buttons (print, epub, pdf) are disabled", () => {
-    render(
-      <StoryNavBar
-        title="Test"
-        panelLayout="grid"
-        onPanelLayoutToggle={vi.fn()}
-      />
-    );
-    expect(screen.getByLabelText("Printer-friendly view")).toBeDisabled();
-    expect(screen.getByLabelText("Download as ePub")).toBeDisabled();
-    expect(screen.getByLabelText("Download as PDF")).toBeDisabled();
-  });
-});
+  it('renders prose text from pages', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    expect(screen.getByText('The city never sleeps.')).toBeTruthy()
+    expect(screen.getByText('The end.')).toBeTruthy()
+  })
+
+  it('renders inline panel images', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    expect(screen.getByAltText('Panel illustration panel-1')).toBeTruthy()
+    expect(screen.getByAltText('Panel illustration panel-2')).toBeTruthy()
+  })
+
+  it('opens lightbox when panel image is clicked', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    const panelBtn = screen.getByLabelText('View full size: Panel illustration panel-1')
+    fireEvent.click(panelBtn)
+    expect(screen.getByRole('dialog')).toBeTruthy()
+  })
+
+  it('closes lightbox when overlay is clicked', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
+    expect(screen.getByRole('dialog')).toBeTruthy()
+    fireEvent.click(screen.getByRole('dialog'))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('closes lightbox when close button is clicked', () => {
+    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
+    fireEvent.click(screen.getByLabelText('Close image'))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+})
 
 // ----------------------------------------------------------------
-// PanelGrid tests
+// StoryPageContent tests
 // ----------------------------------------------------------------
 
-describe("PanelGrid", () => {
-  it("renders 6 panels when all are provided", () => {
-    render(
-      <PanelGrid panels={SAMPLE_PANELS} layout="grid" pageNum={1} />
-    );
-    // 6 images should be present
-    const images = document.querySelectorAll(".panel-image");
-    expect(images.length).toBe(6);
-  });
+describe('StoryPageContent', () => {
+  const mockOpenLightbox = vi.fn()
 
-  it("renders empty slots when fewer than 6 panels are provided", () => {
-    render(
-      <PanelGrid panels={SAMPLE_PANELS.slice(0, 3)} layout="grid" pageNum={1} />
-    );
-    const emptySlots = document.querySelectorAll(".panel-slot--empty");
-    expect(emptySlots.length).toBe(3);
-  });
+  function renderWithLightbox(ui: React.ReactElement) {
+    return render(
+      <LightboxContext.Provider value={{ openLightbox: mockOpenLightbox }}>
+        {ui}
+      </LightboxContext.Provider>
+    )
+  }
 
-  it("applies scattered class when layout is scattered", () => {
-    render(
-      <PanelGrid panels={SAMPLE_PANELS} layout="scattered" pageNum={1} />
-    );
-    const grid = document.querySelector(".panel-grid--scattered");
-    expect(grid).toBeTruthy();
-  });
+  it('renders prose text', () => {
+    renderWithLightbox(<StoryPageContent prose={[makeProseBlock('Hello world.', 'b1')]} />)
+    expect(screen.getByText('Hello world.')).toBeTruthy()
+  })
 
-  it("does not apply scattered class when layout is grid", () => {
-    render(
-      <PanelGrid panels={SAMPLE_PANELS} layout="grid" pageNum={1} />
-    );
-    const grid = document.querySelector(".panel-grid--scattered");
-    expect(grid).toBeNull();
-  });
+  it('renders placeholder when prose is null', () => {
+    renderWithLightbox(<StoryPageContent prose={null} />)
+    expect(screen.getByText('[ No content for this page ]')).toBeTruthy()
+  })
 
-  it("renders alt text on images", () => {
-    render(
-      <PanelGrid panels={SAMPLE_PANELS} layout="grid" pageNum={1} />
-    );
-    expect(
-      screen.getByAltText("A bull charging through city streets")
-    ).toBeTruthy();
-  });
-});
+  it('renders inline panel image', () => {
+    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('test-panel', 'left')]} />)
+    expect(screen.getByAltText('Panel illustration test-panel')).toBeTruthy()
+  })
 
-// ----------------------------------------------------------------
-// StoryReader integration tests
-// ----------------------------------------------------------------
+  it('applies correct alignment class to inline panel', () => {
+    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('left-panel', 'left')]} />)
+    expect(document.querySelector('.inline-panel--left')).toBeTruthy()
+  })
 
-describe("StoryReader", () => {
-  it("renders the correct number of story pages", () => {
-    render(
-      <StoryReader title="Adventures With The Bull" pages={SAMPLE_PAGES} />
-    );
-    // Each page creates a section with aria-label matching page number
-    expect(screen.getByLabelText("Adventures With The Bull — Page 1 of 2")).toBeTruthy();
-    expect(screen.getByLabelText("Adventures With The Bull — Page 2 of 2")).toBeTruthy();
-  });
-
-  it("starts in grid layout mode", () => {
-    render(
-      <StoryReader title="Test Story" pages={SAMPLE_PAGES} />
-    );
-    const gridBtn = screen.getByLabelText("Switch to grid panel layout");
-    expect(gridBtn.getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("switches to scattered layout when toggle is clicked", () => {
-    render(
-      <StoryReader title="Test Story" pages={SAMPLE_PAGES} />
-    );
-    fireEvent.click(screen.getByLabelText("Switch to scattered panel layout"));
-    expect(
-      screen.getByLabelText("Switch to scattered panel layout").getAttribute("aria-pressed")
-    ).toBe("true");
-  });
-
-  it("renders story title in the nav bar", () => {
-    render(
-      <StoryReader title="The Bronze Bull" pages={SAMPLE_PAGES} />
-    );
-    expect(screen.getByText("The Bronze Bull")).toBeTruthy();
-  });
-
-  it("renders prose text from the first page", () => {
-    render(
-      <StoryReader title="Test" pages={SAMPLE_PAGES} />
-    );
-    expect(screen.getByText("The city never sleeps.")).toBeTruthy();
-  });
-});
+  it('calls openLightbox when panel is clicked', () => {
+    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('click-panel', 'right')]} />)
+    fireEvent.click(screen.getByLabelText('View full size: Panel illustration click-panel'))
+    expect(mockOpenLightbox).toHaveBeenCalledTimes(1)
+    expect(mockOpenLightbox).toHaveBeenCalledWith(
+      expect.objectContaining({ alt: 'Panel illustration click-panel' })
+    )
+  })
+})
