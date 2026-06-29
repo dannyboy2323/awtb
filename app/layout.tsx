@@ -73,7 +73,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
 
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
+      <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-black text-white`}>
         <body>
           <section className="min-h-screen">
             <Toaster />
