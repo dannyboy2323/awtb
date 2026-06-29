@@ -133,7 +133,7 @@
 @media (max-width: 767px) {
   .postcard-container {
     width: clamp(288px, 80vw, 504px);
-    margin-top: 25vh;
+    margin-top: 30vh;
   }
 }
 
