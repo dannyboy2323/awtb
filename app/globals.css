@@ -83,11 +83,11 @@
   overflow: hidden;
 }
 
-/* Portrait and mobile: postcard needs to push down past the
-   logo/statue area at the top of the portrait background image */
+/* Portrait and mobile: push content down past logo/statue area */
 @media (max-width: 767px), (orientation: portrait) {
   .desk-hero {
-    align-items: flex-start;
+    align-items: center;
+    padding-top: 30vh;
   }
 }
 
@@ -129,11 +129,9 @@
   }
 }
 
-/* Mobile portrait â€” larger size + push down past logo/statue area */
 @media (max-width: 767px) {
   .postcard-container {
     width: clamp(288px, 80vw, 504px);
-    margin-top: 30vh;
   }
 }
 
