@@ -42,7 +42,7 @@ export default async function LandingPage() {
       {/* Above the fold: desk hero with featured postcard */}
       {featured?.postcard ? (
         <DeskHero
-          postcardUrl={urlForImage(featured.postcard)?.width(800).format('webp').url() ?? ''}
+          postcardUrl={urlForImage(featured.postcard)?.width(2000).format('webp').url() ?? ''}
           postcardAlt={featured.postcard.alt ?? featured.title ?? 'Featured story postcard'}
           storySlug={featured.slug ?? ''}
           storyTitle={featured.title ?? ''}
