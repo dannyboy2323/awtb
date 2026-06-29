@@ -188,12 +188,12 @@ export default function DeskHero({
             <Image
               src={postcardUrl}
               alt={postcardAlt}
-              width={800}
-              height={560}
+              width={1200}
+              height={2133}
               className="postcard-image"
               priority
               style={{ width: '100%', height: 'auto' }}
-              sizes="(max-width: 480px) 92vw, (max-width: 768px) 88vw, (max-width: 1200px) 85vw, 800px"
+              sizes="(max-width: 480px) 88vw, (max-width: 768px) 80vw, (max-width: 1024px) 75vw, (max-width: 1400px) 70vw, 65vw"
             />
           </div>
         </Link>
