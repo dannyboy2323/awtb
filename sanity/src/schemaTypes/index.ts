@@ -10,7 +10,7 @@ import button from './objects/button'
 import { blockContentTextOnly } from './objects/blockContentTextOnly'
 
 // Postcard Stories schema types
-import { panelType } from './objects/panel'
+import { panelImageType } from './objects/panelImage'
 import { storyPageType } from './documents/storyPage'
 import { storyType } from './documents/story'
 import { siteSettingsType } from './singletons/siteSettings'
@@ -24,8 +24,8 @@ export const schemaTypes = [
   post,
   person,
   storyType,
-  // Objects — panel must come before storyPage since storyPage references it
-  panelType,
+  // Objects — panelImage must come before storyPage since storyPage references it
+  panelImageType,
   storyPageType,
   button,
   blockContent,
