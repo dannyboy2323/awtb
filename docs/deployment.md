@@ -1,3 +1,5 @@
+The diff shows only CSS formatting changes (quote style normalization) and what appears to be a duplicate block appended to `globals.css` — neither of which affects any content in the deployment guide. The deployment guide remains accurate.
+
 # Deployment Guide
 
 ## Overview

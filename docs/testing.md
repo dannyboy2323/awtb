@@ -1,3 +1,5 @@
+The diff shows only CSS changes (quote style normalization and a duplicated block of CSS appended to `globals.css`). None of this affects the testing guide's content. The document is already accurate.
+
 # Testing Guide
 
 ## Overview
