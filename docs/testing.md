@@ -1,3 +1,7 @@
+The diff only changes the image width parameter used when generating the featured postcard URL in `app/page.tsx` (from 800 to 2000). This is an implementation detail that has no bearing on any testing documentation. The testing guide contains no references to image dimensions or URL generation parameters.
+
+The document is already accurate. Returning it unchanged.
+
 # Testing Guide
 
 ## Overview

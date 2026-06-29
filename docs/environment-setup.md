@@ -1,3 +1,5 @@
+The diff changes the image width used for the featured postcard in `app/page.tsx` from 800 to 2000 pixels. This is an implementation detail in the application code and has no bearing on environment variable setup, configuration, or any content in this documentation file.
+
 # Environment Variable Setup
 
 ## Overview
