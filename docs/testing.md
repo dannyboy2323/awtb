@@ -1,3 +1,5 @@
+The diff only changes CSS values for `.postcard-container` responsive breakpoints. Nothing in the testing guide is affected by these changes.
+
 # Testing Guide
 
 ## Overview

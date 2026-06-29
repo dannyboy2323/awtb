@@ -1,3 +1,5 @@
+The diff only changes CSS values for `.postcard-container` width breakpoints in `app/globals.css`. None of this affects the deployment guide's content. The document is already accurate.
+
 # Deployment Guide
 
 ## Overview
