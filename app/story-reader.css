@@ -12,13 +12,6 @@
  * Background images (Vercel Blob CDN):
  *   Landscape: https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp
  *   Portrait:  https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp
- *
- * Color palette:
- *   --journal-bg:    #1a1614  (near-black surround)
- *   --ink:           #1c1a17  (near-black ink)
- *   --ink-faded:     #3d3830  (secondary text)
- *   --spine-dark:    #0d0b09  (deep spine shadow)
- *   --accent-amber:  #c8922a  (active states, markers)
  */
 
 /* ============================================================
@@ -31,7 +24,6 @@
   min-height: 100vh;
   background-color: #1a1614;
   background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
-  /* cover scales to fill 100vw Ã— 100vh regardless of aspect ratio */
   background-size: cover;
   background-position: center center;
   background-repeat: repeat-y;
@@ -112,14 +104,23 @@
     inset 2px 0 4px rgba(0, 0, 0, 0.06);
 }
 
+/* Cover image wrap fills the entire left page absolutely */
 .cover-image-wrap {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
+/* Cover image fills the wrap with no clipping â€” object-fit: fill
+   stretches to fill exactly, which is correct for a comic book cover
+   that should always show fully without gaps. Use cover + top if
+   you prefer cropping over stretching. */
 .cover-image {
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .cover-placeholder {
@@ -183,10 +184,6 @@
 /* ============================================================
    PROSE
    ============================================================ */
-
-.prose-body {
-  /* clearfix â€” contains floated inline panels */
-}
 
 .prose-body::after {
   content: '';
@@ -266,7 +263,9 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES
+   INLINE PANEL IMAGES â€” 150% larger than original
+   Original: left/right 45%, center 60%
+   Updated:  left/right 55%, center 75%
    ============================================================ */
 
 .inline-panel {
@@ -277,22 +276,22 @@
 /* Float left â€” text wraps on the right */
 .inline-panel--left {
   float: left;
-  margin: 0.25rem 1.25rem 1rem 0;
-  max-width: 45%;
+  margin: 0.25rem 1.5rem 1.25rem 0;
+  max-width: 55%;
 }
 
 /* Float right â€” text wraps on the left */
 .inline-panel--right {
   float: right;
-  margin: 0.25rem 0 1rem 1.25rem;
-  max-width: 45%;
+  margin: 0.25rem 0 1.25rem 1.5rem;
+  max-width: 55%;
 }
 
 /* Center â€” no float */
 .inline-panel--center {
   float: none;
-  margin: 1.25rem auto;
-  max-width: 60%;
+  margin: 1.5rem auto;
+  max-width: 75%;
   display: block;
   clear: both;
 }
@@ -300,7 +299,7 @@
 /* Full width */
 .inline-panel--full {
   float: none;
-  margin: 1.25rem 0;
+  margin: 1.5rem 0;
   max-width: 100%;
   display: block;
   clear: both;
@@ -488,6 +487,7 @@
     border-radius: 2px;
   }
 
+  /* Panels slightly smaller on mobile to not overwhelm narrow columns */
   .inline-panel--left,
   .inline-panel--right {
     max-width: 50%;

@@ -50,7 +50,9 @@ function InlinePanelImage({ value }: { value: PanelImageValue }) {
   const dims = value.image?.asset?.metadata?.dimensions
   const naturalWidth = dims?.width ?? 800
   const naturalHeight = dims?.height ?? 800
-  const displaySize = alignment === 'full' ? 600 : 280
+
+  // Increased by 150%: 280 → 420, 600 → 900
+  const displaySize = alignment === 'full' ? 900 : 420
   const thumbUrl = buildImageUrl(assetUrl, displaySize)
   const fullUrl = buildImageUrl(assetUrl, naturalWidth)
 
@@ -74,8 +76,8 @@ function InlinePanelImage({ value }: { value: PanelImageValue }) {
           className="inline-panel-image"
           sizes={
             alignment === 'full'
-              ? '(max-width: 700px) 100vw, 600px'
-              : '(max-width: 700px) 100vw, 280px'
+              ? '(max-width: 700px) 100vw, 900px'
+              : '(max-width: 700px) 100vw, 420px'
           }
         />
         <span className="inline-panel-zoom-hint" aria-hidden="true">

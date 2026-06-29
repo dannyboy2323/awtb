@@ -1,8 +1,8 @@
-@import "./story-reader.css";
+@import './story-reader.css';
 
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -64,6 +64,64 @@
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+}
+
+/* ============================================================
+   DESK HERO â€” POSTCARD SIZING
+   
+   Postcard scales responsively and stays centered over the journal.
+   No CSS was previously defined for these classes.
+   ============================================================ */
+
+.postcard-container {
+  display: block;
+  /* Default: scales with viewport, capped at 800px */
+  width: clamp(280px, 50vw, 800px);
+}
+
+/* Large landscape (â‰¥1400px): show at full 800px or 42% of viewport */
+@media (min-width: 1400px) and (orientation: landscape) {
+  .postcard-container {
+    width: min(800px, 42vw);
+  }
+}
+
+/* Medium landscape (1024â€“1399px) */
+@media (min-width: 1024px) and (max-width: 1399px) and (orientation: landscape) {
+  .postcard-container {
+    width: clamp(480px, 44vw, 700px);
+  }
+}
+
+/* Small landscape / large portrait (768â€“1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .postcard-container {
+    width: clamp(380px, 52vw, 580px);
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 767px) {
+  .postcard-container {
+    width: clamp(260px, 78vw, 480px);
+  }
+}
+
+.postcard-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.postcard-image {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  border-radius: 2px;
+  /* Drop shadow lifts the postcard off the desk */
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    0 32px 64px rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
@@ -173,7 +231,7 @@
   --sidebar-primary: oklch(0.623 0.214 259.815);
   --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
   --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
