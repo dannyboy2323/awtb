@@ -1,4 +1,6 @@
-The diff changes are limited to the CI workflow configuration: CI now runs on the `staging` branch in addition to `main`, npm is pinned to version 11, `npm ci` is replaced with `npm install`, and a Vercel status notification step is added. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
+The diff shows changes to the story reader implementation (CSS layout, component props, page structure) but none of these affect the architecture documentation content — the stack, data flow, cache invalidation, database, email, AI, or key directories sections remain accurate. The doc is already correct.
+
+One thing to fix: the doc has a stray paragraph at the top ("The diff changes are limited to the CI workflow configuration...") that is meta-commentary, not architecture content. That should be removed.
 
 # Architecture
 

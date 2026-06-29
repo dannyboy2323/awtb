@@ -1,3 +1,5 @@
+The diff shows changes to component files, CSS, and the story page, but nothing in the diff affects the deployment guide's content. The deployment process, environment variables, webhook configuration, CI pipeline, monitoring, rollback procedures, and database migration steps are all unchanged.
+
 # Deployment Guide
 
 ## Overview

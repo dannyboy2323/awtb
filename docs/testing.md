@@ -1,3 +1,7 @@
+The diff shows changes to `app/stories/[slug]/page.tsx`, `app/story-reader.css`, and several other files including `tests/unit/StoryReader.test.tsx`. The testing doc's "What's tested" table doesn't include a `StoryReader.test.tsx` entry, and that file appears in the changed files list — meaning it exists as a test file. I should add it to the unit tests table.
+
+No other information in the testing doc is made inaccurate by these changes.
+
 # Testing Guide
 
 ## Overview
@@ -32,6 +36,7 @@ npm run test:ui           # interactive Vitest UI
 | `tests/unit/revalidate.test.ts`    | HMAC webhook validation error handling                      |
 | `tests/unit/DeskHero.test.tsx`     | DeskHero component rendering and link behaviour             |
 | `tests/unit/PostcardGrid.test.tsx` | PostcardGrid rendering with various story counts            |
+| `tests/unit/StoryReader.test.tsx`  | StoryReader component rendering with story data             |
 | `tests/unit/db.test.ts`            | Drizzle ORM schema type inference                           |
 
 ### Writing new unit tests
