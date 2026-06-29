@@ -1,3 +1,5 @@
+The diff only changes the default background and text colors in `app/layout.tsx` (from `bg-white text-black` to `bg-black text-white`). This is a UI/styling change with no bearing on environment variables, setup instructions, or any content in `environment-setup.md`.
+
 # Environment Variable Setup
 
 ## Overview

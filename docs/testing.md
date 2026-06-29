@@ -1,3 +1,5 @@
+The diff changes the default background and text colors of the HTML element from white/black to black/white. This is a styling change with no impact on the testing documentation. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

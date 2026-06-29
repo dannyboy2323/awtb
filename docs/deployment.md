@@ -1,3 +1,5 @@
+The diff changes the default background and text colors of the HTML element from `bg-white text-black` to `bg-black text-white`. This is a UI/styling change with no relevance to deployment, database migrations, rollbacks, or any other content covered in deployment.md. The document is already accurate.
+
 # Deployment Guide
 
 ## Overview

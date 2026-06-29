@@ -1,3 +1,5 @@
+The diff changes the default background and text colors of the HTML element (`bg-black text-white` instead of `bg-white text-black`). This is a visual/styling change to the app itself and does not affect any information in the local development guide — no URLs, commands, prerequisites, or environment variable instructions are impacted.
+
 # Local Development Guide
 
 ## Prerequisites
