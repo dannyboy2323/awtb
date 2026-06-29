@@ -1,3 +1,5 @@
+The diff only removes CSS styling properties (border-radius and box-shadow) from the postcard image selector in globals.css. This change has no bearing on any of the testing documentation. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

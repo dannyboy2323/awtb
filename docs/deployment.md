@@ -1,3 +1,5 @@
+The diff only removes CSS styling properties (border-radius and box-shadow) from a postcard image element in `globals.css`. This is a pure visual/styling change with no relevance to deployment, environment variables, CI, database migrations, rollbacks, or any other topic covered in `deployment.md`.
+
 # Deployment Guide
 
 ## Overview
