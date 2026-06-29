@@ -1,3 +1,5 @@
+The diff changes image dimensions and responsive sizes in `DeskHero.tsx` — purely visual/rendering details that are not referenced anywhere in the testing documentation. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff shows changes to image dimensions and `sizes` attribute in `DeskHero.tsx`. This is a frontend component change with no relevance to deployment, database migrations, environment variables, CI, webhooks, or any other topic covered in `deployment.md`. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff changes are internal to the `DeskHero` component (image dimensions and responsive sizes). Nothing in the local development guide is affected by these changes.
+
 # Local Development Guide
 
 ## Prerequisites
