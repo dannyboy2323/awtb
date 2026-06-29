@@ -175,7 +175,7 @@ export default function DeskHero({
       <style>{buildBackgroundCSS()}</style>
 
       <section
-        className="desk-hero flex items-center justify-center"
+        className="desk-hero flex justify-center"
         aria-label={`Featured story: ${storyTitle}`}
       >
         {/* Featured postcard — centered, links to the story */}
