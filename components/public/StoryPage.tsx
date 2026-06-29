@@ -1,71 +1,102 @@
-"use client";
+'use client'
 
 /**
- * StoryPage
+ * StoryPageContent
  *
- * Renders one "spread" of the open journal: left page with 6 graphic novel
- * panels, right page with the prose text for that story page.
+ * Renders the Portable Text content for a single story page.
+ * Supports standard text blocks AND inline panelImage blocks,
+ * which can be floated left/right/center/full within the prose flow.
  *
- * The journal visual is achieved via CSS — a realistic paper texture background
- * image (or CSS grain + color), a subtle center spine shadow, and page-curl
- * shadow on the outer edges.
+ * Clicking a panel image opens it in the lightbox (via LightboxContext).
  *
- * Each StoryPage is one scroll section. The reader scrolls through all pages
- * of a story sequentially, with page breaks visually separated by the journal
- * binding gap.
- *
- * @param panels     - Array of panels for this page (up to 6)
- * @param prose      - Sanity PortableText blocks for the right page
- * @param pageNum    - 1-based page number
- * @param pageTotal  - Total number of pages in the story
- * @param layout     - Panel layout mode ("grid" | "scattered")
- * @param storyTitle - Story title for aria-label context
+ * @param prose - Sanity Portable Text array (blocks + panelImage objects)
  */
 
-import React from "react";
-import { PortableText } from "@portabletext/react";
-import PanelGrid from "./PanelGrid";
-import type { PanelLayout } from "./StoryNavBar";
+import React from 'react'
+import Image from 'next/image'
+import { PortableText } from '@portabletext/react'
+import { useLightbox } from './StoryReader'
 
-interface Panel {
-  _id: string;
-  alt: string | null;
-  caption: string | null;
+interface StoryPageContentProps {
+  prose: unknown
+}
+
+function buildImageUrl(assetUrl: string, width: number): string {
+  return `${assetUrl}?w=${width}&auto=format&fm=webp&q=90`
+}
+
+interface PanelImageValue {
+  _key: string
   image: {
     asset: {
-      _id: string;
-      url: string;
-      metadata: { dimensions: { width: number; height: number } };
-    } | null;
-    hotspot: { x: number; y: number } | null;
-    crop: { top: number; bottom: number; left: number; right: number } | null;
-  } | null;
+      url: string
+      _id: string
+      metadata?: { dimensions?: { width: number; height: number } }
+    } | null
+  } | null
+  alt: string | null
+  caption: string | null
+  alignment: 'left' | 'right' | 'center' | 'full' | null
 }
 
-interface StoryPageProps {
-  panels: Panel[];
-  prose: unknown;
-  pageNum: number;
-  pageTotal: number;
-  layout: PanelLayout;
-  storyTitle: string;
+function InlinePanelImage({ value }: { value: PanelImageValue }) {
+  const { openLightbox } = useLightbox()
+
+  const assetUrl = value?.image?.asset?.url
+  if (!assetUrl) return null
+
+  const alt = value.alt ?? 'Story illustration'
+  const alignment = value.alignment ?? 'left'
+  const dims = value.image?.asset?.metadata?.dimensions
+  const naturalWidth = dims?.width ?? 800
+  const naturalHeight = dims?.height ?? 800
+  const displaySize = alignment === 'full' ? 600 : 280
+  const thumbUrl = buildImageUrl(assetUrl, displaySize)
+  const fullUrl = buildImageUrl(assetUrl, naturalWidth)
+
+  function handleClick() {
+    openLightbox({ url: fullUrl, alt, width: naturalWidth, height: naturalHeight })
+  }
+
+  return (
+    <figure className={`inline-panel inline-panel--${alignment}`} aria-label={alt}>
+      <button
+        className="inline-panel-btn"
+        onClick={handleClick}
+        aria-label={`View full size: ${alt}`}
+        title="Click to enlarge"
+      >
+        <Image
+          src={thumbUrl}
+          alt={alt}
+          width={displaySize}
+          height={displaySize}
+          className="inline-panel-image"
+          sizes={
+            alignment === 'full'
+              ? '(max-width: 700px) 100vw, 600px'
+              : '(max-width: 700px) 100vw, 280px'
+          }
+        />
+        <span className="inline-panel-zoom-hint" aria-hidden="true">
+          ⊕
+        </span>
+      </button>
+      {value.caption && <figcaption className="inline-panel-caption">{value.caption}</figcaption>}
+    </figure>
+  )
 }
 
-/**
- * Custom PortableText components styled for the journal right-page aesthetic.
- * Mignola-inspired: strong contrast, editorial feel, no rounded corners.
- */
 const portableTextComponents = {
+  types: {
+    panelImage: InlinePanelImage,
+  },
   block: {
     normal: ({ children }: { children?: React.ReactNode }) => (
       <p className="prose-paragraph">{children}</p>
     ),
-    h2: ({ children }: { children?: React.ReactNode }) => (
-      <h2 className="prose-h2">{children}</h2>
-    ),
-    h3: ({ children }: { children?: React.ReactNode }) => (
-      <h3 className="prose-h3">{children}</h3>
-    ),
+    h2: ({ children }: { children?: React.ReactNode }) => <h2 className="prose-h2">{children}</h2>,
+    h3: ({ children }: { children?: React.ReactNode }) => <h3 className="prose-h3">{children}</h3>,
     blockquote: ({ children }: { children?: React.ReactNode }) => (
       <blockquote className="prose-blockquote">{children}</blockquote>
     ),
@@ -74,79 +105,20 @@ const portableTextComponents = {
     strong: ({ children }: { children?: React.ReactNode }) => (
       <strong className="prose-strong">{children}</strong>
     ),
-    em: ({ children }: { children?: React.ReactNode }) => (
-      <em className="prose-em">{children}</em>
-    ),
+    em: ({ children }: { children?: React.ReactNode }) => <em className="prose-em">{children}</em>,
+    underline: ({ children }: { children?: React.ReactNode }) => <u>{children}</u>,
   },
-};
+}
 
-/**
- * One full journal spread — left page (panels) + right page (prose).
- * Visually separated from adjacent spreads by a gap that evokes page turning.
- */
-export default function StoryPage({
-  panels,
-  prose,
-  pageNum,
-  pageTotal,
-  layout,
-  storyTitle,
-}: StoryPageProps) {
+export default function StoryPageContent({ prose }: StoryPageContentProps) {
+  if (!prose) {
+    return <p className="prose-placeholder">[ No content for this page ]</p>
+  }
+
   return (
-    <section
-      className="journal-spread"
-      aria-label={`${storyTitle} — Page ${pageNum} of ${pageTotal}`}
-      id={`story-page-${pageNum}`}
-    >
-      {/* Journal outer shadow and texture */}
-      <div className="journal-book">
-        {/* Left page — graphic novel panels */}
-        <div className="journal-page journal-page--left" aria-label="Illustrations">
-          {/* Decorative page number */}
-          <span className="page-number page-number--left" aria-hidden="true">
-            {(pageNum - 1) * 2 + 1}
-          </span>
-
-          <PanelGrid panels={panels} layout={layout} pageNum={pageNum} />
-        </div>
-
-        {/* Spine */}
-        <div className="journal-spine" aria-hidden="true" />
-
-        {/* Right page — prose */}
-        <div className="journal-page journal-page--right" aria-label="Story text">
-          {/* Decorative page number */}
-          <span className="page-number page-number--right" aria-hidden="true">
-            {(pageNum - 1) * 2 + 2}
-          </span>
-
-          {/* Chapter / page marker */}
-          <div className="prose-page-marker" aria-hidden="true">
-            <span className="prose-page-marker-line" />
-            <span className="prose-page-marker-text">
-              {pageNum === 1 ? "Chapter I" : `Page ${pageNum}`}
-            </span>
-            <span className="prose-page-marker-line" />
-          </div>
-
-          {/* Story text */}
-          <div className="prose-body">
-            {prose ? (
-              // @ts-expect-error — PortableText accepts unknown block array
-              <PortableText value={prose} components={portableTextComponents} />
-            ) : (
-              <p className="prose-placeholder">[ No text for this page ]</p>
-            )}
-          </div>
-
-          {/* Page footer */}
-          {pageNum === pageTotal && (
-            <div className="prose-end-mark" aria-label="End of story">
-              ✦
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
+    <div className="prose-body">
+      {/* @ts-expect-error — PortableText accepts unknown block array */}
+      <PortableText value={prose} components={portableTextComponents} />
+    </div>
+  )
 }

@@ -36,7 +36,7 @@
 
   /* Landscape journal photo background — full bleed, fixed to viewport */
   background-color: #1a1614; /* Fallback while image loads */
-  background-image: url("https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp");
+  background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
 
   background-size: 100vw auto;
   background-position: top center;
@@ -77,7 +77,7 @@
 }
 
 .story-nav-title {
-  font-family: "Playfair Display", "Georgia", serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -187,13 +187,7 @@
    ============================================================ */
 
 .journal-spine {
-  background: linear-gradient(
-    to right,
-    #2a1e10 0%,
-    #0d0b09 40%,
-    #1a1209 60%,
-    #2a1e10 100%
-  );
+  background: linear-gradient(to right, #2a1e10 0%, #0d0b09 40%, #1a1209 60%, #2a1e10 100%);
   box-shadow:
     -2px 0 6px rgba(0, 0, 0, 0.4),
     2px 0 6px rgba(0, 0, 0, 0.4);
@@ -206,7 +200,7 @@
 .page-number {
   position: absolute;
   bottom: 1rem;
-  font-family: "Playfair Display", "Georgia", serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 0.75rem;
   font-style: italic;
   color: #7a6a52;
@@ -279,7 +273,7 @@
   right: 0;
   padding: 0.25rem 0.375rem;
   background: rgba(28, 26, 23, 0.82);
-  font-family: "Courier New", "Courier", monospace;
+  font-family: 'Courier New', 'Courier', monospace;
   font-size: 0.6rem;
   color: #e8d9b8;
   letter-spacing: 0.03em;
@@ -336,7 +330,7 @@
 }
 
 .prose-page-marker-text {
-  font-family: "Playfair Display", "Georgia", serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 0.7rem;
   font-style: italic;
   letter-spacing: 0.12em;
@@ -352,7 +346,7 @@
 }
 
 .prose-paragraph {
-  font-family: "Lora", "Georgia", "Times New Roman", serif;
+  font-family: 'Lora', 'Georgia', 'Times New Roman', serif;
   font-size: 1.0625rem;
   line-height: 1.85;
   color: #1c1a17;
@@ -369,7 +363,7 @@
 }
 
 .prose-h2 {
-  font-family: "Playfair Display", "Georgia", serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -379,7 +373,7 @@
 }
 
 .prose-h3 {
-  font-family: "Playfair Display", "Georgia", serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 1.0625rem;
   font-weight: 600;
   font-style: italic;
@@ -406,7 +400,7 @@
 }
 
 .prose-placeholder {
-  font-family: "Lora", "Georgia", serif;
+  font-family: 'Lora', 'Georgia', serif;
   font-style: italic;
   color: #a89578;
   font-size: 0.9rem;
@@ -457,5 +451,315 @@
 
   .journal-spine {
     background: #ccc;
+  }
+}
+
+/* ============================================================
+   APPEND THESE SECTIONS TO THE BOTTOM OF app/story-reader.css
+   (above the existing @media print block)
+   ============================================================ */
+
+/* ============================================================
+   COVER PAGE
+   ============================================================ */
+
+.journal-page--cover {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 2px 0 0 2px;
+  box-shadow:
+    inset -12px 0 20px -8px rgba(0, 0, 0, 0.18),
+    inset 2px 0 4px rgba(0, 0, 0, 0.06);
+}
+
+.cover-image-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.cover-image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 680px;
+  background: linear-gradient(135deg, #1c1a17 0%, #2a231c 100%);
+}
+
+.cover-title {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #c8b99a;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Blank right page (odd page count) */
+.journal-page--blank {
+  width: 100%;
+  height: 100%;
+  min-height: 680px;
+}
+
+/* ============================================================
+   INLINE PANEL IMAGES
+   ============================================================ */
+
+.inline-panel {
+  margin: 0;
+  padding: 0;
+  /* clearfix so float doesn't escape the prose container */
+  display: flow-root;
+}
+
+/* Float left â€” text wraps on the right */
+.inline-panel--left {
+  float: left;
+  margin: 0.25rem 1.25rem 1rem 0;
+  max-width: 45%;
+}
+
+/* Float right â€” text wraps on the left */
+.inline-panel--right {
+  float: right;
+  margin: 0.25rem 0 1rem 1.25rem;
+  max-width: 45%;
+}
+
+/* Center â€” no float, centered block */
+.inline-panel--center {
+  float: none;
+  margin: 1.25rem auto;
+  max-width: 60%;
+  display: block;
+  clear: both;
+}
+
+/* Full width â€” spans the whole column */
+.inline-panel--full {
+  float: none;
+  margin: 1.25rem 0;
+  max-width: 100%;
+  display: block;
+  clear: both;
+}
+
+/* The clickable button wrapper around the image */
+.inline-panel-btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+
+  /* Ink border like a comic panel */
+  border: 2px solid #1c1a17;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.15);
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.inline-panel-btn:hover {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.inline-panel-btn:focus-visible {
+  outline: 2px solid #c8922a;
+  outline-offset: 3px;
+}
+
+.inline-panel-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* Zoom hint that appears on hover */
+.inline-panel-zoom-hint {
+  position: absolute;
+  bottom: 0.375rem;
+  right: 0.375rem;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.inline-panel-btn:hover .inline-panel-zoom-hint {
+  opacity: 1;
+}
+
+.inline-panel-caption {
+  display: block;
+  margin-top: 0.375rem;
+  font-family: 'Lora', 'Georgia', serif;
+  font-size: 0.7rem;
+  font-style: italic;
+  color: #7a6a52;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Clearfix after prose-body to contain floated panels */
+.prose-body::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 8, 6, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  cursor: zoom-out;
+  animation: lightbox-fade-in 0.2s ease;
+}
+
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightbox-inner {
+  position: relative;
+  max-width: min(90vw, 90vh);
+  max-height: 90vh;
+  cursor: default;
+  animation: lightbox-scale-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes lightbox-scale-in {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.lightbox-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border: 3px solid rgba(200, 185, 154, 0.3);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: #c8b99a;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.lightbox-close:hover {
+  color: #fff;
+}
+
+.lightbox-close:focus-visible {
+  outline: 2px solid #c8922a;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   PORTRAIT / MOBILE LAYOUT
+   ============================================================ */
+
+@media (orientation: portrait), (max-width: 768px) {
+  /* Switch to portrait journal background */
+  .story-reader {
+    background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp');
+    background-size: 100vw auto;
+    background-position: top center;
+    background-repeat: repeat-y;
+  }
+
+  /* Stack journal-book vertically â€” one page per row */
+  .journal-book {
+    display: flex;
+    flex-direction: column;
+    grid-template-columns: unset;
+  }
+
+  /* Hide the spine in portrait */
+  .journal-spine {
+    display: none;
+  }
+
+  /* Each page takes full width */
+  .journal-page {
+    width: 100%;
+    border-radius: 2px;
+  }
+
+  .journal-page--left,
+  .journal-page--right {
+    box-shadow: inset 0 -4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Cover takes full width in portrait */
+  .journal-page--cover {
+    min-height: 100vw; /* square-ish on mobile */
+    border-radius: 2px;
+  }
+
+  /* Inline panels: narrower float max-width on small screens */
+  .inline-panel--left,
+  .inline-panel--right {
+    max-width: 50%;
+  }
+
+  /* Spreads closer together vertically */
+  .story-content {
+    gap: 2rem;
+    padding: 2rem 1rem 4rem;
   }
 }
