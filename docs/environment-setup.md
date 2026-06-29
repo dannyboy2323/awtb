@@ -1,3 +1,5 @@
+The diff only changes a CSS class in `DeskHero.tsx` (removing `items-center` from the section element). This has no bearing on environment variables, setup instructions, or any content in the environment setup documentation.
+
 # Environment Variable Setup
 
 ## Overview
