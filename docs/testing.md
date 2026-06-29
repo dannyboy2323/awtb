@@ -1,3 +1,5 @@
+The diff only modifies CSS layout logic (changing `align-items` and moving margin from the postcard container to padding on the hero). This has no impact on any content in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
