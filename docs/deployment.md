@@ -1,3 +1,5 @@
+The diff only modifies `app/story-reader.css` — fixing encoding artifacts in comments, adjusting CSS values for panel sizing and cover image layout, and adding inline comments. None of this affects deployment procedures, environment variables, database migrations, CI configuration, webhooks, or any other content in the deployment guide.
+
 # Deployment Guide
 
 ## Overview
