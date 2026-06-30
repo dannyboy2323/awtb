@@ -1,3 +1,7 @@
+The diff is a component-level implementation detail (how the cover image renders in `StoryReader.tsx`) and has no bearing on deployment, environment variables, database migrations, rollbacks, monitoring, CI, or any other topic covered in `deployment.md`.
+
+The documentation is already accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview
