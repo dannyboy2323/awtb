@@ -1,3 +1,7 @@
+The diff only modifies `StoryReader.tsx` — it changes how the cover image is rendered (switching from Next.js `fill` prop to explicit `width`/`height` with inline styles). This is a component implementation detail with no bearing on environment variables, secrets, or setup instructions.
+
+The current doc is accurate and unchanged.
+
 # Environment Variable Setup
 
 ## Overview

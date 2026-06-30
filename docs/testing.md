@@ -1,3 +1,5 @@
+The diff only modifies `StoryReader.tsx` — it changes how the cover image is rendered (explicit width/height instead of the `fill` prop) and adds explanatory comments. This is an implementation detail of a UI component and has no bearing on any testing documentation. The testing guide is already accurate.
+
 # Testing Guide
 
 ## Overview
