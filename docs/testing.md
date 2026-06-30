@@ -1,3 +1,5 @@
+The diff only modifies CSS visual styles and comments in `app/story-reader.css`. None of the content in `docs/testing.md` is affected by these changes.
+
 # Testing Guide
 
 ## Overview
