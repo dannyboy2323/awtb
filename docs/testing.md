@@ -1,3 +1,7 @@
+The diff changes a CSS class on the `DeskHero` component's `<section>` element (removing `items-center` from the flex classes). This is a purely visual/styling change that has no bearing on anything documented in the testing guide — the guide doesn't describe the CSS or layout of the component, only its rendering and link behaviour at a functional level.
+
+The current doc is accurate. Returning it unchanged.
+
 # Testing Guide
 
 ## Overview

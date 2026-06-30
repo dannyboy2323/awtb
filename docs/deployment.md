@@ -1,3 +1,7 @@
+The diff shows a minor CSS class change in `DeskHero.tsx` (removing `items-center` from a flexbox className). This is a purely cosmetic frontend change with no relevance to deployment, environment variables, database migrations, CI, monitoring, or any other topic covered in `deployment.md`.
+
+The current doc is accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview
