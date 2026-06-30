@@ -17,6 +17,11 @@
  * Lightbox:
  *   Clicking any inline panel image opens it full-screen.
  *   State managed here, shared via LightboxContext.
+ *
+ * Cover image note:
+ *   Uses explicit width/height instead of Next.js fill prop because
+ *   fill requires the parent to have a defined height, which CSS grid
+ *   cells don't provide. Inline style controls objectFit instead.
  */
 
 import React, { useState, createContext, useContext, useCallback } from 'react'
@@ -111,13 +116,25 @@ function CoverPage({ coverImage, title }: { coverImage: CoverImage | null; title
     <div className="journal-page journal-page--cover" aria-label="Cover">
       {imageUrl ? (
         <div className="cover-image-wrap">
+          {/*
+           * Using explicit width/height instead of fill prop.
+           * fill requires the parent to have a defined height which CSS grid
+           * cells don't provide. CSS classes handle object-fit/position.
+           */}
           <Image
             src={imageUrl}
             alt={coverImage?.alt ?? `${title} cover`}
-            fill
+            width={1200}
+            height={2133}
             className="cover-image"
             sizes="50vw"
             priority
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+            }}
           />
         </div>
       ) : (
