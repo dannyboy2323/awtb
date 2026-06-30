@@ -1,12 +1,12 @@
 /**
- * Story Reader â€” Visual Styles
+ * Story Reader — Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw Ã— 100vh (cover) and repeats vertically.
+ *   journal background photo fills 100vw × 100vh (cover) and repeats vertically.
  *   Inline graphic novel panels float within prose like a magazine layout.
  *
  * Background images (Vercel Blob CDN):
@@ -31,7 +31,7 @@
   min-height: 100vh;
   background-color: #1a1614;
   background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
-  /* cover scales to fill 100vw Ã— 100vh regardless of aspect ratio */
+  /* cover scales to fill 100vw × 100vh regardless of aspect ratio */
   background-size: cover;
   background-position: center center;
   background-repeat: repeat-y;
@@ -39,7 +39,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT â€” SCROLL AREA
+   STORY CONTENT — SCROLL AREA
    ============================================================ */
 
 .story-content {
@@ -100,12 +100,17 @@
 
 /* ============================================================
    COVER PAGE
+   The cover image fills the entire left page with no padding.
+   min-height: 100% ensures it stretches to the grid row height.
+   .cover-image-wrap uses absolute inset:0 to fill the container.
+   .cover-image uses explicit width/height 100% so Next.js Image fills it.
    ============================================================ */
 
 .journal-page--cover {
   position: relative;
   padding: 0;
   overflow: hidden;
+  min-height: 100%;
   border-radius: 2px 0 0 2px;
   box-shadow:
     inset -12px 0 20px -8px rgba(0, 0, 0, 0.18),
@@ -115,11 +120,16 @@
 .cover-image-wrap {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .cover-image {
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
 
 .cover-placeholder {
@@ -184,10 +194,7 @@
    PROSE
    ============================================================ */
 
-.prose-body {
-  /* clearfix â€” contains floated inline panels */
-}
-
+/* clearfix — contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -266,7 +273,8 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES
+   INLINE PANEL IMAGES — 150% larger than original baseline
+   left/right float: 55% max-width, center: 75%
    ============================================================ */
 
 .inline-panel {
@@ -274,25 +282,25 @@
   padding: 0;
 }
 
-/* Float left â€” text wraps on the right */
+/* Float left — text wraps on the right */
 .inline-panel--left {
   float: left;
-  margin: 0.25rem 1.25rem 1rem 0;
-  max-width: 45%;
+  margin: 0.25rem 1.5rem 1.25rem 0;
+  max-width: 55%;
 }
 
-/* Float right â€” text wraps on the left */
+/* Float right — text wraps on the left */
 .inline-panel--right {
   float: right;
-  margin: 0.25rem 0 1rem 1.25rem;
-  max-width: 45%;
+  margin: 0.25rem 0 1.25rem 1.5rem;
+  max-width: 55%;
 }
 
-/* Center â€” no float */
+/* Center — no float */
 .inline-panel--center {
   float: none;
-  margin: 1.25rem auto;
-  max-width: 60%;
+  margin: 1.5rem auto;
+  max-width: 75%;
   display: block;
   clear: both;
 }
@@ -300,7 +308,7 @@
 /* Full width */
 .inline-panel--full {
   float: none;
-  margin: 1.25rem 0;
+  margin: 1.5rem 0;
   max-width: 100%;
   display: block;
   clear: both;
@@ -456,6 +464,7 @@
    ============================================================ */
 
 @media (orientation: portrait), (max-width: 768px) {
+  /* Switch to portrait journal background */
   .story-reader {
     background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp');
     background-size: cover;
@@ -463,16 +472,19 @@
     background-repeat: repeat-y;
   }
 
+  /* Stack journal book vertically — one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
     grid-template-columns: unset;
   }
 
+  /* Hide the spine in portrait */
   .journal-spine {
     display: none;
   }
 
+  /* Each page takes full width */
   .journal-page {
     width: 100%;
     border-radius: 2px;
@@ -483,11 +495,13 @@
     box-shadow: inset 0 -4px 12px rgba(0, 0, 0, 0.06);
   }
 
+  /* Cover takes full width, square-ish on mobile */
   .journal-page--cover {
     min-height: 100vw;
     border-radius: 2px;
   }
 
+  /* Panels narrower on mobile to not overwhelm narrow columns */
   .inline-panel--left,
   .inline-panel--right {
     max-width: 50%;
