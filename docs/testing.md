@@ -1,3 +1,5 @@
+The diff only changes `app/globals.css` — it reorganizes comments, removes duplicate CSS blocks, updates mobile postcard sizing, and adds a `margin-top: 25vh` for mobile portrait. None of this affects the testing guide content.
+
 # Testing Guide
 
 ## Overview

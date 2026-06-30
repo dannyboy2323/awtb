@@ -1,3 +1,5 @@
+The diff only modifies `app/globals.css` — it reorganizes CSS with better comments, removes a duplicate block, and adjusts some postcard sizing values. None of this affects the deployment guide's content. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview
