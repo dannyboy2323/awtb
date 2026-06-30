@@ -1,3 +1,5 @@
+The diff only changes CSS layout behavior for the `.desk-hero` class — portrait mobile alignment and padding. This has no bearing on any content in the deployment guide. The document is already accurate.
+
 # Deployment Guide
 
 ## Overview

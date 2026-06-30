@@ -1,3 +1,5 @@
+The diff only changes CSS layout behavior for the `.desk-hero` class — nothing in the testing guide is affected by this change. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

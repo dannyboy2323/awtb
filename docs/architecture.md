@@ -1,5 +1,3 @@
-The diff changes are limited to the CI workflow configuration: CI now runs on the `staging` branch in addition to `main`, npm is pinned to version 11, `npm ci` is replaced with `npm install`, and a Vercel status notification step is added. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
-
 # Architecture
 
 ## Stack
