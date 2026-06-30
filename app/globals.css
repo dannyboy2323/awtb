@@ -81,13 +81,16 @@
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* landscape default — vertically centered */
 }
 
-/* Portrait and mobile: push content down past logo/statue area */
-@media (max-width: 767px), (orientation: portrait) {
+/* Portrait mobile only — push postcard down past logo/statue area */
+@media (max-width: 767px) and (orientation: portrait) {
   .desk-hero {
-    align-items: center;
-    padding-top: 30vh;
+    align-items: flex-start;
+    padding-top: 50vh;
   }
 }
 
