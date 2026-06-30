@@ -18,10 +18,10 @@
  *   Clicking any inline panel image opens it full-screen.
  *   State managed here, shared via LightboxContext.
  *
- * Cover image note:
- *   Uses explicit width/height instead of Next.js fill prop because
- *   fill requires the parent to have a defined height, which CSS grid
- *   cells don't provide. Inline style controls objectFit instead.
+ * Cover image:
+ *   The cover page uses position:relative + inset:0 absolute child
+ *   to fill the grid cell. The journal-book height is set to
+ *   calc(100vh - 8rem) so the first spread fits in one viewport.
  */
 
 import React, { useState, createContext, useContext, useCallback } from 'react'
@@ -115,26 +115,21 @@ function CoverPage({ coverImage, title }: { coverImage: CoverImage | null; title
   return (
     <div className="journal-page journal-page--cover" aria-label="Cover">
       {imageUrl ? (
+        /*
+         * cover-image-wrap is position:absolute inset:0 — it fills
+         * the journal-page--cover container which is position:relative.
+         * The Image uses fill so it fills the wrap completely.
+         * journal-page--cover must have an explicit height (set via CSS
+         * on journal-book) for this to work.
+         */
         <div className="cover-image-wrap">
-          {/*
-           * Using explicit width/height instead of fill prop.
-           * fill requires the parent to have a defined height which CSS grid
-           * cells don't provide. CSS classes handle object-fit/position.
-           */}
           <Image
             src={imageUrl}
             alt={coverImage?.alt ?? `${title} cover`}
-            width={1200}
-            height={2133}
+            fill
             className="cover-image"
             sizes="50vw"
             priority
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center top',
-            }}
           />
         </div>
       ) : (
@@ -187,7 +182,12 @@ export default function StoryReader({ title, coverImage, pages }: StoryReaderPro
                 className="journal-spread"
                 aria-label={`Spread ${spreadIdx + 1}`}
               >
-                <div className="journal-book">
+                {/*
+                 * First spread gets journal-book--cover class so CSS can
+                 * set an explicit height (calc(100vh - 8rem)) to contain
+                 * the cover image within the viewport.
+                 */}
+                <div className={`journal-book${isFirstSpread ? 'journal-book--cover' : ''}`}>
                   {/* LEFT PAGE */}
                   {left === 'cover' ? (
                     <CoverPage coverImage={coverImage} title={title} />

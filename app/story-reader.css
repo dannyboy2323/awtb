@@ -1,12 +1,12 @@
 /**
- * Story Reader — Visual Styles
+ * Story Reader â€” Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw × 100vh (cover) and repeats vertically.
+ *   journal background photo fills 100vw Ã— 100vh and repeats vertically.
  *   Inline graphic novel panels float within prose like a magazine layout.
  *
  * Background images (Vercel Blob CDN):
@@ -31,7 +31,6 @@
   min-height: 100vh;
   background-color: #1a1614;
   background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
-  /* cover scales to fill 100vw × 100vh regardless of aspect ratio */
   background-size: cover;
   background-position: center center;
   background-repeat: repeat-y;
@@ -39,7 +38,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT — SCROLL AREA
+   STORY CONTENT â€” SCROLL AREA
    ============================================================ */
 
 .story-content {
@@ -60,6 +59,7 @@
   max-width: 1400px;
 }
 
+/* Base journal book â€” used for all spreads after the first */
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
@@ -70,6 +70,17 @@
     0 40px 80px -20px rgba(0, 0, 0, 0.5),
     8px 0 20px -8px rgba(0, 0, 0, 0.3) inset;
   border-radius: 2px 4px 4px 2px;
+}
+
+/*
+ * First spread (cover + page 1) gets an explicit height so the cover
+ * image fills exactly one viewport and doesn't overflow.
+ * calc(100vh - 8rem) accounts for the 4rem top + 4rem bottom padding
+ * on .story-content.
+ */
+.journal-book--cover {
+  height: calc(100vh - 8rem);
+  min-height: 0;
 }
 
 /* ============================================================
@@ -100,17 +111,16 @@
 
 /* ============================================================
    COVER PAGE
-   The cover image fills the entire left page with no padding.
-   min-height: 100% ensures it stretches to the grid row height.
-   .cover-image-wrap uses absolute inset:0 to fill the container.
-   .cover-image uses explicit width/height 100% so Next.js Image fills it.
+   position:relative on .journal-page--cover + position:absolute
+   inset:0 on .cover-image-wrap allows Next.js Image fill to work.
+   The parent (.journal-book--cover) has explicit height so the
+   grid cell has a defined dimension for fill to measure against.
    ============================================================ */
 
 .journal-page--cover {
   position: relative;
   padding: 0;
   overflow: hidden;
-  min-height: 100%;
   border-radius: 2px 0 0 2px;
   box-shadow:
     inset -12px 0 20px -8px rgba(0, 0, 0, 0.18),
@@ -120,16 +130,11 @@
 .cover-image-wrap {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
 }
 
 .cover-image {
   object-fit: cover;
   object-position: center top;
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
 }
 
 .cover-placeholder {
@@ -194,7 +199,7 @@
    PROSE
    ============================================================ */
 
-/* clearfix — contains floated inline panels */
+/* clearfix â€” contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -273,7 +278,7 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES — 150% larger than original baseline
+   INLINE PANEL IMAGES â€” 150% larger than original baseline
    left/right float: 55% max-width, center: 75%
    ============================================================ */
 
@@ -282,21 +287,21 @@
   padding: 0;
 }
 
-/* Float left — text wraps on the right */
+/* Float left â€” text wraps on the right */
 .inline-panel--left {
   float: left;
   margin: 0.25rem 1.5rem 1.25rem 0;
   max-width: 55%;
 }
 
-/* Float right — text wraps on the left */
+/* Float right â€” text wraps on the left */
 .inline-panel--right {
   float: right;
   margin: 0.25rem 0 1.25rem 1.5rem;
   max-width: 55%;
 }
 
-/* Center — no float */
+/* Center â€” no float */
 .inline-panel--center {
   float: none;
   margin: 1.5rem auto;
@@ -472,11 +477,17 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically — one page per row */
+  /* Stack journal book vertically â€” one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
     grid-template-columns: unset;
+  }
+
+  /* First spread in portrait also stacks â€” reset explicit height */
+  .journal-book--cover {
+    height: auto;
+    min-height: 0;
   }
 
   /* Hide the spine in portrait */
