@@ -1,3 +1,5 @@
+The diff only modifies CSS layout behavior (how `.desk-hero` and `.postcard-container` are positioned on mobile/portrait screens). Nothing in `deployment.md` covers CSS implementation details, so the document remains accurate and requires no changes.
+
 # Deployment Guide
 
 ## Overview

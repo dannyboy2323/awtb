@@ -1,3 +1,5 @@
+The diff only modifies CSS layout behavior (alignment and padding for the hero section on mobile/portrait). This has no bearing on environment variables, setup instructions, or any content in `environment-setup.md`.
+
 # Environment Variable Setup
 
 ## Overview
