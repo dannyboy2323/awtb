@@ -1,3 +1,7 @@
+The diff changes a CSS value (`margin-top` on `.postcard-container` for mobile) in `app/globals.css`. This is a minor styling change with no relevance to deployment, environment variables, database migrations, rollbacks, monitoring, CI, or any other topic covered in `deployment.md`.
+
+The documentation is already accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview

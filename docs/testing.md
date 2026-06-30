@@ -1,3 +1,5 @@
+The diff only changes a CSS `margin-top` value for mobile postcard container layout. This has no bearing on any content in the testing guide. The document is already accurate.
+
 # Testing Guide
 
 ## Overview
