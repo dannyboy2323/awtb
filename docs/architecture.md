@@ -1,4 +1,4 @@
-The diff changes are limited to the CI workflow configuration: CI now runs on the `staging` branch in addition to `main`, npm is pinned to version 11, `npm ci` is replaced with `npm install`, and a Vercel status notification step is added. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
+The diff changes are limited to CSS styling for the story reader component: encoding artifacts in comments, removal of a redundant inline comment, addition of a `.journal-book--cover` modifier class with explicit height, removal of redundant CSS properties from `.cover-image-wrap` and `.cover-image`, and responsive overrides for the new modifier class. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
 
 # Architecture
 
