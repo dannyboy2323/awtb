@@ -1,3 +1,5 @@
+The diff only modifies CSS layout values (`gap` and `height` calculations for the story reader). This has no bearing on environment variables, setup instructions, or any content in the environment setup documentation.
+
 # Environment Variable Setup
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff only touches CSS layout (gap and height values in `story-reader.css`). None of that affects the deployment guide's content. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview
