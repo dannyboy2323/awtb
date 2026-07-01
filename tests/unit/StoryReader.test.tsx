@@ -77,7 +77,7 @@ describe('StoryReader', () => {
     render(
       <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} coverImagePortrait={null} pages={SAMPLE_PAGES} />
     )
-    expect(screen.getByAltText('Story cover art')).toBeTruthy()
+    expect(screen.getAllByAltText('Story cover art')[0]).toBeTruthy()
   })
 
   it('renders cover placeholder when no coverImage provided', () => {
@@ -100,8 +100,8 @@ describe('StoryReader', () => {
 
   it('renders inline panel images', () => {
     render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    expect(screen.getByAltText('Panel illustration panel-1')).toBeTruthy()
-    expect(screen.getByAltText('Panel illustration panel-2')).toBeTruthy()
+    expect(screen.getAllByAltText('Panel illustration panel-1')).toBeTruthy()
+    expect(screen.getAllByAltText('Panel illustration panel-2')).toBeTruthy()
   })
 
   it('opens lightbox when panel image is clicked', () => {
@@ -154,7 +154,7 @@ describe('StoryPageContent', () => {
 
   it('renders inline panel image', () => {
     renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('test-panel', 'left')]} />)
-    expect(screen.getByAltText('Panel illustration test-panel')).toBeTruthy()
+    expect(screen.getAllByAltText('Panel illustration test-panel')).toBeTruthy()
   })
 
   it('applies correct alignment class to inline panel', () => {

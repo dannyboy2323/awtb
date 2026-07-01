@@ -210,7 +210,7 @@ export default function StoryReader({
                 className="journal-spread"
                 aria-label={`Spread ${spreadIdx + 1}`}
               >
-                <div className={`journal-book${isFirstSpread ? 'journal-book--cover' : ''}`}>
+                <div className={`journal-book ${isFirstSpread ? 'journal-book--cover' : ''}`.trim()}>
                   {/* LEFT PAGE */}
                   {left === 'cover' ? (
                     <CoverPage
