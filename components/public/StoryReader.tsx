@@ -132,8 +132,7 @@ function CoverPage({ coverImage, title }: { coverImage: CoverImage | null; title
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center top',
+              objectFit: 'fill',
             }}
           />
         </div>
