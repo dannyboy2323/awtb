@@ -1,3 +1,5 @@
+The diff only changes CSS rules in `app/story-reader.css` — portrait/mobile layout for the journal book cover. Nothing in this change affects the testing guide's content. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

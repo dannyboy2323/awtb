@@ -1,3 +1,5 @@
+The diff only touches CSS layout rules for the story reader (mobile portrait cover sizing). None of this affects deployment procedures, environment variables, CI, webhooks, monitoring, or any other topic covered in `deployment.md`. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview

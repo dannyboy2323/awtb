@@ -1,3 +1,5 @@
+The diff only changes CSS layout properties for the story reader's mobile portrait view. It has no bearing on environment variables, setup instructions, or any content in `environment-setup.md`. The document is already accurate.
+
 # Environment Variable Setup
 
 ## Overview
