@@ -1,3 +1,7 @@
+The diff only modifies CSS styling in `app/story-reader.css` — padding values, shadow properties, and layout comments. None of this affects deployment procedures, environment variables, database migrations, CI configuration, webhooks, or any other content covered in `deployment.md`.
+
+The documentation is already accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview
