@@ -1,3 +1,5 @@
+The diff only changes ESLint ignore patterns (adding `dist/**` and `sanity/**` to the ignored glob list). This has no bearing on environment variable setup, configuration, or any content in the environment-setup doc.
+
 # Environment Variable Setup
 
 ## Overview

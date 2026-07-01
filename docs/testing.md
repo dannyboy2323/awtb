@@ -1,3 +1,5 @@
+The diff only changes ESLint's ignore patterns (adding `dist/**` and `sanity/**`). This is an implementation detail of the linter configuration and has no bearing on any content in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

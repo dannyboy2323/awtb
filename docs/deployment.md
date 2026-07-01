@@ -1,3 +1,5 @@
+The diff only changes ESLint ignore patterns (adding `dist/**` and `sanity/**` to the ignored directories). This is not relevant to the deployment guide's content. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview
