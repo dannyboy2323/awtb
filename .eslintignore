@@ -1,0 +1,13 @@
+# Build outputs
+.next/
+dist/
+out/
+
+# Generated files
+sanity.types.ts
+
+# Dependencies
+node_modules/
+
+# Sanity subdirectory (has its own lint config)
+sanity/
