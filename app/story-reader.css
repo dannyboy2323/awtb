@@ -39,8 +39,7 @@
 
 /* ============================================================
    STORY CONTENT â€” SCROLL AREA
-   Reduced outer padding so the journal book fills more of the
-   viewport. No horizontal padding so spreads go edge to edge.
+   No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
 .story-content {
@@ -54,16 +53,16 @@
 
 /* ============================================================
    JOURNAL SPREAD
+   Full width â€” no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
   width: 100%;
-  max-width: 100%;
 }
 
 /*
  * Base journal book â€” used for all spreads after the first.
- * min-height ensures prose pages have enough room.
+ * No box-shadow on the book wrapper â€” pages have their own depth.
  */
 .journal-book {
   display: grid;
@@ -76,7 +75,7 @@
  * First spread (cover + page 1) gets an explicit height so the
  * cover image fills exactly one viewport without overflow.
  * calc(100vh - 4rem) accounts for the 2rem top padding on
- * .story-content (2rem top Ã— 2 = 4rem total vertical space).
+ * .story-content.
  */
 .journal-book--cover {
   height: calc(100vh - 4rem);
@@ -159,6 +158,9 @@
 
 .journal-spine {
   background: linear-gradient(to right, #2a1e10 0%, #0d0b09 40%, #1a1209 60%, #2a1e10 100%);
+  box-shadow:
+    -2px 0 6px rgba(0, 0, 0, 0.4),
+    2px 0 6px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================================
@@ -314,6 +316,7 @@
   border: 2px solid #1c1a17;
   background: transparent;
   cursor: zoom-in;
+  box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.15);
   transition:
@@ -322,6 +325,7 @@
 }
 
 .inline-panel-btn:hover {
+  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.3),
     0 8px 32px rgba(0, 0, 0, 0.2);
   transform: translateY(-1px);
@@ -422,6 +426,7 @@
   max-height: 90vh;
   object-fit: contain;
   border: 3px solid rgba(200, 185, 154, 0.3);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
 }
 
 .lightbox-close {
