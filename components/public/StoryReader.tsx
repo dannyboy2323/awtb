@@ -187,7 +187,7 @@ export default function StoryReader({ title, coverImage, pages }: StoryReaderPro
                 className="journal-spread"
                 aria-label={`Spread ${spreadIdx + 1}`}
               >
-                <div className="journal-book">
+                <div className={`journal-book${isFirstSpread ? ' journal-book--cover' : ''}`}>
                   {/* LEFT PAGE */}
                   {left === 'cover' ? (
                     <CoverPage coverImage={coverImage} title={title} />
