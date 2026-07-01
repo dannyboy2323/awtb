@@ -1,3 +1,5 @@
+The diff only changes `app/story-reader.css` — CSS comments, encoding artifacts, and the addition of a `.journal-book--cover` modifier class. None of this affects anything documented in `deployment.md` (Vercel environments, deployments, environment variables, database migrations, rollbacks, monitoring, CI, or webhooks).
+
 # Deployment Guide
 
 ## Overview

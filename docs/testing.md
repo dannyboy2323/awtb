@@ -1,3 +1,5 @@
+The diff only modifies CSS comments and styles in `app/story-reader.css`. None of this affects the testing guide's content about Vitest, Playwright, Checkly, CI, or the pre-push hook. The documentation is already accurate.
+
 # Testing Guide
 
 ## Overview
