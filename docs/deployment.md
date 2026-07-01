@@ -1,3 +1,5 @@
+The diff contains no changes relevant to deployment configuration, environment variables, CI pipeline, Sanity webhooks, monitoring, or any other topic covered in `deployment.md`. The changes are entirely limited to the `StoryReader` component (cover image orientation switching), CSS, Sanity schema (new `coverImagePortrait` field), and GROQ queries. None of that affects deployment procedures.
+
 # Deployment Guide
 
 ## Overview
