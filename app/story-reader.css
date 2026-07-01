@@ -58,7 +58,7 @@
 
 .journal-spread {
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
 }
 
 /*
@@ -69,10 +69,6 @@
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
   min-height: 680px;
-  box-shadow:
-    0 4px 6px -2px rgba(0, 0, 0, 0.4),
-    0 20px 60px -10px rgba(0, 0, 0, 0.7),
-    0 40px 80px -20px rgba(0, 0, 0, 0.5);
   border-radius: 2px 4px 4px 2px;
 }
 
@@ -163,9 +159,6 @@
 
 .journal-spine {
   background: linear-gradient(to right, #2a1e10 0%, #0d0b09 40%, #1a1209 60%, #2a1e10 100%);
-  box-shadow:
-    -2px 0 6px rgba(0, 0, 0, 0.4),
-    2px 0 6px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================================
@@ -321,7 +314,6 @@
   border: 2px solid #1c1a17;
   background: transparent;
   cursor: zoom-in;
-  box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.15);
   transition:
@@ -330,7 +322,6 @@
 }
 
 .inline-panel-btn:hover {
-  box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.3),
     0 8px 32px rgba(0, 0, 0, 0.2);
   transform: translateY(-1px);
@@ -431,7 +422,6 @@
   max-height: 90vh;
   object-fit: contain;
   border: 3px solid rgba(200, 185, 154, 0.3);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
 }
 
 .lightbox-close {
