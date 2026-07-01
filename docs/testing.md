@@ -1,3 +1,5 @@
+The diff adds a `StoryReader` unit test file to the test suite (updating existing tests in `tests/unit/StoryReader.test.tsx`). The testing doc's "What's tested" table does not currently list `StoryReader.test.tsx`. That's the only factual gap introduced by this diff. All other content remains accurate.
+
 # Testing Guide
 
 ## Overview
@@ -32,6 +34,7 @@ npm run test:ui           # interactive Vitest UI
 | `tests/unit/revalidate.test.ts`    | HMAC webhook validation error handling                      |
 | `tests/unit/DeskHero.test.tsx`     | DeskHero component rendering and link behaviour             |
 | `tests/unit/PostcardGrid.test.tsx` | PostcardGrid rendering with various story counts            |
+| `tests/unit/StoryReader.test.tsx`  | StoryReader spreads, cover images, lightbox open/close      |
 | `tests/unit/db.test.ts`            | Drizzle ORM schema type inference                           |
 
 ### Writing new unit tests
