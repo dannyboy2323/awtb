@@ -8,20 +8,19 @@
  * Layout (landscape):
  *   Spread 0: Cover image (left page) | Page 1 prose+panels (right page)
  *   Spread 1: Page 2 (left page)      | Page 3 (right page)
- *   Spread 2: Page 4 (left page)      | Page 5 (right page)
  *
  * Layout (portrait — via CSS media query):
- *   Single column: Cover → Page 1 → Page 2 → Page 3 → ...
- *   Background switches to 9:16 portrait journal image.
+ *   Single column: Cover → Page 1 → Page 2 → ...
+ *
+ * Cover images:
+ *   - Landscape: uses coverImage (square 1:1)
+ *   - Portrait:  uses coverImagePortrait (9:16), falls back to coverImage
+ *   The switch is done via CSS — both images are rendered, portrait one
+ *   is hidden in landscape via .cover-image--portrait { display: none }
+ *   and vice versa. This avoids JS orientation detection issues with SSR.
  *
  * Lightbox:
  *   Clicking any inline panel image opens it full-screen.
- *   State managed here, shared via LightboxContext.
- *
- * Cover image note:
- *   Uses explicit width/height instead of Next.js fill prop because
- *   fill requires the parent to have a defined height, which CSS grid
- *   cells don't provide. Inline style controls objectFit instead.
  */
 
 import React, { useState, createContext, useContext, useCallback } from 'react'
@@ -55,7 +54,7 @@ export function useLightbox() {
 // Types
 // ----------------------------------------------------------------
 
-interface CoverImage {
+interface CoverImageAsset {
   asset: { url: string; _id: string } | null
   alt?: string | null
 }
@@ -68,7 +67,8 @@ interface StoryPageData {
 
 interface StoryReaderProps {
   title: string
-  coverImage: CoverImage | null
+  coverImage: CoverImageAsset | null
+  coverImagePortrait: CoverImageAsset | null
   pages: StoryPageData[]
 }
 
@@ -105,36 +105,57 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
 
 // ----------------------------------------------------------------
 // Cover page
+// Two images rendered — CSS controls which is visible based on orientation.
 // ----------------------------------------------------------------
 
-function CoverPage({ coverImage, title }: { coverImage: CoverImage | null; title: string }) {
-  const imageUrl = coverImage?.asset?.url
+function CoverPage({
+  coverImage,
+  coverImagePortrait,
+  title,
+}: {
+  coverImage: CoverImageAsset | null
+  coverImagePortrait: CoverImageAsset | null
+  title: string
+}) {
+  const landscapeUrl = coverImage?.asset?.url
     ? `${coverImage.asset.url}?auto=format&fm=webp&q=90`
     : null
 
+  // Fall back to landscape image if no portrait provided
+  const portraitUrl = coverImagePortrait?.asset?.url
+    ? `${coverImagePortrait.asset.url}?auto=format&fm=webp&q=90`
+    : landscapeUrl
+
+  const altText = coverImage?.alt ?? `${title} cover`
+
   return (
     <div className="journal-page journal-page--cover" aria-label="Cover">
-      {imageUrl ? (
+      {landscapeUrl ? (
         <div className="cover-image-wrap">
-          {/*
-           * Using explicit width/height instead of fill prop.
-           * fill requires the parent to have a defined height which CSS grid
-           * cells don't provide. CSS classes handle object-fit/position.
-           */}
+          {/* Landscape / square cover — shown in landscape orientation */}
           <Image
-            src={imageUrl}
-            alt={coverImage?.alt ?? `${title} cover`}
+            src={landscapeUrl}
+            alt={altText}
             width={1200}
-            height={2133}
-            className="cover-image"
+            height={1200}
+            className="cover-image cover-image--landscape"
             sizes="50vw"
             priority
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'fill',
-            }}
+            style={{ width: '100%', height: '100%', objectFit: 'fill' }}
           />
+          {/* Portrait cover — shown in portrait / mobile orientation */}
+          {portraitUrl && (
+            <Image
+              src={portraitUrl}
+              alt={coverImagePortrait?.alt ?? altText}
+              width={1080}
+              height={1920}
+              className="cover-image cover-image--portrait"
+              sizes="100vw"
+              priority
+              style={{ width: '100%', height: '100%', objectFit: 'fill' }}
+            />
+          )}
         </div>
       ) : (
         <div className="cover-placeholder">
@@ -153,9 +174,7 @@ type SpreadItem = 'cover' | StoryPageData
 
 function buildSpreads(pages: StoryPageData[]): Array<[SpreadItem, StoryPageData | null]> {
   const spreads: Array<[SpreadItem, StoryPageData | null]> = []
-  // First spread: cover left, page 0 right
   spreads.push(['cover', pages[0] ?? null])
-  // Remaining pages in pairs
   for (let i = 1; i < pages.length; i += 2) {
     spreads.push([pages[i], pages[i + 1] ?? null])
   }
@@ -166,7 +185,12 @@ function buildSpreads(pages: StoryPageData[]): Array<[SpreadItem, StoryPageData 
 // Main component
 // ----------------------------------------------------------------
 
-export default function StoryReader({ title, coverImage, pages }: StoryReaderProps) {
+export default function StoryReader({
+  title,
+  coverImage,
+  coverImagePortrait,
+  pages,
+}: StoryReaderProps) {
   const [lightboxImage, setLightboxImage] = useState<LightboxImage | null>(null)
   const openLightbox = useCallback((img: LightboxImage) => setLightboxImage(img), [])
   const closeLightbox = useCallback(() => setLightboxImage(null), [])
@@ -186,10 +210,14 @@ export default function StoryReader({ title, coverImage, pages }: StoryReaderPro
                 className="journal-spread"
                 aria-label={`Spread ${spreadIdx + 1}`}
               >
-                <div className={`journal-book${isFirstSpread ? ' journal-book--cover' : ''}`}>
+                <div className={`journal-book ${isFirstSpread ? 'journal-book--cover' : ''}`.trim()}>
                   {/* LEFT PAGE */}
                   {left === 'cover' ? (
-                    <CoverPage coverImage={coverImage} title={title} />
+                    <CoverPage
+                      coverImage={coverImage}
+                      coverImagePortrait={coverImagePortrait}
+                      title={title}
+                    />
                   ) : (
                     <div className="journal-page journal-page--left">
                       <span className="page-number page-number--left" aria-hidden="true">

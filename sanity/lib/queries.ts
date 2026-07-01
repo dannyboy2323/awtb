@@ -203,6 +203,14 @@ export const storyBySlugQuery = defineQuery(`
         metadata { dimensions { width, height } }
       }
     },
+    "coverImagePortrait": coverImagePortrait {
+      alt,
+      "asset": asset-> {
+        _id,
+        url,
+        metadata { dimensions { width, height } }
+      }
+    },
     "pages": pages[] {
       _key,
       prose[] {

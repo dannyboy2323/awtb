@@ -546,3 +546,33 @@
     display: none;
   }
 }
+
+/* ============================================================
+   COVER IMAGE — ORIENTATION SWITCHING
+   Landscape shows square cover, portrait shows portrait cover.
+   Both images are always rendered; CSS hides the inactive one.
+   ============================================================ */
+
+.cover-image--portrait {
+  display: none;
+}
+
+@media (orientation: portrait), (max-width: 768px) {
+  .cover-image--landscape {
+    display: none;
+  }
+  .cover-image--portrait {
+    display: block;
+  }
+}
+
+/* ============================================================
+   RIGHT PAGE — PADDING TO AVOID BACKGROUND OVERLAP
+   The landscape background image has design elements on the
+   far right. Add right padding only to the prose page so text
+   doesn't overlap those elements.
+   ============================================================ */
+
+.journal-page--right {
+  padding-right: 3rem;
+}

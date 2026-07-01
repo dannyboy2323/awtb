@@ -68,51 +68,51 @@ const SAMPLE_PAGES = [
 describe('StoryReader', () => {
   it('renders without crashing', () => {
     render(
-      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} pages={SAMPLE_PAGES} />
+      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} coverImagePortrait={null} pages={SAMPLE_PAGES} />
     )
     expect(screen.getByRole('main')).toBeTruthy()
   })
 
   it('renders the cover image alt text', () => {
     render(
-      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} pages={SAMPLE_PAGES} />
+      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} coverImagePortrait={null} pages={SAMPLE_PAGES} />
     )
-    expect(screen.getByAltText('Story cover art')).toBeTruthy()
+    expect(screen.getAllByAltText('Story cover art')[0]).toBeTruthy()
   })
 
   it('renders cover placeholder when no coverImage provided', () => {
-    render(<StoryReader title="No Cover Story" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="No Cover Story" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     expect(screen.getByText('No Cover Story')).toBeTruthy()
   })
 
   it('renders correct number of spreads', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     // 3 pages → spread 0: cover + page1, spread 1: page2 + page3
     const spreads = document.querySelectorAll('.journal-spread')
     expect(spreads.length).toBe(2)
   })
 
   it('renders prose text from pages', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     expect(screen.getByText('The city never sleeps.')).toBeTruthy()
     expect(screen.getByText('The end.')).toBeTruthy()
   })
 
   it('renders inline panel images', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
-    expect(screen.getByAltText('Panel illustration panel-1')).toBeTruthy()
-    expect(screen.getByAltText('Panel illustration panel-2')).toBeTruthy()
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
+    expect(screen.getAllByAltText('Panel illustration panel-1')).toBeTruthy()
+    expect(screen.getAllByAltText('Panel illustration panel-2')).toBeTruthy()
   })
 
   it('opens lightbox when panel image is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     const panelBtn = screen.getByLabelText('View full size: Panel illustration panel-1')
     fireEvent.click(panelBtn)
     expect(screen.getByRole('dialog')).toBeTruthy()
   })
 
   it('closes lightbox when overlay is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
     expect(screen.getByRole('dialog')).toBeTruthy()
     fireEvent.click(screen.getByRole('dialog'))
@@ -120,7 +120,7 @@ describe('StoryReader', () => {
   })
 
   it('closes lightbox when close button is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} pages={SAMPLE_PAGES} />)
+    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
     fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
     fireEvent.click(screen.getByLabelText('Close image'))
     expect(screen.queryByRole('dialog')).toBeNull()
@@ -154,7 +154,7 @@ describe('StoryPageContent', () => {
 
   it('renders inline panel image', () => {
     renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('test-panel', 'left')]} />)
-    expect(screen.getByAltText('Panel illustration test-panel')).toBeTruthy()
+    expect(screen.getAllByAltText('Panel illustration test-panel')).toBeTruthy()
   })
 
   it('applies correct alignment class to inline panel', () => {
