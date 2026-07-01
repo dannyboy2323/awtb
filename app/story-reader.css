@@ -39,8 +39,7 @@
 
 /* ============================================================
    STORY CONTENT â€” SCROLL AREA
-   Reduced outer padding so the journal book fills more of the
-   viewport. No horizontal padding so spreads go edge to edge.
+   No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
 .story-content {
@@ -54,25 +53,21 @@
 
 /* ============================================================
    JOURNAL SPREAD
+   Full width â€” no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
   width: 100%;
-  max-width: 1400px;
 }
 
 /*
  * Base journal book â€” used for all spreads after the first.
- * min-height ensures prose pages have enough room.
+ * No box-shadow on the book wrapper â€” pages have their own depth.
  */
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
   min-height: 680px;
-  box-shadow:
-    0 4px 6px -2px rgba(0, 0, 0, 0.4),
-    0 20px 60px -10px rgba(0, 0, 0, 0.7),
-    0 40px 80px -20px rgba(0, 0, 0, 0.5);
   border-radius: 2px 4px 4px 2px;
 }
 
@@ -80,7 +75,7 @@
  * First spread (cover + page 1) gets an explicit height so the
  * cover image fills exactly one viewport without overflow.
  * calc(100vh - 4rem) accounts for the 2rem top padding on
- * .story-content (2rem top Ã— 2 = 4rem total vertical space).
+ * .story-content.
  */
 .journal-book--cover {
   height: calc(100vh - 4rem);
