@@ -1,3 +1,5 @@
+The diff only modifies CSS styling in `app/story-reader.css`. None of that affects environment variables, setup instructions, or any other content in `environment-setup.md`. The document is already accurate.
+
 # Environment Variable Setup
 
 ## Overview

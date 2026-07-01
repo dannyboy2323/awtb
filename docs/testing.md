@@ -1,3 +1,5 @@
+The diff only modifies CSS styling in `app/story-reader.css` — padding values, shadows, and layout comments. None of this affects anything documented in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
