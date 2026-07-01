@@ -1,3 +1,7 @@
+The diff shows only CSS changes (padding, object-fit, and text-indent adjustments in `story-reader.css`). None of these changes affect the deployment guide's content, which covers Vercel deployments, environment variables, database migrations, rollbacks, monitoring, CI pipeline, and webhooks.
+
+The doc is already accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview

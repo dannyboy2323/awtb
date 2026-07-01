@@ -1,3 +1,5 @@
+The diff only modifies CSS properties in `story-reader.css` (padding values, `object-fit` values, and `text-indent`). None of these changes affect environment variables, setup instructions, or any content in the environment setup documentation.
+
 # Environment Variable Setup
 
 ## Overview
