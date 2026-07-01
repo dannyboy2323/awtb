@@ -1,3 +1,5 @@
+The diff only changes CSS media query selectors in `app/story-reader.css` — it has no bearing on deployment, environment variables, database migrations, rollbacks, monitoring, CI, or any other topic covered in `deployment.md`. The documentation is already accurate.
+
 # Deployment Guide
 
 ## Overview

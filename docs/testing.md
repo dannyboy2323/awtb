@@ -1,3 +1,5 @@
+The diff only modifies CSS media query selectors in `app/story-reader.css`. None of this affects the testing guide's content. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
