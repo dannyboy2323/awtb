@@ -1,3 +1,5 @@
+The diff changes a CSS property in `StoryReader.tsx` (cover image `objectFit` changed from `cover` to `fill`, and `objectPosition` removed). This is a UI implementation detail that has no bearing on the testing documentation. The testing guide contains no references to cover image styling, `objectFit`, or `StoryReader`.
+
 # Testing Guide
 
 ## Overview
