@@ -1,3 +1,7 @@
+The diff changes CSS properties in a React component (`StoryReader.tsx`) — specifically the cover image's `objectFit` from `cover` to `fill` and removes `objectPosition: 'center top'`. This is a frontend styling change with no bearing on any content in the deployment guide. The deployment guide does not document component-level styling details.
+
+No changes needed.
+
 # Deployment Guide
 
 ## Overview
