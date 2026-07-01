@@ -1,3 +1,5 @@
+The diff only changes CSS comments and styling rules in `app/story-reader.css`. None of this affects the deployment guide's content about Vercel, database migrations, rollbacks, environment variables, CI, or any other topic covered in `docs/deployment.md`. The document is already accurate.
+
 # Deployment Guide
 
 ## Overview
