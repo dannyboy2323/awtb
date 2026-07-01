@@ -126,7 +126,7 @@ function CoverPage({ coverImage, title }: { coverImage: CoverImage | null; title
             alt={coverImage?.alt ?? `${title} cover`}
             width={1200}
             height={2133}
-            className="cover-image"
+            className="cover-image" style={{ width: '100%', height: '100%', objectFit: 'fill' }}
             sizes="50vw"
             priority
             style={{
