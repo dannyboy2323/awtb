@@ -1,3 +1,7 @@
+The diff shows a change to `StoryReader.tsx` that adds a CSS modifier class (`journal-book--cover`) to the first spread's container element. This is a frontend styling change with no relevance to deployment, environment variables, database migrations, rollbacks, monitoring, CI, or any other topic covered in `deployment.md`.
+
+The current documentation is accurate and unaffected by this change.
+
 # Deployment Guide
 
 ## Overview

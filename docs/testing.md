@@ -1,3 +1,5 @@
+The diff only changes a CSS class applied conditionally to the cover spread in `StoryReader.tsx`. This is a styling detail with no bearing on anything documented in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
