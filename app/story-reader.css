@@ -472,9 +472,9 @@
     grid-template-columns: unset;
   }
 
-  /* First spread in portrait stacks â€” reset explicit height */
+  /* First spread in portrait -- full viewport height for 9:16 cover */
   .journal-book--cover {
-    height: auto;
+    height: 100dvh;
     min-height: 0;
   }
 
@@ -489,10 +489,11 @@
     border-radius: 2px;
   }
 
-  /* Cover takes full width, square-ish on mobile */
+  /* Cover page fills full viewport height in portrait for 9:16 image */
   .journal-page--cover {
-    min-height: 100vw;
-    border-radius: 2px;
+    height: 100dvh;
+    min-height: 0;
+    border-radius: 0;
   }
 
   /* Panels narrower on mobile to not overwhelm narrow columns */
