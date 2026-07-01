@@ -1,3 +1,5 @@
+The diff only modifies CSS layout values in `story-reader.css` — removing a gap and adjusting a height calculation. Nothing in this change affects testing infrastructure, test commands, CI pipeline, or any content covered by the testing guide.
+
 # Testing Guide
 
 ## Overview
