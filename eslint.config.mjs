@@ -34,7 +34,7 @@ const eslintConfig = defineConfig([
       'jsx-a11y/tabindex-no-positive': 'warn',
     },
   },
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'sanity.types.ts']),
+  globalIgnores(['.next/**', 'dist/**', 'out/**', 'build/**', 'next-env.d.ts', 'sanity.types.ts', 'sanity/**']),
 ])
 
 export default eslintConfig
