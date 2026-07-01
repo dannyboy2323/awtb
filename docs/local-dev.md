@@ -1,3 +1,5 @@
+The diff only changes ESLint ignore patterns (adding `dist/**` and `sanity/**` to the ignore list). This is an internal ESLint configuration detail that has no bearing on the local development guide's content — the guide covers prerequisites, setup, URLs, commands, and environment variables, none of which are affected by this change.
+
 # Local Development Guide
 
 ## Prerequisites
