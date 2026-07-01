@@ -39,6 +39,8 @@
 
 /* ============================================================
    STORY CONTENT â€” SCROLL AREA
+   Reduced outer padding so the journal book fills more of the
+   viewport. No horizontal padding so spreads go edge to edge.
    ============================================================ */
 
 .story-content {
@@ -46,8 +48,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4rem 2rem 6rem;
-  gap: 5rem;
+  padding: 2rem 0 4rem;
+  gap: 4rem;
 }
 
 /* ============================================================
@@ -59,7 +61,10 @@
   max-width: 1400px;
 }
 
-/* Base journal book â€” used for all spreads after the first */
+/*
+ * Base journal book â€” used for all spreads after the first.
+ * min-height ensures prose pages have enough room.
+ */
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
@@ -67,19 +72,18 @@
   box-shadow:
     0 4px 6px -2px rgba(0, 0, 0, 0.4),
     0 20px 60px -10px rgba(0, 0, 0, 0.7),
-    0 40px 80px -20px rgba(0, 0, 0, 0.5),
-    8px 0 20px -8px rgba(0, 0, 0, 0.3) inset;
+    0 40px 80px -20px rgba(0, 0, 0, 0.5);
   border-radius: 2px 4px 4px 2px;
 }
 
 /*
- * First spread (cover + page 1) gets an explicit height so the cover
- * image fills exactly one viewport and doesn't overflow.
- * calc(100vh - 8rem) accounts for the 4rem top + 4rem bottom padding
- * on .story-content.
+ * First spread (cover + page 1) gets an explicit height so the
+ * cover image fills exactly one viewport without overflow.
+ * calc(100vh - 4rem) accounts for the 2rem top padding on
+ * .story-content (2rem top Ã— 2 = 4rem total vertical space).
  */
 .journal-book--cover {
-  height: calc(100vh - 8rem);
+  height: calc(100vh - 4rem);
   min-height: 0;
 }
 
@@ -96,35 +100,25 @@
 
 .journal-page--left {
   border-radius: 2px 0 0 2px;
-  box-shadow:
-    inset -12px 0 20px -8px rgba(0, 0, 0, 0.12),
-    inset 2px 0 4px rgba(0, 0, 0, 0.04);
 }
 
 .journal-page--right {
   border-radius: 0 4px 4px 0;
-  box-shadow:
-    inset 12px 0 20px -8px rgba(0, 0, 0, 0.1),
-    inset -2px 0 6px rgba(0, 0, 0, 0.06),
-    inset 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ============================================================
    COVER PAGE
-   position:relative on .journal-page--cover + position:absolute
-   inset:0 on .cover-image-wrap allows Next.js Image fill to work.
-   The parent (.journal-book--cover) has explicit height so the
-   grid cell has a defined dimension for fill to measure against.
+   padding: 0 !important overrides the base .journal-page padding.
+   position:relative + .cover-image-wrap position:absolute inset:0
+   allows Next.js Image fill prop to work within the grid cell.
+   .journal-book--cover provides the explicit height fill needs.
    ============================================================ */
 
 .journal-page--cover {
   position: relative;
-  padding: 0;
+  padding: 0 !important;
   overflow: hidden;
   border-radius: 2px 0 0 2px;
-  box-shadow:
-    inset -12px 0 20px -8px rgba(0, 0, 0, 0.18),
-    inset 2px 0 4px rgba(0, 0, 0, 0.06);
 }
 
 .cover-image-wrap {
@@ -213,7 +207,6 @@
   color: #1c1a17;
   text-indent: 1.5em;
   margin: 0 0 0.75rem;
-  text-shadow: 0 0 0.5px rgba(28, 26, 23, 0.15);
   hyphens: auto;
   text-align: justify;
 }
@@ -484,7 +477,7 @@
     grid-template-columns: unset;
   }
 
-  /* First spread in portrait also stacks â€” reset explicit height */
+  /* First spread in portrait stacks â€” reset explicit height */
   .journal-book--cover {
     height: auto;
     min-height: 0;
@@ -499,11 +492,6 @@
   .journal-page {
     width: 100%;
     border-radius: 2px;
-  }
-
-  .journal-page--left,
-  .journal-page--right {
-    box-shadow: inset 0 -4px 12px rgba(0, 0, 0, 0.06);
   }
 
   /* Cover takes full width, square-ish on mobile */
