@@ -48,7 +48,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0;
-  gap: 4rem;
+  gap: 0;
 }
 
 /* ============================================================
@@ -74,11 +74,11 @@
 /*
  * First spread (cover + page 1) gets an explicit height so the
  * cover image fills exactly one viewport without overflow.
- * calc(100vh - 4rem) accounts for the 2rem top padding on
+ * 100vh since story-content padding is now 0
  * .story-content.
  */
 .journal-book--cover {
-  height: calc(100vh - 4rem);
+  height: 100vh;
   min-height: 0;
 }
 
