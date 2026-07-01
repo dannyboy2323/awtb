@@ -456,7 +456,7 @@
    PORTRAIT / MOBILE LAYOUT
    ============================================================ */
 
-@media (orientation: portrait), (max-width: 768px) {
+@media (orientation: portrait) {
   /* Switch to portrait journal background */
   .story-reader {
     background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp');
@@ -503,8 +503,14 @@
   }
 
   .story-content {
-    gap: 2rem;
-    padding: 2rem 1rem 4rem;
+    gap: 0;
+    padding: 0 0 4rem;
+  }
+
+  /* Restore gap + side padding for prose spreads after the cover */
+  .journal-spread:not(:first-child) {
+    margin-top: 2rem;
+    padding: 0 1rem;
   }
 }
 
@@ -558,7 +564,7 @@
   display: none;
 }
 
-@media (orientation: portrait), (max-width: 768px) {
+@media (orientation: portrait) {
   .cover-image--landscape {
     display: none;
   }
