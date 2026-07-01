@@ -47,6 +47,7 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
       <StoryReader
         title={story.title ?? 'Untitled Story'}
         coverImage={story.coverImage ?? null}
+        coverImagePortrait={story.coverImagePortrait ?? null}
         pages={pages}
       />
       <SanityLive />

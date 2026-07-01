@@ -2,8 +2,8 @@ import { defineField, defineType } from 'sanity'
 
 /**
  * Top-level story document.
- * Contains the postcard image (grid + hero), cover image,
- * and an ordered array of pages.
+ * Contains the postcard image (grid + hero), cover images (square for
+ * landscape, portrait for mobile), and an ordered array of pages.
  */
 export const storyType = defineType({
   name: 'story',
@@ -47,12 +47,22 @@ export const storyType = defineType({
     }),
     defineField({
       name: 'coverImage',
-      title: 'Cover Image',
-      description: 'Full-screen image shown before the reader enters the story.',
+      title: 'Cover Image (Square — Landscape / Desktop)',
+      description:
+        'Square (1:1) image used as the cover on landscape / desktop layouts. Fills the left half of the journal spread.',
       type: 'image',
       options: { hotspot: true },
       fields: [defineField({ name: 'alt', title: 'Alt Text', type: 'string' })],
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'coverImagePortrait',
+      title: 'Cover Image Portrait (9:16 — Mobile)',
+      description:
+        'Tall portrait (9:16) image used as the cover on mobile / portrait layouts. Falls back to coverImage if not provided.',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt Text', type: 'string' })],
     }),
     defineField({
       name: 'pages',
