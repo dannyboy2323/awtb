@@ -1,3 +1,5 @@
+The diff only modifies CSS properties (`padding`, `object-fit`, `text-indent`) in `story-reader.css`. None of these changes affect anything documented in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
