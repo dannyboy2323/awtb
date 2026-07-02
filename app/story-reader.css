@@ -515,7 +515,8 @@
 
   /* Page number flush to bottom in portrait */
   .page-number {
-    bottom: 2px;
+    position: fixed;
+    bottom: 5px;
   }
 }
 
@@ -598,7 +599,7 @@
 
   /* Shift page number right on desktop landscape */
   .page-number--right {
-    right: 9rem;
+    right: 9.3rem;
   }
 }
 
