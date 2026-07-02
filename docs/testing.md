@@ -1,3 +1,5 @@
+The diff only changes two CSS pixel/rem values for page number positioning in `story-reader.css`. Nothing in this diff affects the testing guide's content. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

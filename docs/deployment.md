@@ -1,3 +1,5 @@
+The diff only changes two CSS pixel/rem values in `story-reader.css` — adjusting the bottom position of `.page-number` from `5px` to `2px` in portrait, and the right position of `.page-number--right` from `5rem` to `9rem` in desktop landscape. Neither of these changes affects anything documented in `deployment.md`. The deployment guide is already accurate.
+
 # Deployment Guide
 
 ## Overview

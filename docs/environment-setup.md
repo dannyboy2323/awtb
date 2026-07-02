@@ -1,3 +1,5 @@
+The diff contains only CSS positioning adjustments (page number bottom and right values). This has no bearing on environment variables or setup instructions. The documentation is already accurate.
+
 # Environment Variable Setup
 
 ## Overview
