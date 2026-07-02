@@ -472,9 +472,9 @@
     grid-template-columns: unset;
   }
 
-  /* First spread in portrait -- full viewport height for 9:16 cover */
+  /* Cover spread in portrait: auto height so right page flows below cover */
   .journal-book--cover {
-    height: 100dvh;
+    height: auto;
     min-height: 0;
   }
 
@@ -494,12 +494,6 @@
     height: 100dvh;
     min-height: 0;
     border-radius: 0;
-  }
-
-  /* Hide the prose page inside the cover spread in portrait
-     so the cover image gets the full 100dvh height */
-  .journal-book--cover .journal-page--right {
-    display: none;
   }
 
   /* Panels narrower on mobile to not overwhelm narrow columns */
