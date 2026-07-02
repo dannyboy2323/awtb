@@ -599,7 +599,7 @@
 
   /* Shift page number right on desktop landscape */
   .page-number--right {
-    right: 9.3rem;
+    right: 8rem;
   }
 }
 
