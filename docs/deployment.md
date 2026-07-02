@@ -1,3 +1,5 @@
+The diff only modifies CSS rules in `story-reader.css` — adding a `bottom: 5px` rule for `.page-number` in portrait and a `right: 5rem` rule for `.page-number--right` on desktop landscape. None of this affects deployment, environment variables, CI, database migrations, rollbacks, monitoring, or any other topic covered in `deployment.md`.
+
 # Deployment Guide
 
 ## Overview

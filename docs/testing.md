@@ -1,3 +1,5 @@
+The diff only changes CSS rules for page number positioning in `story-reader.css`. None of this affects the testing guide's content. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
