@@ -1,3 +1,5 @@
+The diff only modifies CSS media queries in `story-reader.css`. None of that touches testing infrastructure, test files, CI configuration, or anything documented in `testing.md`. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview
