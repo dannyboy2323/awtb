@@ -588,14 +588,14 @@
    Mobile landscape (~682px) is unaffected. */
 @media (min-width: 1024px) and (orientation: landscape) {
   .journal-page--right {
-    padding-right: 4.5rem;
+    padding-right: 5.5rem;
   }
 }
 
 /* Mobile landscape: page number flush to bottom so it clears panel thumbnails. */
 @media (max-width: 1023px) and (orientation: landscape) {
   .page-number {
-    bottom: 5px;
+    bottom: 2px;
   }
 }
 
