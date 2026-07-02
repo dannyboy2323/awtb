@@ -1,3 +1,5 @@
+The diff only modifies CSS layout behavior for the story reader's cover spread on mobile (portrait mode). This change has no bearing on environment variables, setup instructions, or any content in `environment-setup.md`. The document is already accurate.
+
 # Environment Variable Setup
 
 ## Overview
