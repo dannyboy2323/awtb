@@ -496,6 +496,12 @@
     border-radius: 0;
   }
 
+  /* Hide the prose page inside the cover spread in portrait
+     so the cover image gets the full 100dvh height */
+  .journal-book--cover .journal-page--right {
+    display: none;
+  }
+
   /* Panels narrower on mobile to not overwhelm narrow columns */
   .inline-panel--left,
   .inline-panel--right {
