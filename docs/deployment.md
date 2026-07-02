@@ -1,3 +1,5 @@
+The diff only modifies CSS media queries for responsive layout adjustments in `story-reader.css`. None of this affects deployment procedures, environment variables, database migrations, CI pipeline, monitoring, or any other content covered in `deployment.md`. The documentation is already accurate.
+
 # Deployment Guide
 
 ## Overview
