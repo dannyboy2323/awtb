@@ -1,3 +1,5 @@
+The diff only changes CSS values in `story-reader.css` (padding and bottom positioning). This has no bearing on any content in the testing guide. The document is already accurate.
+
 # Testing Guide
 
 ## Overview

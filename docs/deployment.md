@@ -1,3 +1,5 @@
+The diff only changes two CSS values in `app/story-reader.css` (padding and bottom positioning). None of this affects anything documented in `deployment.md`. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview
