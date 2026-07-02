@@ -1,3 +1,5 @@
+The diff is a CSS-only change adding a rule to hide `.journal-page--right` inside `.journal-book--cover` on mobile portrait layouts. This has no bearing on any content in the testing guide. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

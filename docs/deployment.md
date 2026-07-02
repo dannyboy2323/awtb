@@ -1,3 +1,5 @@
+The diff is a pure CSS change adding a rule to hide `.journal-page--right` inside `.journal-book--cover` on mobile portrait layouts. This has no bearing on deployment, environment variables, database migrations, rollbacks, monitoring, CI, or any other topic covered in `deployment.md`. The documentation is already accurate.
+
 # Deployment Guide
 
 ## Overview
