@@ -1,3 +1,5 @@
+The diff only changes CSS behavior for the cover spread on mobile (portrait mode) — it does not affect deployment, environment variables, database migrations, monitoring, CI, or any other topic covered in `deployment.md`. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview

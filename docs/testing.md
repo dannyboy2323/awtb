@@ -1,3 +1,5 @@
+The diff only changes CSS layout behavior for the cover spread in portrait mode — it doesn't affect any testing infrastructure, tools, commands, or workflows. The documentation is already accurate.
+
 # Testing Guide
 
 ## Overview
