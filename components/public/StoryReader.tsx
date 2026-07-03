@@ -20,33 +20,16 @@
  *   Spread 2:  Page 4 (left)  │ Page 5 (right)
  *   …
  *
- * Pagination uses real DOM measurement so content NEVER clips:
- *  - All blocks render in a hidden measurement container sized to an
- *    actual page content area (same width, font, line-height).
- *  - After first paint, each block's offsetHeight is read.
- *  - Blocks are packed into pages until the target height would be exceeded.
- *  - Re-paginates on window resize (debounced 300ms).
+ * Pagination uses real DOM measurement so content NEVER clips.
  *
- * Images in landscape mode use block (non-float) layout so measurement
- * is accurate and narrow half-page columns look clean. Portrait mode
- * keeps the float layout for full-width aesthetic.
+ * Inline panel images always use their Sanity alignment field (left/right/center)
+ * in both portrait and landscape. CSS float rules handle text wrap.
  *
- * ─── SCHEMA CHANGE ───────────────────────────────────────────────
- * Replaces the manual `pages[]` array with a single `body` Portable Text
- * field. Paste all story text at once, then insert panelImage blocks.
- *
- * ─── MIGRATION ───────────────────────────────────────────────────
- * Existing story content in `pages[]` must be manually re-pasted into
- * the new `body` field in Sanity Studio. One-time step per story.
+ * ─── SCHEMA ──────────────────────────────────────────────────────
+ * Uses a single `body` Portable Text field (replaces manual pages[] array).
  */
 
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  createContext,
-  useContext,
-} from 'react'
+import React, { useState, useCallback, useEffect, createContext, useContext } from 'react'
 import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 import { useOrientation } from '@/hooks/useOrientation'
@@ -84,7 +67,7 @@ export interface LightboxImage {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Lightbox context — shared between StoryReader and nested image components
+// Lightbox context
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface LightboxContextValue {
@@ -103,13 +86,7 @@ export function useLightbox() {
 // Lightbox overlay
 // ─────────────────────────────────────────────────────────────────────────────
 
-function Lightbox({
-  image,
-  onClose,
-}: {
-  image: LightboxImage | null
-  onClose: () => void
-}) {
+function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: () => void }) {
   if (!image) return null
 
   return (
@@ -138,7 +115,7 @@ function Lightbox({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cover page — renders both images; CSS shows the correct one per orientation
+// Cover page
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CoverPage({
@@ -164,7 +141,6 @@ function CoverPage({
     <div className="journal-page journal-page--cover" aria-label="Cover">
       {landscapeUrl ? (
         <div className="cover-image-wrap">
-          {/* Landscape / square cover — hidden in portrait via CSS */}
           <Image
             src={landscapeUrl}
             alt={altText}
@@ -175,7 +151,6 @@ function CoverPage({
             priority
             style={{ width: '100%', height: '100%', objectFit: 'fill' }}
           />
-          {/* Portrait / 9:16 cover — hidden in landscape via CSS */}
           {portraitUrl && (
             <Image
               src={portraitUrl}
@@ -199,13 +174,9 @@ function CoverPage({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Portable Text component definitions
-// Two variants: render (for display) and measure (for hidden container)
+// PanelImageBlock type
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * PanelImageBlock — the shape of a panelImage block from Sanity
- */
 interface PanelImageBlock {
   _type: 'panelImage'
   _key: string
@@ -221,17 +192,15 @@ interface PanelImageBlock {
   } | null
 }
 
-/**
- * PanelImageRenderer — proper React component (capitalized) for panelImage blocks.
- * Extracted from the PortableText component map so useContext can be called legally.
- */
-function PanelImageRenderer({
-  value: block,
-  landscapeMode,
-}: {
-  value: PanelImageBlock
-  landscapeMode: boolean
-}) {
+// ─────────────────────────────────────────────────────────────────────────────
+// PanelImageRenderer
+//
+// Always uses the block's own `alignment` field (left/right/center/full).
+// Never overrides to center for landscape — that was the bug causing panels
+// to render full-width centered instead of floating inline with text wrap.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
   const { openLightbox } = useContext(LightboxContext)
   const asset = block.image?.asset
   const imageUrl = asset?.url ? `${asset.url}?auto=format&fm=webp&q=90` : null
@@ -242,16 +211,10 @@ function PanelImageRenderer({
   const width = dims?.width ?? 280
   const height = dims?.height ?? 280
   const altText = block.alt ?? 'Panel illustration'
-  const alignClass = landscapeMode
-    ? 'inline-panel--center'
-    : `inline-panel--${block.alignment ?? 'left'}`
+  const alignClass = `inline-panel--${block.alignment ?? 'left'}`
 
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-    <figure
-      role="group"
-      className={`inline-panel ${alignClass}`}
-    >
+    <figure role="group" className={`inline-panel ${alignClass}`}>
       <button
         className="inline-panel-btn"
         aria-label={`View full size: ${altText}`}
@@ -267,28 +230,24 @@ function PanelImageRenderer({
           sizes="(max-width: 1400px) 25vw, 280px"
           loading="lazy"
         />
-        <span className="inline-panel-zoom-hint" aria-hidden="true">🔍</span>
+        <span className="inline-panel-zoom-hint" aria-hidden="true">
+          🔍
+        </span>
       </button>
-      {block.caption && (
-        <figcaption className="inline-panel-caption">{block.caption}</figcaption>
-      )}
+      {block.caption && <figcaption className="inline-panel-caption">{block.caption}</figcaption>}
     </figure>
   )
 }
 
-/**
- * makeRenderComponents — full interactive rendering with lightbox support.
- * Used for both portrait continuous body and landscape page rendering.
- *
- * @param landscapeMode  When true, images use block layout (no floats)
- *                       for accurate pagination and clean narrow columns.
- */
-function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
+// ─────────────────────────────────────────────────────────────────────────────
+// makeRenderComponents — PortableText component map
+// No landscapeMode param — alignment is always driven by the block's own field.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function makeRenderComponents(): PortableTextComponents {
   return {
     types: {
-      panelImage: ({ value }) => (
-        <PanelImageRenderer value={value as PanelImageBlock} landscapeMode={landscapeMode} />
-      ),
+      panelImage: ({ value }) => <PanelImageRenderer value={value as PanelImageBlock} />,
     },
     block: {
       normal: ({ children }) => <p className="prose-paragraph">{children}</p>,
@@ -305,19 +264,12 @@ function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
   }
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Prose content renderer — wraps PortableText in .prose-body
+// ProseContent
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ProseContent({
-  blocks,
-  landscapeMode,
-}: {
-  blocks: BodyBlock[]
-  landscapeMode: boolean
-}) {
-  const components = makeRenderComponents(landscapeMode)
+function ProseContent({ blocks }: { blocks: BodyBlock[] }) {
+  const components = makeRenderComponents()
 
   return (
     <div className="prose-body">
@@ -331,7 +283,7 @@ function ProseContent({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Portrait layout — cover + single scrolling column for all body content
+// Portrait layout
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PortraitLayout({
@@ -347,7 +299,6 @@ function PortraitLayout({
 }) {
   return (
     <main className="story-content" role="main" aria-label={`${title} — story reader`}>
-      {/* Cover spread — full viewport height in portrait via CSS */}
       <section className="journal-spread" aria-label="Cover">
         <div className="journal-book journal-book--cover">
           <CoverPage
@@ -355,18 +306,16 @@ function PortraitLayout({
             coverImagePortrait={coverImagePortrait}
             title={title}
           />
-          {/* Spine + right page hidden in portrait via CSS */}
           <div className="journal-spine" aria-hidden="true" />
           <div className="journal-page journal-page--right" aria-hidden="true" />
         </div>
       </section>
 
-      {/* Body content — continuous scroll, no page breaks */}
       {body.length > 0 && (
         <section className="journal-spread" aria-label="Story content">
           <div className="journal-book">
             <div className="journal-page journal-page--portrait-body">
-              <ProseContent blocks={body} landscapeMode={false} />
+              <ProseContent blocks={body} />
             </div>
           </div>
         </section>
@@ -390,11 +339,6 @@ function LandscapeLayout({
   coverImagePortrait: CoverImageAsset | null
   pages: BodyBlock[][]
 }) {
-  // Build spreads:
-  // Spread 0: Cover (left) | Page 0 (right)
-  // Spread 1: Page 1 (left) | Page 2 (right)
-  // Spread 2: Page 3 (left) | Page 4 (right)
-  // ...
   const spreads: Array<{
     left: 'cover' | BodyBlock[]
     right: BodyBlock[] | null
@@ -402,12 +346,7 @@ function LandscapeLayout({
     pageNumRight: number
   }> = []
 
-  spreads.push({
-    left: 'cover',
-    right: pages[0] ?? null,
-    pageNumLeft: 0,
-    pageNumRight: 1,
-  })
+  spreads.push({ left: 'cover', right: pages[0] ?? null, pageNumLeft: 0, pageNumRight: 1 })
 
   for (let i = 1; i < pages.length; i += 2) {
     spreads.push({
@@ -429,7 +368,7 @@ function LandscapeLayout({
             className="journal-spread"
             aria-label={`Spread ${spreadIdx + 1}`}
           >
-            <div className={`journal-book${isFirstSpread ? ' journal-book--cover' : ''}`}>
+            <div className={`journal-book${isFirstSpread ? 'journal-book--cover' : ''}`}>
               {/* LEFT PAGE */}
               {spread.left === 'cover' ? (
                 <CoverPage
@@ -442,7 +381,7 @@ function LandscapeLayout({
                   <span className="page-number page-number--left" aria-hidden="true">
                     {spread.pageNumLeft}
                   </span>
-                  <ProseContent blocks={spread.left} landscapeMode={true} />
+                  <ProseContent blocks={spread.left} />
                 </div>
               )}
 
@@ -456,7 +395,7 @@ function LandscapeLayout({
                     <span className="page-number page-number--right" aria-hidden="true">
                       {spread.pageNumRight}
                     </span>
-                    <ProseContent blocks={spread.right} landscapeMode={true} />
+                    <ProseContent blocks={spread.right} />
                   </>
                 ) : (
                   <div className="journal-page--blank" aria-hidden="true" />
@@ -487,15 +426,12 @@ export default function StoryReader({
   const orientation = useOrientation()
   const isLandscape = orientation === 'landscape'
 
-  // Page content dimensions — updated from actual viewport on mount/resize
-  const [pageContentHeight, setPageContentHeight] = useState(600) // SSR-safe default
-  const [pageContentWidth, setPageContentWidth] = useState(400)  // SSR-safe default
+  const [pageContentHeight, setPageContentHeight] = useState(600)
+  const [pageContentWidth, setPageContentWidth] = useState(400)
 
   useEffect(() => {
     const updateDimensions = () => {
-      // Content height = viewport height minus page top/bottom padding (2.5rem + 3rem ≈ 88px)
       setPageContentHeight(window.innerHeight - 88)
-      // Content width = half viewport minus page left/right padding (2 × 2.5rem ≈ 80px)
       setPageContentWidth(window.innerWidth / 2 - 80)
     }
     updateDimensions()
@@ -505,24 +441,14 @@ export default function StoryReader({
 
   const blocks = body ?? []
 
-  // Paginate only in landscape mode
-  const { pages, measureRef, isReady } = usePagination(
-    blocks,
-    pageContentHeight,
-    isLandscape
-  )
+  const { pages, measureRef, isReady } = usePagination(blocks, pageContentHeight, isLandscape)
 
-  // Use same render components for measurement so heights match actual render
-  const measureComponents = makeRenderComponents(false)
+  const renderComponents = makeRenderComponents()
 
   return (
     <LightboxContext.Provider value={{ openLightbox }}>
       <div className="story-reader">
-        {/*
-         * Hidden measurement container — always rendered in DOM so
-         * usePagination can measure block heights. Invisible and non-interactive.
-         * Sized to one page column's content area.
-         */}
+        {/* Hidden measurement container */}
         <div
           ref={measureRef}
           aria-hidden="true"
@@ -534,7 +460,6 @@ export default function StoryReader({
             zIndex: -1,
             top: 0,
             left: 0,
-            // Match actual page font/spacing for accurate measurement
             fontFamily: "'Lora', 'Georgia', 'Times New Roman', serif",
             fontSize: '1.0625rem',
             lineHeight: '1.85',
@@ -542,14 +467,12 @@ export default function StoryReader({
           }}
         >
           {blocks.map((block, i) => (
-            // Each block is its own child so we can read offsetHeight individually
             <div key={block._key ?? i}>
-              <PortableText value={[block]} components={measureComponents} />
+              <PortableText value={[block]} components={renderComponents} />
             </div>
           ))}
         </div>
 
-        {/* Main content — portrait until landscape pagination is ready */}
         {isLandscape && isReady ? (
           <LandscapeLayout
             title={title}
