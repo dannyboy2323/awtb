@@ -115,6 +115,16 @@ export function useLightbox() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: () => void }) {
+  // Close on Escape — accessible alternative to overlay click and close button.
+  useEffect(() => {
+    if (!image) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [image, onClose])
+
   if (!image) return null
 
   return (
@@ -123,6 +133,7 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
       role="dialog"
       aria-modal="true"
       aria-label={image.alt}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
       onClick={onClose}
     >
       <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
