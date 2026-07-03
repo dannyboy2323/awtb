@@ -3,42 +3,64 @@
 /**
  * StoryReader
  *
- * Full story reading experience with automatic content pagination.
+ * Renders the full story reading experience for the graphic-novel reader.
  *
- * ─── PORTRAIT / MOBILE ───────────────────────────────────────────
- * Cover fills 100dvh × 100dvw (9:16 variant via CSS).
- * All story body content scrolls below in a single continuous column.
- * No pagination — content never clips.
- * Rendered immediately (SSR-safe, no client-side JS needed for layout).
+ * LAYOUT
+ * ───────────────────────────────────────────────────────────────────────────
+ * PORTRAIT (unchanged, known-good)
+ *   A single journal spread: cover fills 100dvh, then the entire body flows
+ *   below in one naturally-scrolling column. No pagination, no JS layout work.
+ *   CSS (`@media (orientation: portrait)`) stacks the grid vertically.
  *
- * ─── LANDSCAPE / DESKTOP ─────────────────────────────────────────
- * Cover takes the LEFT half of the first journal spread.
- * Body content is automatically paginated into landscape page heights:
+ * LANDSCAPE (book pagination — re-introduced here)
+ *   The body is split into page-height fragments and laid out as discrete
+ *   two-page book spreads that each fill exactly 100vh so the repeating
+ *   journal background art stays aligned:
  *
- *   Spread 0:  Cover (left)   │ Page 1 (right)
- *   Spread 1:  Page 2 (left)  │ Page 3 (right)
- *   Spread 2:  Page 4 (left)  │ Page 5 (right)
- *   …
+ *     Spread 1: [ cover ][spine][ body page 1 ]
+ *     Spread 2: [ body page 2 ][spine][ body page 3 ]
+ *     Spread 3: [ body page 4 ][spine][ body page 5 ]  ... etc.
  *
- * Pagination uses real DOM measurement so content NEVER clips.
+ *   Pages are measured, never estimated (see `useLandscapePagination`), and
+ *   each rendered page is `overflow: hidden` so — even if a measurement drifts
+ *   by a pixel — content can NEVER spill over the cover art or the next spread.
  *
- * Inline panel images always use their Sanity alignment field (left/right/center)
- * in both portrait and landscape. CSS float rules handle text wrap.
+ * PROGRESSIVE ENHANCEMENT
+ * ───────────────────────────────────────────────────────────────────────────
+ * The server-rendered / no-JS output is the single non-paginated spread, which
+ * is fully functional in both orientations. Landscape pagination is applied on
+ * the client after mount once real element heights (and web fonts) are known.
  *
- * ─── SCHEMA ──────────────────────────────────────────────────────
- * Uses a single `body` Portable Text field (replaces manual pages[] array).
+ * INLINE PANELS
+ * ───────────────────────────────────────────────────────────────────────────
+ * Panel images always use their Sanity `alignment` field (left/right/center/
+ * full). There is no orientation-based override, so float/text-wrap behaves
+ * identically in portrait and landscape — the alignment regression is gone.
+ *
+ * SCHEMA
+ * ───────────────────────────────────────────────────────────────────────────
+ * Expects a single flat `body` Portable Text array from Sanity (replaces the
+ * legacy `pages[]`). Every top-level block carries a Sanity `_key`, which the
+ * paginator uses to assign blocks to pages without positional index drift.
  */
 
-import React, { useState, useCallback, useEffect, createContext, useContext } from 'react'
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  createContext,
+} from 'react'
 import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
-import { useOrientation } from '@/hooks/useOrientation'
-import { usePagination } from '@/hooks/usePagination'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Cover image asset from a Sanity image field. */
 export interface CoverImageAsset {
   asset: {
     url: string
@@ -48,17 +70,20 @@ export interface CoverImageAsset {
   alt?: string | null
 }
 
+/** A single Portable Text block from the Sanity body field. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BodyBlock = Record<string, any>
 
+/** Props accepted by the StoryReader component. */
 export interface StoryReaderProps {
   title: string
   coverImage: CoverImageAsset | null
   coverImagePortrait: CoverImageAsset | null
-  /** Full story body as a flat Portable Text block array */
+  /** Full story body as a flat Portable Text block array from Sanity. */
   body: BodyBlock[] | null
 }
 
+/** Data passed to the lightbox when a panel image is clicked. */
 export interface LightboxImage {
   url: string
   alt: string
@@ -68,6 +93,8 @@ export interface LightboxImage {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lightbox context
+// Lets PanelImageRenderer open the lightbox without prop-drilling through the
+// PortableText component map.
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface LightboxContextValue {
@@ -78,6 +105,7 @@ export const LightboxContext = createContext<LightboxContextValue>({
   openLightbox: () => {},
 })
 
+/** Hook for nested components to access the lightbox opener. */
 export function useLightbox() {
   return useContext(LightboxContext)
 }
@@ -115,7 +143,9 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cover page
+// CoverPage
+// Renders both the landscape (square) and portrait (9:16) cover images.
+// CSS orientation rules show the appropriate one and hide the other.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CoverPage({
@@ -141,6 +171,7 @@ function CoverPage({
     <div className="journal-page journal-page--cover" aria-label="Cover">
       {landscapeUrl ? (
         <div className="cover-image-wrap">
+          {/* Square / landscape cover — CSS hides this in portrait orientation */}
           <Image
             src={landscapeUrl}
             alt={altText}
@@ -151,6 +182,7 @@ function CoverPage({
             priority
             style={{ width: '100%', height: '100%', objectFit: 'fill' }}
           />
+          {/* 9:16 portrait cover — CSS hides this in landscape orientation */}
           {portraitUrl && (
             <Image
               src={portraitUrl}
@@ -174,12 +206,13 @@ function CoverPage({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PanelImageBlock type
+// PanelImageBlock type — shape of an inline panelImage block from Sanity
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface PanelImageBlock {
   _type: 'panelImage'
   _key: string
+  /** Drives the CSS float class — left, right, center, or full. */
   alignment?: 'left' | 'right' | 'center' | 'full'
   alt?: string | null
   caption?: string | null
@@ -195,13 +228,15 @@ interface PanelImageBlock {
 // ─────────────────────────────────────────────────────────────────────────────
 // PanelImageRenderer
 //
-// Always uses the block's own `alignment` field (left/right/center/full).
-// Never overrides to center for landscape — that was the bug causing panels
-// to render full-width centered instead of floating inline with text wrap.
+// Must be a capitalized component so React hook rules are satisfied — useContext
+// is called inside. ALWAYS uses block.alignment with no orientation override,
+// matching how portrait has always worked correctly. The figure carries a
+// data-key so the landscape paginator can map it to a page.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
   const { openLightbox } = useContext(LightboxContext)
+
   const asset = block.image?.asset
   const imageUrl = asset?.url ? `${asset.url}?auto=format&fm=webp&q=90` : null
 
@@ -211,10 +246,12 @@ function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
   const width = dims?.width ?? 280
   const height = dims?.height ?? 280
   const altText = block.alt ?? 'Panel illustration'
+
+  // Always block.alignment — no landscapeMode override ever.
   const alignClass = `inline-panel--${block.alignment ?? 'left'}`
 
   return (
-    <figure role="group" className={`inline-panel ${alignClass}`}>
+    <figure role="group" data-key={block._key} className={`inline-panel ${alignClass}`}>
       <button
         className="inline-panel-btn"
         aria-label={`View full size: ${altText}`}
@@ -240,21 +277,37 @@ function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// makeRenderComponents — PortableText component map
-// No landscapeMode param — alignment is always driven by the block's own field.
+// makeComponents — PortableText component map.
+// Every top-level element carries a data-key so the paginator can assign it to
+// a page without relying on positional indices (which drift if a block renders
+// nothing).
 // ─────────────────────────────────────────────────────────────────────────────
 
-function makeRenderComponents(): PortableTextComponents {
+function makeComponents(): PortableTextComponents {
   return {
     types: {
       panelImage: ({ value }) => <PanelImageRenderer value={value as PanelImageBlock} />,
     },
     block: {
-      normal: ({ children }) => <p className="prose-paragraph">{children}</p>,
-      h2: ({ children }) => <h2 className="prose-h2">{children}</h2>,
-      h3: ({ children }) => <h3 className="prose-h3">{children}</h3>,
-      blockquote: ({ children }) => (
-        <blockquote className="prose-blockquote">{children}</blockquote>
+      normal: ({ children, value }) => (
+        <p className="prose-paragraph" data-key={(value as BodyBlock)?._key}>
+          {children}
+        </p>
+      ),
+      h2: ({ children, value }) => (
+        <h2 className="prose-h2" data-key={(value as BodyBlock)?._key}>
+          {children}
+        </h2>
+      ),
+      h3: ({ children, value }) => (
+        <h3 className="prose-h3" data-key={(value as BodyBlock)?._key}>
+          {children}
+        </h3>
+      ),
+      blockquote: ({ children, value }) => (
+        <blockquote className="prose-blockquote" data-key={(value as BodyBlock)?._key}>
+          {children}
+        </blockquote>
       ),
     },
     marks: {
@@ -265,152 +318,248 @@ function makeRenderComponents(): PortableTextComponents {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ProseContent
+// Spread model
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ProseContent({ blocks }: { blocks: BodyBlock[] }) {
-  const components = makeRenderComponents()
+type Spread =
+  | { kind: 'cover'; rightKeys: string[]; rightPageNo: number }
+  | {
+      kind: 'text'
+      leftKeys: string[]
+      leftPageNo: number
+      rightKeys: string[] | null
+      rightPageNo: number | null
+    }
 
-  return (
-    <div className="prose-body">
-      {blocks.length > 0 ? (
-        <PortableText value={blocks} components={components} />
-      ) : (
-        <p className="prose-placeholder">No content yet.</p>
-      )}
-    </div>
-  )
-}
+/**
+ * buildSpreads
+ *
+ * Maps an ordered list of page key-groups onto book spreads:
+ *   - The first page sits to the RIGHT of the cover.
+ *   - Remaining pages are paired into subsequent left/right spreads.
+ *   - An odd final page leaves a blank right-hand page.
+ *
+ * @param pages Ordered array of pages, each an ordered array of block `_key`s.
+ * @returns Ordered array of spreads with running page numbers.
+ */
+function buildSpreads(pages: string[][]): Spread[] {
+  const spreads: Spread[] = []
+  let pageNo = 1
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Portrait layout
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PortraitLayout({
-  title,
-  coverImage,
-  coverImagePortrait,
-  body,
-}: {
-  title: string
-  coverImage: CoverImageAsset | null
-  coverImagePortrait: CoverImageAsset | null
-  body: BodyBlock[]
-}) {
-  return (
-    <main className="story-content" role="main" aria-label={`${title} — story reader`}>
-      <section className="journal-spread" aria-label="Cover">
-        <div className="journal-book journal-book--cover">
-          <CoverPage
-            coverImage={coverImage}
-            coverImagePortrait={coverImagePortrait}
-            title={title}
-          />
-          <div className="journal-spine" aria-hidden="true" />
-          <div className="journal-page journal-page--right" aria-hidden="true" />
-        </div>
-      </section>
-
-      {body.length > 0 && (
-        <section className="journal-spread" aria-label="Story content">
-          <div className="journal-book">
-            <div className="journal-page journal-page--portrait-body">
-              <ProseContent blocks={body} />
-            </div>
-          </div>
-        </section>
-      )}
-    </main>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Landscape layout — paginated spreads
-// ─────────────────────────────────────────────────────────────────────────────
-
-function LandscapeLayout({
-  title,
-  coverImage,
-  coverImagePortrait,
-  pages,
-}: {
-  title: string
-  coverImage: CoverImageAsset | null
-  coverImagePortrait: CoverImageAsset | null
-  pages: BodyBlock[][]
-}) {
-  const spreads: Array<{
-    left: 'cover' | BodyBlock[]
-    right: BodyBlock[] | null
-    pageNumLeft: number
-    pageNumRight: number
-  }> = []
-
-  spreads.push({ left: 'cover', right: pages[0] ?? null, pageNumLeft: 0, pageNumRight: 1 })
+  const first = pages[0] ?? []
+  spreads.push({ kind: 'cover', rightKeys: first, rightPageNo: pageNo++ })
 
   for (let i = 1; i < pages.length; i += 2) {
-    spreads.push({
-      left: pages[i],
-      right: pages[i + 1] ?? null,
-      pageNumLeft: i + 1,
-      pageNumRight: i + 2,
-    })
+    const leftKeys = pages[i]
+    const leftPageNo = pageNo++
+    let rightKeys: string[] | null = null
+    let rightPageNo: number | null = null
+    if (i + 1 < pages.length) {
+      rightKeys = pages[i + 1]
+      rightPageNo = pageNo++
+    }
+    spreads.push({ kind: 'text', leftKeys, leftPageNo, rightKeys, rightPageNo })
   }
 
+  return spreads
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// useIsLandscape
+//
+// Tracks viewport orientation via matchMedia. Returns:
+//   null  during SSR / before first client resolution (unknown)
+//   true  landscape
+//   false portrait
+//
+// State updates are deferred to requestAnimationFrame to satisfy the project's
+// `react-hooks/set-state-in-effect` rule and avoid a synchronous render cascade.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function useIsLandscape(): boolean | null {
+  const [isLandscape, setIsLandscape] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return
+    }
+    const mq = window.matchMedia('(orientation: landscape)')
+    let raf = 0
+    const apply = (matches: boolean) => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => setIsLandscape(matches))
+    }
+    apply(mq.matches)
+    const onChange = (event: MediaQueryListEvent) => apply(event.matches)
+    mq.addEventListener('change', onChange)
+    return () => {
+      cancelAnimationFrame(raf)
+      mq.removeEventListener('change', onChange)
+    }
+  }, [])
+
+  return isLandscape
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// useLandscapePagination
+//
+// Measurement-driven pagination for the landscape "book" layout.
+//
+// 1. A hidden measurer renders the entire body at the exact width and padding
+//    of a real right-hand page (same CSS classes + the paginated panel caps),
+//    with its height allowed to grow.
+// 2. After web fonts settle and the browser paints, each top-level block is
+//    measured by its data-key and greedily packed into pages whose content
+//    height never exceeds the available page height (viewport height minus the
+//    page's vertical padding).
+// 3. The resulting per-page key lists drive the discrete book spreads.
+//
+// Waiting on `document.fonts.ready` before measuring prevents the classic
+// "pagination stops partway" bug caused by measuring pre-webfont line heights.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function useLandscapePagination(
+  blocks: BodyBlock[],
+  enabled: boolean
+): { measurerRef: React.RefObject<HTMLDivElement | null>; pages: string[][] | null } {
+  const measurerRef = useRef<HTMLDivElement | null>(null)
+  const [pages, setPages] = useState<string[][] | null>(null)
+
+  useEffect(() => {
+    if (!enabled || blocks.length === 0) {
+      // Portrait or empty body: no pagination. Clear any stale result (deferred
+      // to rAF to satisfy the set-state-in-effect lint rule).
+      const raf = requestAnimationFrame(() => {
+        setPages((prev) => (prev === null ? prev : null))
+      })
+      return () => cancelAnimationFrame(raf)
+    }
+
+    let raf = 0
+
+    const measure = () => {
+      const root = measurerRef.current
+      if (!root) return
+      const page = root.querySelector('.journal-page--right') as HTMLElement | null
+      const proseBody = root.querySelector('.prose-body') as HTMLElement | null
+      if (!page || !proseBody) return
+
+      const cs = window.getComputedStyle(page)
+      const padTop = parseFloat(cs.paddingTop) || 0
+      const padBottom = parseFloat(cs.paddingBottom) || 0
+      const available = window.innerHeight - padTop - padBottom
+
+      const children = Array.from(proseBody.children) as HTMLElement[]
+      const measured = children
+        .map((el) => ({
+          key: el.getAttribute('data-key'),
+          top: el.offsetTop,
+          height: el.offsetHeight,
+        }))
+        .filter((m): m is { key: string; top: number; height: number } => Boolean(m.key))
+
+      if (measured.length === 0 || available <= 0) {
+        setPages([measured.map((m) => m.key)])
+        return
+      }
+
+      // Greedy pack: a block joins the current page while the distance from the
+      // page's first-block top to this block's bottom fits the available height.
+      const result: string[][] = []
+      let current: string[] = []
+      let startTop = measured[0].top
+
+      for (const m of measured) {
+        const bottom = m.top + m.height
+        if (current.length > 0 && bottom - startTop > available) {
+          result.push(current)
+          current = [m.key]
+          startTop = m.top
+        } else {
+          current.push(m.key)
+        }
+      }
+      if (current.length > 0) result.push(current)
+
+      setPages(result)
+    }
+
+    const schedule = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(measure)
+    }
+
+    const runAfterFonts = () => {
+      if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(schedule).catch(schedule)
+      } else {
+        schedule()
+      }
+    }
+
+    const onResize = () => {
+      // Re-show the measurer with a clean slate, then re-measure at new size.
+      setPages(null)
+      runAfterFonts()
+    }
+
+    runAfterFonts()
+    window.addEventListener('resize', onResize)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [enabled, blocks])
+
+  return { measurerRef, pages }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SingleSpread
+// The non-paginated fallback used for portrait (final) and for landscape before
+// pagination has been computed. Cover on the left, all body on the right.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function SingleSpread({
+  title,
+  coverImage,
+  coverImagePortrait,
+  blocks,
+  components,
+}: {
+  title: string
+  coverImage: CoverImageAsset | null
+  coverImagePortrait: CoverImageAsset | null
+  blocks: BodyBlock[]
+  components: PortableTextComponents
+}) {
   return (
-    <main className="story-content" role="main" aria-label={`${title} — story reader`}>
-      {spreads.map((spread, spreadIdx) => {
-        const isFirstSpread = spreadIdx === 0
+    <section className="journal-spread" aria-label="Spread 1">
+      <div className="journal-book journal-book--cover">
+        {/* LEFT PAGE — cover image */}
+        <CoverPage coverImage={coverImage} coverImagePortrait={coverImagePortrait} title={title} />
 
-        return (
-          <section
-            key={spreadIdx}
-            className="journal-spread"
-            aria-label={`Spread ${spreadIdx + 1}`}
-          >
-            <div className={`journal-book${isFirstSpread ? 'journal-book--cover' : ''}`}>
-              {/* LEFT PAGE */}
-              {spread.left === 'cover' ? (
-                <CoverPage
-                  coverImage={coverImage}
-                  coverImagePortrait={coverImagePortrait}
-                  title={title}
-                />
-              ) : (
-                <div className="journal-page journal-page--left">
-                  <span className="page-number page-number--left" aria-hidden="true">
-                    {spread.pageNumLeft}
-                  </span>
-                  <ProseContent blocks={spread.left} />
-                </div>
-              )}
+        {/* SPINE */}
+        <div className="journal-spine" aria-hidden="true" />
 
-              {/* SPINE */}
-              <div className="journal-spine" aria-hidden="true" />
-
-              {/* RIGHT PAGE */}
-              <div className="journal-page journal-page--right">
-                {spread.right ? (
-                  <>
-                    <span className="page-number page-number--right" aria-hidden="true">
-                      {spread.pageNumRight}
-                    </span>
-                    <ProseContent blocks={spread.right} />
-                  </>
-                ) : (
-                  <div className="journal-page--blank" aria-hidden="true" />
-                )}
-              </div>
-            </div>
-          </section>
-        )
-      })}
-    </main>
+        {/* RIGHT PAGE — all story body content */}
+        <div className="journal-page journal-page--right">
+          <div className="prose-body">
+            {blocks.length > 0 ? (
+              <PortableText value={blocks} components={components} />
+            ) : (
+              <p className="prose-placeholder">No content yet.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Main StoryReader component
+// StoryReader — main export
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function StoryReader({
@@ -423,71 +572,125 @@ export default function StoryReader({
   const openLightbox = useCallback((img: LightboxImage) => setLightboxImage(img), [])
   const closeLightbox = useCallback(() => setLightboxImage(null), [])
 
-  const orientation = useOrientation()
-  const isLandscape = orientation === 'landscape'
+  const blocks = useMemo<BodyBlock[]>(() => body ?? [], [body])
+  const components = useMemo(() => makeComponents(), [])
 
-  const [pageContentHeight, setPageContentHeight] = useState(600)
-  const [pageContentWidth, setPageContentWidth] = useState(400)
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      setPageContentHeight(window.innerHeight - 88)
-      setPageContentWidth(window.innerWidth / 2 - 80)
+  // key → block, used to rebuild pages from measured key-groups.
+  const keyIndex = useMemo(() => {
+    const map = new Map<string, BodyBlock>()
+    for (const block of blocks) {
+      const key = block?._key
+      if (typeof key === 'string') map.set(key, block)
     }
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
-    return () => window.removeEventListener('resize', updateDimensions)
-  }, [])
+    return map
+  }, [blocks])
 
-  const blocks = body ?? []
+  const isLandscape = useIsLandscape()
+  const paginate = isLandscape === true && blocks.length > 0
+  const { measurerRef, pages } = useLandscapePagination(blocks, paginate)
 
-  const { pages, measureRef, isReady } = usePagination(blocks, pageContentHeight, isLandscape)
+  const renderKeys = useCallback(
+    (keys: string[]) => {
+      const slice = keys
+        .map((key) => keyIndex.get(key))
+        .filter((block): block is BodyBlock => Boolean(block))
+      if (slice.length === 0) return null
+      return <PortableText value={slice} components={components} />
+    },
+    [keyIndex, components]
+  )
 
-  const renderComponents = makeRenderComponents()
+  const spreads = useMemo(() => (pages ? buildSpreads(pages) : []), [pages])
+  const showPaginated = paginate && pages !== null && spreads.length > 0
 
   return (
     <LightboxContext.Provider value={{ openLightbox }}>
       <div className="story-reader">
-        {/* Hidden measurement container */}
-        <div
-          ref={measureRef}
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            visibility: 'hidden',
-            pointerEvents: 'none',
-            width: pageContentWidth,
-            zIndex: -1,
-            top: 0,
-            left: 0,
-            fontFamily: "'Lora', 'Georgia', 'Times New Roman', serif",
-            fontSize: '1.0625rem',
-            lineHeight: '1.85',
-            padding: '0',
-          }}
-        >
-          {blocks.map((block, i) => (
-            <div key={block._key ?? i}>
-              <PortableText value={[block]} components={renderComponents} />
-            </div>
-          ))}
-        </div>
+        <main className="story-content" role="main" aria-label={`${title} — story reader`}>
+          {showPaginated ? (
+            spreads.map((spread, index) =>
+              spread.kind === 'cover' ? (
+                <section
+                  key={`spread-${index}`}
+                  className="journal-spread"
+                  aria-label={`Spread ${index + 1}`}
+                >
+                  <div className="journal-book journal-book--cover">
+                    <CoverPage
+                      coverImage={coverImage}
+                      coverImagePortrait={coverImagePortrait}
+                      title={title}
+                    />
+                    <div className="journal-spine" aria-hidden="true" />
+                    <div className="journal-page journal-page--right journal-page--paginated">
+                      <div className="prose-body">{renderKeys(spread.rightKeys)}</div>
+                      <span className="page-number page-number--right">{spread.rightPageNo}</span>
+                    </div>
+                  </div>
+                </section>
+              ) : (
+                <section
+                  key={`spread-${index}`}
+                  className="journal-spread"
+                  aria-label={`Spread ${index + 1}`}
+                >
+                  <div className="journal-book">
+                    <div className="journal-page journal-page--left journal-page--paginated">
+                      <div className="prose-body">{renderKeys(spread.leftKeys)}</div>
+                      <span className="page-number page-number--left">{spread.leftPageNo}</span>
+                    </div>
+                    <div className="journal-spine" aria-hidden="true" />
+                    {spread.rightKeys ? (
+                      <div className="journal-page journal-page--right journal-page--paginated">
+                        <div className="prose-body">{renderKeys(spread.rightKeys)}</div>
+                        <span className="page-number page-number--right">{spread.rightPageNo}</span>
+                      </div>
+                    ) : (
+                      <div
+                        className="journal-page journal-page--right journal-page--blank"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                </section>
+              )
+            )
+          ) : (
+            <SingleSpread
+              title={title}
+              coverImage={coverImage}
+              coverImagePortrait={coverImagePortrait}
+              blocks={blocks}
+              components={components}
+            />
+          )}
 
-        {isLandscape && isReady ? (
-          <LandscapeLayout
-            title={title}
-            coverImage={coverImage}
-            coverImagePortrait={coverImagePortrait}
-            pages={pages}
-          />
-        ) : (
-          <PortraitLayout
-            title={title}
-            coverImage={coverImage}
-            coverImagePortrait={coverImagePortrait}
-            body={blocks}
-          />
-        )}
+          {/*
+           * Hidden measurer — mounted only while landscape pagination is pending.
+           * Renders the entire body at real right-page width/padding (plus the
+           * paginated panel caps) so measured heights match the live layout.
+           */}
+          {paginate && pages === null && (
+            <div
+              ref={measurerRef}
+              className="story-reader story-reader--measurer"
+              aria-hidden="true"
+            >
+              <div className="journal-book journal-book--cover" style={{ height: 'auto' }}>
+                <div className="journal-page journal-page--cover" />
+                <div className="journal-spine" />
+                <div
+                  className="journal-page journal-page--right journal-page--paginated"
+                  style={{ overflow: 'visible', height: 'auto' }}
+                >
+                  <div className="prose-body">
+                    <PortableText value={blocks} components={components} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
 
         <Lightbox image={lightboxImage} onClose={closeLightbox} />
       </div>
