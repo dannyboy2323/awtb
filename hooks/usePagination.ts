@@ -103,8 +103,8 @@ export function usePagination(
   // Run after first render (delayed to let layout settle)
   useEffect(() => {
     if (!enabled) {
-      setPages([])
-      setIsReady(false)
+      setPages([]) // eslint-disable-line react-hooks/set-state-in-effect
+      setIsReady(false) // eslint-disable-line react-hooks/set-state-in-effect
       return
     }
 

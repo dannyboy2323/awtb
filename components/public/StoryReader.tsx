@@ -248,6 +248,7 @@ function PanelImageRenderer({
 
   return (
     <figure
+      role="group"
       className={`inline-panel ${alignClass}`}
     >
       <button
