@@ -1042,7 +1042,7 @@ export type AllStorySlugsQueryResult = Array<{
 
 // Source: sanity/lib/queries.ts
 // Variable: storyBySlugQuery
-// Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    slug,    publishedAt,    "coverImage": coverImage {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "coverImagePortrait": coverImagePortrait {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "pages": pages[] {      _key,      prose[] {        ...,        _type == "panelImage" => {          ...,          "image": image {            "asset": asset-> {              _id,              url,              metadata { dimensions { width, height } }            }          }        }      }    }  }
+// Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    slug,    publishedAt,    "coverImage": coverImage {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "coverImagePortrait": coverImagePortrait {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "body": body[] {      ...,      _type == "panelImage" => {        ...,        "image": image {          "asset": asset-> {            _id,            url,            metadata { dimensions { width, height } }          }        }      }    }  }
 export type StoryBySlugQueryResult = {
   _id: string
   title: string
@@ -1062,27 +1062,7 @@ export type StoryBySlugQueryResult = {
     } | null
   }
   coverImagePortrait: null
-  pages: Array<{
-    _key: string
-    prose: Array<{
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }>
-  }>
+  body: null
 } | null
 
 // Query TypeMap
@@ -1103,6 +1083,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "story" && slug.current == $slug][0] {\n    title,\n    "page": pages[$pageIndex] {\n      panels[] {\n        image,\n        alt,\n        caption\n      },\n      prose\n    },\n    "pageCount": count(pages)\n  }\n': StoryPageQueryResult
     '\n  *[_type == "siteSettings"][0] {\n    featuredStory-> {\n      _id, title, "slug": slug.current, postcard\n    },\n    deskBackgroundImage\n  }\n': SiteSettingsQueryResult
     '\n  *[_type == "story" && defined(slug.current)] {\n    "slug": slug.current,\n    "pageCount": count(pages)\n  }\n': AllStorySlugsQueryResult
-    '\n  *[_type == "story" && slug.current == $slug][0] {\n    _id,\n    title,\n    slug,\n    publishedAt,\n    "coverImage": coverImage {\n      alt,\n      "asset": asset-> {\n        _id,\n        url,\n        metadata { dimensions { width, height } }\n      }\n    },\n    "coverImagePortrait": coverImagePortrait {\n      alt,\n      "asset": asset-> {\n        _id,\n        url,\n        metadata { dimensions { width, height } }\n      }\n    },\n    "pages": pages[] {\n      _key,\n      prose[] {\n        ...,\n        _type == "panelImage" => {\n          ...,\n          "image": image {\n            "asset": asset-> {\n              _id,\n              url,\n              metadata { dimensions { width, height } }\n            }\n          }\n        }\n      }\n    }\n  }\n': StoryBySlugQueryResult
+    '\n  *[_type == "story" && slug.current == $slug][0] {\n    _id,\n    title,\n    slug,\n    publishedAt,\n    "coverImage": coverImage {\n      alt,\n      "asset": asset-> {\n        _id,\n        url,\n        metadata { dimensions { width, height } }\n      }\n    },\n    "coverImagePortrait": coverImagePortrait {\n      alt,\n      "asset": asset-> {\n        _id,\n        url,\n        metadata { dimensions { width, height } }\n      }\n    },\n    "body": body[] {\n      ...,\n      _type == "panelImage" => {\n        ...,\n        "image": image {\n          "asset": asset-> {\n            _id,\n            url,\n            metadata { dimensions { width, height } }\n          }\n        }\n      }\n    }\n  }\n': StoryBySlugQueryResult
   }
 }

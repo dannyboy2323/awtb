@@ -65,12 +65,28 @@ export const storyType = defineType({
       fields: [defineField({ name: 'alt', title: 'Alt Text', type: 'string' })],
     }),
     defineField({
-      name: 'pages',
-      title: 'Pages',
-      description: 'Add pages in reading order. Each page has panels and prose.',
+      name: 'body',
+      title: 'Story Body',
+      description: 'Paste all story text here, then insert panelImage blocks inline between paragraphs. The reader automatically paginates this for landscape view.',
       type: 'array',
-      of: [{ type: 'storyPage' }],
-      validation: (Rule) => Rule.required().min(1),
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H2', value: 'h2' },
+            { title: 'H3', value: 'h3' },
+            { title: 'Quote', value: 'blockquote' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Bold', value: 'strong' },
+              { title: 'Italic', value: 'em' },
+            ],
+          },
+        },
+        { type: 'panelImage' },
+      ],
     }),
   ],
   preview: {
