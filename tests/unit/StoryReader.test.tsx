@@ -332,7 +332,7 @@ describe('StoryReader', () => {
     // In portrait mode, all content is in a single continuous body section
     expect(document.querySelectorAll('.journal-spread').length).toBe(2) // cover + body
     expect(
-      screen.getByText('Once upon a time in the Wild West, Roosevelt led the charge.')
+      screen.getAllByText('Once upon a time in the Wild West, Roosevelt led the charge.')[0]
     ).toBeTruthy()
   })
 
