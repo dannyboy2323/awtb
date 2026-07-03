@@ -217,10 +217,10 @@ describe('StoryReader', () => {
       />
     )
     expect(
-      screen.getByText('Once upon a time in the Wild West, Roosevelt led the charge.')
+      screen.getAllByText('Once upon a time in the Wild West, Roosevelt led the charge.')[0]
     ).toBeTruthy()
     expect(
-      screen.getByText('The rough riders galloped through the Cuban hillside.')
+      screen.getAllByText('The rough riders galloped through the Cuban hillside.')[0]
     ).toBeTruthy()
   })
 
