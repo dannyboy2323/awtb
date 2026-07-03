@@ -36,11 +36,9 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
 
   if (!story) notFound()
 
-  const pages = (story.pages ?? []).map((p, i) => ({
-    _id: `page-${i}`,
-    _key: p._key,
-    prose: p.prose,
-  }))
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const body = (story as any).body ?? null
 
   return (
     <>
@@ -49,7 +47,7 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
         coverImage={story.coverImage ?? null}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         coverImagePortrait={(story as any).coverImagePortrait ?? null}
-        pages={pages}
+        body={body}
       />
       <SanityLive />
     </>

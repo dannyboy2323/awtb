@@ -211,18 +211,15 @@ export const storyBySlugQuery = defineQuery(`
         metadata { dimensions { width, height } }
       }
     },
-    "pages": pages[] {
-      _key,
-      prose[] {
+    "body": body[] {
+      ...,
+      _type == "panelImage" => {
         ...,
-        _type == "panelImage" => {
-          ...,
-          "image": image {
-            "asset": asset-> {
-              _id,
-              url,
-              metadata { dimensions { width, height } }
-            }
+        "image": image {
+          "asset": asset-> {
+            _id,
+            url,
+            metadata { dimensions { width, height } }
           }
         }
       }
@@ -243,8 +240,5 @@ export type StoryBySlugQueryResult = {
       metadata: { dimensions: { width: number; height: number } } | null
     } | null
   } | null
-  pages: Array<{
-    _key: string
-    prose: unknown
-  }> | null
+  body: unknown[] | null
 } | null

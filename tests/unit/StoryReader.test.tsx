@@ -1,173 +1,376 @@
 /**
- * Story reader component unit tests.
+ * StoryReader unit tests
  *
- * Tests cover:
- *   - StoryReader: renders cover + all pages in spreads, lightbox opens/closes
- *   - StoryPageContent: renders prose text and inline panel images
- *
- * Run with: npm test
+ * Tests the StoryReader component with the new `body` prop (flat Portable Text
+ * array) replacing the old `pages[]` array. Pagination is tested in portrait
+ * mode only (landscape pagination requires real DOM measurement which is not
+ * available in JSDOM).
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import StoryReader, { LightboxContext } from '@/components/public/StoryReader'
-import StoryPageContent from '@/components/public/StoryPage'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import StoryReader from '@/components/public/StoryReader'
 
-// ----------------------------------------------------------------
+// ─────────────────────────────────────────────────────────────────────────────
 // Fixtures
-// ----------------------------------------------------------------
+// ─────────────────────────────────────────────────────────────────────────────
 
 const COVER_IMAGE = {
   asset: {
-    _id: 'asset-cover',
+    _id: 'cover-asset-id',
     url: 'https://cdn.sanity.io/images/test/production/cover.webp',
   },
   alt: 'Story cover art',
 }
 
-const makePanelImageBlock = (id: string, alignment: 'left' | 'right') => ({
+const PORTRAIT_COVER = {
+  asset: {
+    _id: 'portrait-asset-id',
+    url: 'https://cdn.sanity.io/images/test/production/cover-portrait.webp',
+  },
+  alt: 'Story cover art portrait',
+}
+
+const PANEL_IMAGE_BLOCK = {
   _type: 'panelImage',
-  _key: `panel-${id}`,
-  alignment,
-  alt: `Panel illustration ${id}`,
+  _key: 'panel-1',
+  alignment: 'left' as const,
+  alt: 'Panel illustration panel-1',
   caption: null,
   image: {
     asset: {
-      _id: `asset-${id}`,
-      url: `https://cdn.sanity.io/images/test/production/${id}.webp`,
-      metadata: { dimensions: { width: 800, height: 800 } },
+      _id: 'panel-asset-1',
+      url: 'https://cdn.sanity.io/images/test/production/panel-1.webp',
+      metadata: { dimensions: { width: 280, height: 280 } },
     },
   },
-})
+}
 
-const makeProseBlock = (text: string, key: string) => ({
+const TEXT_BLOCK = {
   _type: 'block',
-  _key: key,
+  _key: 'text-1',
   style: 'normal',
-  children: [{ _type: 'span', _key: `span-${key}`, text, marks: [] }],
+  children: [
+    {
+      _type: 'span',
+      _key: 'span-1',
+      text: 'Once upon a time in the Wild West, Roosevelt led the charge.',
+      marks: [],
+    },
+  ],
   markDefs: [],
-})
+}
 
-const SAMPLE_PROSE = [
-  makePanelImageBlock('panel-1', 'left'),
-  makeProseBlock('The city never sleeps.', 'block-1'),
-  makePanelImageBlock('panel-2', 'right'),
-  makeProseBlock('He ran, but there was nowhere to hide.', 'block-2'),
-]
+const TEXT_BLOCK_2 = {
+  _type: 'block',
+  _key: 'text-2',
+  style: 'normal',
+  children: [
+    {
+      _type: 'span',
+      _key: 'span-2',
+      text: 'The rough riders galloped through the Cuban hillside.',
+      marks: [],
+    },
+  ],
+  markDefs: [],
+}
 
-const SAMPLE_PAGES = [
-  { _id: 'page-1', _key: 'key-1', prose: SAMPLE_PROSE },
-  { _id: 'page-2', _key: 'key-2', prose: [makeProseBlock('The end.', 'block-3')] },
-  { _id: 'page-3', _key: 'key-3', prose: [makeProseBlock('Epilogue.', 'block-4')] },
-]
+const PANEL_IMAGE_BLOCK_2 = {
+  _type: 'panelImage',
+  _key: 'panel-2',
+  alignment: 'right' as const,
+  alt: 'Panel illustration panel-2',
+  caption: 'A historic moment',
+  image: {
+    asset: {
+      _id: 'panel-asset-2',
+      url: 'https://cdn.sanity.io/images/test/production/panel-2.webp',
+      metadata: { dimensions: { width: 280, height: 280 } },
+    },
+  },
+}
 
-// ----------------------------------------------------------------
-// StoryReader tests
-// ----------------------------------------------------------------
+const SAMPLE_BODY = [PANEL_IMAGE_BLOCK, TEXT_BLOCK, PANEL_IMAGE_BLOCK_2, TEXT_BLOCK_2]
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mock next/image
+// ─────────────────────────────────────────────────────────────────────────────
+
+vi.mock('next/image', () => ({
+  default: ({
+    src,
+    alt,
+    className,
+    width,
+    height,
+  }: {
+    src: string
+    alt: string
+    className?: string
+    width?: number
+    height?: number
+  }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} className={className} width={width} height={height} />
+  ),
+}))
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mock orientation (default to portrait so no pagination runs in tests)
+// ─────────────────────────────────────────────────────────────────────────────
+
+vi.mock('@/hooks/useOrientation', () => ({
+  useOrientation: () => 'portrait',
+}))
+
+vi.mock('@/hooks/usePagination', () => ({
+  usePagination: () => ({
+    pages: [],
+    measureRef: { current: null },
+    isReady: false,
+  }),
+}))
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tests
+// ─────────────────────────────────────────────────────────────────────────────
 
 describe('StoryReader', () => {
-  it('renders without crashing', () => {
-    render(
-      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} coverImagePortrait={null} pages={SAMPLE_PAGES} />
-    )
-    expect(screen.getByRole('main')).toBeTruthy()
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('renders the cover image alt text', () => {
+  it('renders without crashing with full props', () => {
     render(
-      <StoryReader title="Adventures With The Bull" coverImage={COVER_IMAGE} coverImagePortrait={null} pages={SAMPLE_PAGES} />
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={PORTRAIT_COVER}
+        body={SAMPLE_BODY}
+      />
     )
-    expect(screen.getAllByAltText('Story cover art')[0]).toBeTruthy()
+    expect(document.querySelector('.story-reader')).toBeTruthy()
+  })
+
+  it('renders the landscape cover image', () => {
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={PORTRAIT_COVER}
+        body={SAMPLE_BODY}
+      />
+    )
+    // Both images rendered; CSS controls visibility
+    const coverImages = screen.getAllByAltText('Story cover art')
+    expect(coverImages.length).toBeGreaterThanOrEqual(1)
+    expect(coverImages[0]).toBeTruthy()
+  })
+
+  it('renders the portrait cover image', () => {
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={PORTRAIT_COVER}
+        body={SAMPLE_BODY}
+      />
+    )
+    expect(screen.getAllByAltText('Story cover art portrait')).toBeTruthy()
+  })
+
+  it('falls back to landscape cover when no portrait image provided', () => {
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    // Should still render — landscape image used as fallback
+    expect(screen.getAllByAltText('Story cover art').length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders cover placeholder when no coverImage provided', () => {
-    render(<StoryReader title="No Cover Story" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    expect(screen.getByText('No Cover Story')).toBeTruthy()
+    render(
+      <StoryReader
+        title="No Cover Story"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    expect(document.querySelector('.cover-placeholder')).toBeTruthy()
+    expect(document.querySelector('.cover-title')).toBeTruthy()
   })
 
-  it('renders correct number of spreads', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    // 3 pages → spread 0: cover + page1, spread 1: page2 + page3
-    const spreads = document.querySelectorAll('.journal-spread')
-    expect(spreads.length).toBe(2)
+  it('renders prose text from body in portrait mode', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    expect(
+      screen.getAllByText('Once upon a time in the Wild West, Roosevelt led the charge.')[0]
+    ).toBeTruthy()
+    expect(
+      screen.getAllByText('The rough riders galloped through the Cuban hillside.')[0]
+    ).toBeTruthy()
   })
 
-  it('renders prose text from pages', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    expect(screen.getByText('The city never sleeps.')).toBeTruthy()
-    expect(screen.getByText('The end.')).toBeTruthy()
-  })
-
-  it('renders inline panel images', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
+  it('renders inline panel images from body', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
     expect(screen.getAllByAltText('Panel illustration panel-1')).toBeTruthy()
     expect(screen.getAllByAltText('Panel illustration panel-2')).toBeTruthy()
   })
 
-  it('opens lightbox when panel image is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    const panelBtn = screen.getByLabelText('View full size: Panel illustration panel-1')
+  it('renders portrait layout when body is null', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={null}
+      />
+    )
+    // Should render without crashing; story-reader wrapper present
+    expect(document.querySelector('.story-reader')).toBeTruthy()
+  })
+
+  it('renders hidden measurement container', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    // Measurement div is always in the DOM (hidden via aria-hidden + CSS)
+    const measureDivs = document.querySelectorAll('[aria-hidden="true"]')
+    expect(measureDivs.length).toBeGreaterThan(0)
+  })
+
+  it('opens lightbox when panel image button is clicked', () => {
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    const panelBtn = screen.getByRole('button', {
+      name: 'View full size: Panel illustration panel-1',
+    })
     fireEvent.click(panelBtn)
-    expect(screen.getByRole('dialog')).toBeTruthy()
+    expect(document.querySelector('.lightbox-overlay')).toBeTruthy()
   })
 
   it('closes lightbox when overlay is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
-    expect(screen.getByRole('dialog')).toBeTruthy()
-    fireEvent.click(screen.getByRole('dialog'))
-    expect(screen.queryByRole('dialog')).toBeNull()
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    const panelBtn = screen.getByRole('button', {
+      name: 'View full size: Panel illustration panel-1',
+    })
+    fireEvent.click(panelBtn)
+    expect(document.querySelector('.lightbox-overlay')).toBeTruthy()
+
+    const overlay = document.querySelector('.lightbox-overlay')!
+    fireEvent.click(overlay)
+    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
   })
 
   it('closes lightbox when close button is clicked', () => {
-    render(<StoryReader title="Test" coverImage={null} coverImagePortrait={null} pages={SAMPLE_PAGES} />)
-    fireEvent.click(screen.getByLabelText('View full size: Panel illustration panel-1'))
-    fireEvent.click(screen.getByLabelText('Close image'))
-    expect(screen.queryByRole('dialog')).toBeNull()
-  })
-})
-
-// ----------------------------------------------------------------
-// StoryPageContent tests
-// ----------------------------------------------------------------
-
-describe('StoryPageContent', () => {
-  const mockOpenLightbox = vi.fn()
-
-  function renderWithLightbox(ui: React.ReactElement) {
-    return render(
-      <LightboxContext.Provider value={{ openLightbox: mockOpenLightbox }}>
-        {ui}
-      </LightboxContext.Provider>
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={COVER_IMAGE}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
     )
-  }
+    const panelBtn = screen.getByRole('button', {
+      name: 'View full size: Panel illustration panel-1',
+    })
+    fireEvent.click(panelBtn)
+    expect(document.querySelector('.lightbox-overlay')).toBeTruthy()
 
-  it('renders prose text', () => {
-    renderWithLightbox(<StoryPageContent prose={[makeProseBlock('Hello world.', 'b1')]} />)
-    expect(screen.getByText('Hello world.')).toBeTruthy()
+    const closeBtn = screen.getByRole('button', { name: 'Close image' })
+    fireEvent.click(closeBtn)
+    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
   })
 
-  it('renders placeholder when prose is null', () => {
-    renderWithLightbox(<StoryPageContent prose={null} />)
-    expect(screen.getByText('[ No content for this page ]')).toBeTruthy()
-  })
-
-  it('renders inline panel image', () => {
-    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('test-panel', 'left')]} />)
-    expect(screen.getAllByAltText('Panel illustration test-panel')).toBeTruthy()
-  })
-
-  it('applies correct alignment class to inline panel', () => {
-    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('left-panel', 'left')]} />)
-    expect(document.querySelector('.inline-panel--left')).toBeTruthy()
-  })
-
-  it('calls openLightbox when panel is clicked', () => {
-    renderWithLightbox(<StoryPageContent prose={[makePanelImageBlock('click-panel', 'right')]} />)
-    fireEvent.click(screen.getByLabelText('View full size: Panel illustration click-panel'))
-    expect(mockOpenLightbox).toHaveBeenCalledTimes(1)
-    expect(mockOpenLightbox).toHaveBeenCalledWith(
-      expect.objectContaining({ alt: 'Panel illustration click-panel' })
+  it('renders portrait body section with all content', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={[TEXT_BLOCK, TEXT_BLOCK_2]}
+      />
     )
+    // In portrait mode, all content is in a single continuous body section
+    expect(document.querySelectorAll('.journal-spread').length).toBe(2) // cover + body
+    expect(
+      screen.getAllByText('Once upon a time in the Wild West, Roosevelt led the charge.')[0]
+    ).toBeTruthy()
+  })
+
+  it('renders story reader aria label', () => {
+    render(
+      <StoryReader
+        title="Adventures With The Bull"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={SAMPLE_BODY}
+      />
+    )
+    expect(
+      screen.getByRole('main', { name: 'Adventures With The Bull — story reader' })
+    ).toBeTruthy()
+  })
+
+  it('renders panel image caption when present', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={[PANEL_IMAGE_BLOCK_2]}
+      />
+    )
+    expect(screen.getByText('A historic moment')).toBeTruthy()
+  })
+
+  it('renders empty body gracefully', () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={[]}
+      />
+    )
+    expect(document.querySelector('.story-reader')).toBeTruthy()
   })
 })

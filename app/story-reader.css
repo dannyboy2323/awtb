@@ -520,6 +520,34 @@
   }
 }
 
+
+/* ============================================================
+   AUTO-PAGINATION — PORTRAIT BODY PAGE
+   Full story body in portrait renders in a single page.
+   overflow: visible so long content scrolls naturally.
+   ============================================================ */
+
+.journal-page--portrait-body {
+  overflow: visible;
+  width: 100%;
+}
+
+/* ============================================================
+   AUTO-PAGINATION — LANDSCAPE PAGE IMAGES (BLOCK LAYOUT)
+   In landscape paginated pages, images use block (non-float)
+   layout so DOM measurement is accurate and narrow half-page
+   columns stay clean. Portrait retains float layout.
+   ============================================================ */
+
+.journal-page--left .inline-panel,
+.journal-page--right .inline-panel {
+  float: none;
+  display: block;
+  margin: 1rem auto;
+  max-width: 65%;
+  clear: both;
+}
+
 /* ============================================================
    REDUCED MOTION
    ============================================================ */
