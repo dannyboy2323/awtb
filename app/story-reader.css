@@ -31,8 +31,8 @@
   min-height: 100vh;
   background-color: #1a1614;
   background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
-  background-size: cover;
-  background-position: center center;
+  background-size: 100vw 100vh;
+  background-position: top center;
   background-repeat: repeat-y;
   background-attachment: scroll;
 }
@@ -67,7 +67,8 @@
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
-  min-height: 680px;
+  height: 100vh;
+  min-height: 0;
   border-radius: 2px 4px 4px 2px;
 }
 
@@ -90,7 +91,7 @@
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
   background-color: transparent;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .journal-page--left {
@@ -532,21 +533,6 @@
   width: 100%;
 }
 
-/* ============================================================
-   AUTO-PAGINATION — LANDSCAPE PAGE IMAGES (BLOCK LAYOUT)
-   In landscape paginated pages, images use block (non-float)
-   layout so DOM measurement is accurate and narrow half-page
-   columns stay clean. Portrait retains float layout.
-   ============================================================ */
-
-.journal-page--left .inline-panel,
-.journal-page--right .inline-panel {
-  float: none;
-  display: block;
-  margin: 1rem auto;
-  max-width: 65%;
-  clear: both;
-}
 
 /* ============================================================
    REDUCED MOTION
