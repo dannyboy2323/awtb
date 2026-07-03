@@ -47,7 +47,7 @@ export type PortableTextBlock = Record<string, any>
 
 export interface UsePaginationResult {
   pages: PortableTextBlock[][]
-  measureRef: RefObject<HTMLDivElement>
+  measureRef: RefObject<HTMLDivElement | null>
   isReady: boolean
 }
 
