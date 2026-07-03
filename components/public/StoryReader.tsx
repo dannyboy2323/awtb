@@ -44,7 +44,6 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  useRef,
   createContext,
   useContext,
 } from 'react'
@@ -223,6 +222,61 @@ interface PanelImageBlock {
 }
 
 /**
+ * PanelImageRenderer — proper React component (capitalized) for panelImage blocks.
+ * Extracted from the PortableText component map so useContext can be called legally.
+ */
+function PanelImageRenderer({
+  value: block,
+  landscapeMode,
+}: {
+  value: PanelImageBlock
+  landscapeMode: boolean
+}) {
+  const { openLightbox } = useContext(LightboxContext)
+  const asset = block.image?.asset
+  const imageUrl = asset?.url ? `${asset.url}?auto=format&fm=webp&q=90` : null
+
+  if (!imageUrl) return null
+
+  const dims = asset?.metadata?.dimensions
+  const width = dims?.width ?? 280
+  const height = dims?.height ?? 280
+  const altText = block.alt ?? 'Panel illustration'
+  const alignClass = landscapeMode
+    ? 'inline-panel--center'
+    : `inline-panel--${block.alignment ?? 'left'}`
+
+  return (
+    <figure
+      className={`inline-panel ${alignClass}`}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+      onKeyDown={(e) => e.key === 'Enter' && openLightbox({ url: imageUrl, alt: altText, width, height })}
+    >
+      <button
+        className="inline-panel-btn"
+        aria-label={`View full size: ${altText}`}
+        title="Click to enlarge"
+        onClick={() => openLightbox({ url: imageUrl, alt: altText, width, height })}
+      >
+        <Image
+          src={imageUrl}
+          alt={altText}
+          width={280}
+          height={280}
+          className="inline-panel-image"
+          sizes={landscapeMode ? '(max-width: 1200px) 40vw, 280px' : '(max-width: 700px) 100vw, 280px'}
+          loading="lazy"
+        />
+        <span className="inline-panel-zoom-hint" aria-hidden="true">🔍</span>
+      </button>
+      {block.caption && (
+        <figcaption className="inline-panel-caption">{block.caption}</figcaption>
+      )}
+    </figure>
+  )
+}
+
+/**
  * makeRenderComponents — full interactive rendering with lightbox support.
  * Used for both portrait continuous body and landscape page rendering.
  *
@@ -232,60 +286,9 @@ interface PanelImageBlock {
 function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
   return {
     types: {
-      panelImage: ({ value }) => {
-        const block = value as PanelImageBlock
-        const asset = block.image?.asset
-        const imageUrl = asset?.url
-          ? `${asset.url}?auto=format&fm=webp&q=90`
-          : null
-
-        if (!imageUrl) return null
-
-        const dims = asset?.metadata?.dimensions
-        const width = dims?.width ?? 280
-        const height = dims?.height ?? 280
-        const altText = block.alt ?? 'Panel illustration'
-
-        // In landscape mode, always use block (non-float) layout.
-        // In portrait mode, use the alignment class for float layout.
-        const alignClass = landscapeMode
-          ? 'inline-panel--center'
-          : `inline-panel--${block.alignment ?? 'left'}`
-
-        const openLightbox = useContext(LightboxContext).openLightbox
-
-        return (
-          <figure
-            className={`inline-panel ${alignClass}`}
-            aria-label={altText}
-          >
-            <button
-              className="inline-panel-btn"
-              aria-label={`View full size: ${altText}`}
-              title="Click to enlarge"
-              onClick={() =>
-                openLightbox({ url: imageUrl, alt: altText, width, height })
-              }
-            >
-              <Image
-                src={imageUrl}
-                alt={altText}
-                width={280}
-                height={280}
-                className="inline-panel-image"
-                sizes={landscapeMode ? '(max-width: 1200px) 40vw, 280px' : '(max-width: 700px) 100vw, 280px'}
-                loading="lazy"
-              />
-              <span className="inline-panel-zoom-hint" aria-hidden="true">
-                🔍
-              </span>
-            </button>
-            {block.caption && (
-              <figcaption className="inline-panel-caption">{block.caption}</figcaption>
-            )}
-          </figure>
-        )
-      },
+      panelImage: ({ value }) => (
+        <PanelImageRenderer value={value as PanelImageBlock} landscapeMode={landscapeMode} />
+      ),
     },
     block: {
       normal: ({ children }) => <p className="prose-paragraph">{children}</p>,
