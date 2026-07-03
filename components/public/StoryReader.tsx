@@ -304,48 +304,6 @@ function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
   }
 }
 
-/**
- * makeMeasureComponents — lightweight components for the hidden measurement
- * container. Images are replaced by fixed-height placeholder divs computed
- * from Sanity asset metadata so async image loading doesn't affect accuracy.
- */
-function makeMeasureComponents(pageContentWidth: number): PortableTextComponents {
-  return {
-    types: {
-      panelImage: ({ value }) => {
-        const block = value as PanelImageBlock
-        const dims = block.image?.asset?.metadata?.dimensions
-
-        // For 1:1 images (square), height = width. For other ratios, scale.
-        // Images are centered (block) in landscape, max ~40% of page width.
-        const aspectRatio = dims ? dims.height / dims.width : 1
-        const imgW = Math.min(pageContentWidth * 0.4, 280)
-        const imgH = imgW * aspectRatio
-        const captionH = block.caption ? 20 : 0
-        const totalH = imgH + captionH + 24 // +24 for figure padding/margin
-
-        return (
-          <div
-            style={{ height: totalH, display: 'block' }}
-            aria-hidden="true"
-          />
-        )
-      },
-    },
-    block: {
-      normal: ({ children }) => <p className="prose-paragraph">{children}</p>,
-      h2: ({ children }) => <h2 className="prose-h2">{children}</h2>,
-      h3: ({ children }) => <h3 className="prose-h3">{children}</h3>,
-      blockquote: ({ children }) => (
-        <blockquote className="prose-blockquote">{children}</blockquote>
-      ),
-    },
-    marks: {
-      strong: ({ children }) => <strong className="prose-strong">{children}</strong>,
-      em: ({ children }) => <em className="prose-em">{children}</em>,
-    },
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Prose content renderer — wraps PortableText in .prose-body
