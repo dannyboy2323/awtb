@@ -227,10 +227,8 @@ interface PanelImageBlock {
  */
 function PanelImageRenderer({
   value: block,
-  landscapeMode,
 }: {
   value: PanelImageBlock
-  landscapeMode: boolean
 }) {
   const { openLightbox } = useContext(LightboxContext)
   const asset = block.image?.asset
@@ -280,14 +278,12 @@ function PanelImageRenderer({
  * makeRenderComponents — full interactive rendering with lightbox support.
  * Used for both portrait continuous body and landscape page rendering.
  *
- * @param landscapeMode  When true, images use block layout (no floats)
- *                       for accurate pagination and clean narrow columns.
  */
-function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
+function makeRenderComponents(): PortableTextComponents {
   return {
     types: {
       panelImage: ({ value }) => (
-        <PanelImageRenderer value={value as PanelImageBlock} landscapeMode={landscapeMode} />
+        <PanelImageRenderer value={value as PanelImageBlock} />
       ),
     },
     block: {
@@ -312,12 +308,10 @@ function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
 
 function ProseContent({
   blocks,
-  landscapeMode,
 }: {
   blocks: BodyBlock[]
-  landscapeMode: boolean
 }) {
-  const components = makeRenderComponents(landscapeMode)
+  const components = makeRenderComponents()
 
   return (
     <div className="prose-body">
@@ -366,7 +360,7 @@ function PortraitLayout({
         <section className="journal-spread" aria-label="Story content">
           <div className="journal-book">
             <div className="journal-page journal-page--portrait-body">
-              <ProseContent blocks={body} landscapeMode={false} />
+              <ProseContent blocks={body} />
             </div>
           </div>
         </section>
@@ -442,7 +436,7 @@ function LandscapeLayout({
                   <span className="page-number page-number--left" aria-hidden="true">
                     {spread.pageNumLeft}
                   </span>
-                  <ProseContent blocks={spread.left} landscapeMode={true} />
+                  <ProseContent blocks={spread.left} />
                 </div>
               )}
 
@@ -456,7 +450,7 @@ function LandscapeLayout({
                     <span className="page-number page-number--right" aria-hidden="true">
                       {spread.pageNumRight}
                     </span>
-                    <ProseContent blocks={spread.right} landscapeMode={true} />
+                    <ProseContent blocks={spread.right} />
                   </>
                 ) : (
                   <div className="journal-page--blank" aria-hidden="true" />
@@ -513,7 +507,7 @@ export default function StoryReader({
   )
 
   // Use same render components for measurement so heights match actual render
-  const measureComponents = makeRenderComponents(false)
+  const measureComponents = makeRenderComponents()
 
   return (
     <LightboxContext.Provider value={{ openLightbox }}>
