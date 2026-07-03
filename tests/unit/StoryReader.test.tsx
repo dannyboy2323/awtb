@@ -319,3 +319,18 @@ describe('StoryReader — landscape pagination', () => {
     expect(document.querySelector('.journal-page--paginated')).toBeFalsy()
   })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lightbox keyboard
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('StoryReader — lightbox keyboard', () => {
+  it('closes the lightbox when Escape is pressed', () => {
+    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />)
+    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
+    const overlay = document.querySelector('.lightbox-overlay')
+    expect(overlay).toBeTruthy()
+    fireEvent.keyDown(overlay!, { key: 'Escape' })
+    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
+  })
+})
