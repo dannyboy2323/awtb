@@ -247,6 +247,7 @@ function PanelImageRenderer({
     : `inline-panel--${block.alignment ?? 'left'}`
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <figure
       role="group"
       className={`inline-panel ${alignClass}`}
@@ -263,7 +264,7 @@ function PanelImageRenderer({
           width={280}
           height={280}
           className="inline-panel-image"
-          sizes={landscapeMode ? '(max-width: 1200px) 40vw, 280px' : '(max-width: 700px) 100vw, 280px'}
+          sizes="(max-width: 1400px) 25vw, 280px"
           loading="lazy"
         />
         <span className="inline-panel-zoom-hint" aria-hidden="true">🔍</span>
@@ -304,48 +305,6 @@ function makeRenderComponents(landscapeMode: boolean): PortableTextComponents {
   }
 }
 
-/**
- * makeMeasureComponents — lightweight components for the hidden measurement
- * container. Images are replaced by fixed-height placeholder divs computed
- * from Sanity asset metadata so async image loading doesn't affect accuracy.
- */
-function makeMeasureComponents(pageContentWidth: number): PortableTextComponents {
-  return {
-    types: {
-      panelImage: ({ value }) => {
-        const block = value as PanelImageBlock
-        const dims = block.image?.asset?.metadata?.dimensions
-
-        // For 1:1 images (square), height = width. For other ratios, scale.
-        // Images are centered (block) in landscape, max ~40% of page width.
-        const aspectRatio = dims ? dims.height / dims.width : 1
-        const imgW = Math.min(pageContentWidth * 0.4, 280)
-        const imgH = imgW * aspectRatio
-        const captionH = block.caption ? 20 : 0
-        const totalH = imgH + captionH + 24 // +24 for figure padding/margin
-
-        return (
-          <div
-            style={{ height: totalH, display: 'block' }}
-            aria-hidden="true"
-          />
-        )
-      },
-    },
-    block: {
-      normal: ({ children }) => <p className="prose-paragraph">{children}</p>,
-      h2: ({ children }) => <h2 className="prose-h2">{children}</h2>,
-      h3: ({ children }) => <h3 className="prose-h3">{children}</h3>,
-      blockquote: ({ children }) => (
-        <blockquote className="prose-blockquote">{children}</blockquote>
-      ),
-    },
-    marks: {
-      strong: ({ children }) => <strong className="prose-strong">{children}</strong>,
-      em: ({ children }) => <em className="prose-em">{children}</em>,
-    },
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Prose content renderer — wraps PortableText in .prose-body
@@ -553,7 +512,8 @@ export default function StoryReader({
     isLandscape
   )
 
-  const measureComponents = makeMeasureComponents(pageContentWidth)
+  // Use same render components for measurement so heights match actual render
+  const measureComponents = makeRenderComponents(false)
 
   return (
     <LightboxContext.Provider value={{ openLightbox }}>

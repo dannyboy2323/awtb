@@ -359,7 +359,7 @@ describe('StoryReader', () => {
         body={[PANEL_IMAGE_BLOCK_2]}
       />
     )
-    expect(screen.getByText('A historic moment')).toBeTruthy()
+    expect(screen.getAllByText('A historic moment')[0]).toBeTruthy()
   })
 
   it('renders empty body gracefully', () => {
