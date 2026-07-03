@@ -240,9 +240,7 @@ function PanelImageRenderer({
   const width = dims?.width ?? 280
   const height = dims?.height ?? 280
   const altText = block.alt ?? 'Panel illustration'
-  const alignClass = landscapeMode
-    ? 'inline-panel--center'
-    : `inline-panel--${block.alignment ?? 'left'}`
+  const alignClass = `inline-panel--${block.alignment ?? 'left'}`
 
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
