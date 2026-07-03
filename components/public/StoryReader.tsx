@@ -263,7 +263,7 @@ function PanelImageRenderer({
           width={280}
           height={280}
           className="inline-panel-image"
-          sizes={landscapeMode ? '(max-width: 1200px) 40vw, 280px' : '(max-width: 700px) 100vw, 280px'}
+          sizes="(max-width: 1400px) 25vw, 280px"
           loading="lazy"
         />
         <span className="inline-panel-zoom-hint" aria-hidden="true">🔍</span>
@@ -553,7 +553,8 @@ export default function StoryReader({
     isLandscape
   )
 
-  const measureComponents = makeMeasureComponents(pageContentWidth)
+  // Use same render components for measurement so heights match actual render
+  const measureComponents = makeRenderComponents(false)
 
   return (
     <LightboxContext.Provider value={{ openLightbox }}>
