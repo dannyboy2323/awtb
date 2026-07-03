@@ -247,6 +247,7 @@ function PanelImageRenderer({
     : `inline-panel--${block.alignment ?? 'left'}`
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <figure
       role="group"
       className={`inline-panel ${alignClass}`}
