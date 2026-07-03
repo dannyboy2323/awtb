@@ -1,12 +1,12 @@
 /**
- * Story Reader — Visual Styles
+ * Story Reader â€” Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw × 100vh and repeats vertically.
+ *   journal background photo fills 100vw Ã— 100vh and repeats vertically.
  *   Inline graphic novel panels float within prose like a magazine layout.
  *
  * Background images (Vercel Blob CDN):
@@ -38,7 +38,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT — SCROLL AREA
+   STORY CONTENT â€” SCROLL AREA
    No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
@@ -53,7 +53,7 @@
 
 /* ============================================================
    JOURNAL SPREAD
-   Full width — no max-width constraint so cover fills 50vw.
+   Full width â€” no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
@@ -61,7 +61,7 @@
 }
 
 /*
- * Base journal book — used for all spreads.
+ * Base journal book â€” used for all spreads.
  * height: 100vh ensures each spread fills exactly one viewport so
  * the background image tiles correctly as the user scrolls.
  */
@@ -74,7 +74,7 @@
 }
 
 /*
- * First spread (cover + page 1) — same 100vh height as all spreads.
+ * First spread (cover + page 1) â€” same 100vh height as all spreads.
  */
 .journal-book--cover {
   height: 100vh;
@@ -86,20 +86,19 @@
    ============================================================ */
 
 /*
- * overflow: hidden creates a Block Formatting Context (BFC) which:
- *  - Contains floated inline panel images within the page boundary
- *  - Allows text to wrap correctly around floated panels
- *  - Does NOT create a scroll box (unlike overflow: auto) which would
- *    interfere with float layout in fixed-height landscape grid cells
+ * overflow: auto allows content to scroll within each landscape page cell
+ * when content exceeds the 100vh height. CSS float layout works correctly
+ * inside overflow: auto containers â€” floated panels are contained within
+ * the BFC and text wraps around them normally.
  *
  * Portrait body page overrides this with overflow: visible via
- * .journal-page--portrait-body so long content scrolls naturally.
+ * .journal-page--portrait-body so long content scrolls on the main document.
  */
 .journal-page {
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
   background-color: transparent;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .journal-page--left {
@@ -114,8 +113,7 @@
    COVER PAGE
    padding: 0 !important overrides the base .journal-page padding.
    position:relative + .cover-image-wrap position:absolute inset:0
-   allows Next.js Image fill prop to work within the grid cell.
-   .journal-book--cover provides the explicit height fill needs.
+   allows Next.js Image to fill the entire grid cell.
    ============================================================ */
 
 .journal-page--cover {
@@ -197,7 +195,7 @@
    PROSE
    ============================================================ */
 
-/* clearfix — contains floated inline panels */
+/* clearfix â€” contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -275,7 +273,7 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES — 150% larger than original baseline
+   INLINE PANEL IMAGES â€” 150% larger than original baseline
    left/right float: 55% max-width, center: 75%
    ============================================================ */
 
@@ -284,21 +282,21 @@
   padding: 0;
 }
 
-/* Float left — text wraps on the right */
+/* Float left â€” text wraps on the right */
 .inline-panel--left {
   float: left;
   margin: 0.25rem 1.5rem 1.25rem 0;
   max-width: 55%;
 }
 
-/* Float right — text wraps on the left */
+/* Float right â€” text wraps on the left */
 .inline-panel--right {
   float: right;
   margin: 0.25rem 0 1.25rem 1.5rem;
   max-width: 55%;
 }
 
-/* Center — no float */
+/* Center â€” no float */
 .inline-panel--center {
   float: none;
   margin: 1.5rem auto;
@@ -474,7 +472,7 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically — one page per row */
+  /* Stack journal book vertically â€” one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
@@ -530,7 +528,7 @@
 }
 
 /* ============================================================
-   AUTO-PAGINATION — PORTRAIT BODY PAGE
+   AUTO-PAGINATION â€” PORTRAIT BODY PAGE
    Full story body in portrait renders in a single scrolling page.
    overflow: visible so long content is never clipped.
    ============================================================ */
@@ -581,7 +579,7 @@
 }
 
 /* ============================================================
-   COVER IMAGE — ORIENTATION SWITCHING
+   COVER IMAGE â€” ORIENTATION SWITCHING
    Landscape shows square cover, portrait shows portrait cover.
    Both images are always rendered; CSS hides the inactive one.
    ============================================================ */
@@ -600,7 +598,7 @@
 }
 
 /* ============================================================
-   RIGHT PAGE — PADDING TO AVOID BACKGROUND OVERLAP
+   RIGHT PAGE â€” PADDING TO AVOID BACKGROUND OVERLAP
    The landscape background image has design elements on the
    far right. Add right padding only to the prose page so text
    doesn't overlap those elements.
