@@ -105,7 +105,6 @@ vi.mock('next/image', () => ({
     className,
     width,
     height,
-    ...rest
   }: {
     src: string
     alt: string

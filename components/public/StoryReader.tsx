@@ -249,8 +249,6 @@ function PanelImageRenderer({
   return (
     <figure
       className={`inline-panel ${alignClass}`}
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-      onKeyDown={(e) => e.key === 'Enter' && openLightbox({ url: imageUrl, alt: altText, width, height })}
     >
       <button
         className="inline-panel-btn"
