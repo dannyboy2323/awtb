@@ -103,9 +103,11 @@ export function usePagination(
   // Run after first render (delayed to let layout settle)
   useEffect(() => {
     if (!enabled) {
-      setPages([])
-      setIsReady(false)
-      return
+      const id = requestAnimationFrame(() => {
+        setPages([])
+        setIsReady(false)
+      })
+      return () => cancelAnimationFrame(id)
     }
 
     const id = setTimeout(runPagination, MEASURE_DELAY_MS)
