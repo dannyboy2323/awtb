@@ -1,18 +1,13 @@
 /**
- * Story Reader â€” Visual Styles
+ * Story Reader Ã¢â‚¬â€ Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw Ã— 100vh and repeats vertically.
+ *   journal background photo fills 100vw Ãƒâ€” 100vh and repeats vertically.
  *   Inline graphic novel panels float within prose like a magazine layout.
- *
- * Orientation handling:
- *   CSS (not JavaScript) controls the layout difference between portrait and
- *   landscape. The journal-book is always a CSS grid; the portrait media query
- *   switches it to a flex column so the cover and body stack vertically.
  *
  * Background images (Vercel Blob CDN):
  *   Landscape: https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp
@@ -43,7 +38,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT â€” SCROLL AREA
+   STORY CONTENT Ã¢â‚¬â€ SCROLL AREA
    No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
@@ -58,20 +53,17 @@
 
 /* ============================================================
    JOURNAL SPREAD
-   Full width â€” no max-width so cover fills exactly 50vw.
+   Full width Ã¢â‚¬â€ no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
   width: 100%;
 }
 
-/* ============================================================
-   JOURNAL BOOK
-   3-column grid: left page (1fr) | spine (2px) | right page (1fr)
-   height: 100vh so each spread fills exactly one viewport tile,
-   keeping the background image aligned as the user scrolls.
-   ============================================================ */
-
+/*
+ * Base journal book Ã¢â‚¬â€ used for all spreads after the first.
+ * No box-shadow on the book wrapper Ã¢â‚¬â€ pages have their own depth.
+ */
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
@@ -80,21 +72,26 @@
   border-radius: 2px 4px 4px 2px;
 }
 
-/* First spread also uses 100vh â€” identical to subsequent spreads. */
+/*
+ * First spread (cover + page 1) gets an explicit height so the
+ * cover image fills exactly one viewport without overflow.
+ * 100vh since story-content padding is now 0
+ * .story-content.
+ */
 .journal-book--cover {
   height: 100vh;
   min-height: 0;
 }
 
 /* ============================================================
-   JOURNAL PAGES â€” base styles
+   JOURNAL PAGES
    ============================================================ */
 
 .journal-page {
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
   background-color: transparent;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .journal-page--left {
@@ -106,36 +103,17 @@
 }
 
 /* ============================================================
-   BODY PAGE
-   The right-hand page containing all story body content.
-
-   Landscape: scrollable within the right 50% panel so readers
-   can read all the content without leaving the spread view.
-   The page height is 100vh (from the grid), so content that
-   exceeds this height scrolls within the panel.
-
-   Portrait: handled by the portrait media query below â€”
-   width: 100%, overflow: visible, natural document scroll.
-   ============================================================ */
-
-.journal-page--body {
-  overflow: auto;
-}
-
-/* ============================================================
    COVER PAGE
-   No padding â€” image fills the entire left grid cell.
-   position: relative creates the positioning context for the
-   absolutely-positioned .cover-image-wrap child.
-   height: 100% ensures the cover page fills the full grid cell
-   height (which is 100vh from .journal-book).
+   padding: 0 !important overrides the base .journal-page padding.
+   position:relative + .cover-image-wrap position:absolute inset:0
+   allows Next.js Image fill prop to work within the grid cell.
+   .journal-book--cover provides the explicit height fill needs.
    ============================================================ */
 
 .journal-page--cover {
   position: relative;
   padding: 0 !important;
   overflow: hidden;
-  height: 100%;
   border-radius: 2px 0 0 2px;
 }
 
@@ -168,7 +146,7 @@
   padding: 2rem;
 }
 
-/* Blank right page for spreads with an odd number of pages */
+/* Blank right page for odd page counts */
 .journal-page--blank {
   width: 100%;
   height: 100%;
@@ -211,7 +189,7 @@
    PROSE
    ============================================================ */
 
-/* clearfix â€” contains floated inline panels */
+/* clearfix Ã¢â‚¬â€ contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -289,14 +267,8 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES
-   left / right: float with 55% max-width, text wraps around
-   center: block, 75% max-width
-   full: block, 100% max-width
-
-   NOTE: alignment is always driven by the Sanity block.alignment
-   field â€” there is no orientation-based override. This gives
-   identical float behaviour in portrait and landscape.
+   INLINE PANEL IMAGES Ã¢â‚¬â€ 150% larger than original baseline
+   left/right float: 55% max-width, center: 75%
    ============================================================ */
 
 .inline-panel {
@@ -304,25 +276,25 @@
   padding: 0;
 }
 
-/* Float left â€” text wraps on the right */
+/* Float left Ã¢â‚¬â€ text wraps on the right */
 .inline-panel--left {
   float: left;
   margin: 0.25rem 1.5rem 1.25rem 0;
-  max-width: 45%;
+  max-width: 55%;
 }
 
-/* Float right â€” text wraps on the left */
+/* Float right Ã¢â‚¬â€ text wraps on the left */
 .inline-panel--right {
   float: right;
   margin: 0.25rem 0 1.25rem 1.5rem;
-  max-width: 45%;
+  max-width: 55%;
 }
 
-/* Center â€” no float */
+/* Center Ã¢â‚¬â€ no float */
 .inline-panel--center {
   float: none;
   margin: 1.5rem auto;
-  max-width: 70%;
+  max-width: 75%;
   display: block;
   clear: both;
 }
@@ -370,7 +342,7 @@
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
+  object-fit: fill;
 }
 
 .inline-panel-zoom-hint {
@@ -475,6 +447,7 @@
 .lightbox-close:hover {
   color: #fff;
 }
+
 .lightbox-close:focus-visible {
   outline: 2px solid #c8922a;
   outline-offset: 2px;
@@ -482,10 +455,6 @@
 
 /* ============================================================
    PORTRAIT / MOBILE LAYOUT
-   The portrait media query converts the grid to a flex column
-   so elements stack: cover (full-width, 100dvh) then body below.
-   The JavaScript layout switching has been removed â€” CSS handles
-   everything. This is more reliable and SSR-friendly.
    ============================================================ */
 
 @media (orientation: portrait) {
@@ -497,15 +466,14 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically â€” cover first, body below */
+  /* Stack journal book vertically Ã¢â‚¬â€ one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
     grid-template-columns: unset;
-    height: auto;
   }
 
-  /* Cover spread in portrait: auto height so body flows below it */
+  /* Cover spread in portrait: auto height so right page flows below cover */
   .journal-book--cover {
     height: auto;
     min-height: 0;
@@ -522,41 +490,46 @@
     border-radius: 2px;
   }
 
-  /* Cover fills full viewport height in portrait (9:16 image) */
+  /* Cover page fills full viewport height in portrait for 9:16 image */
   .journal-page--cover {
     height: 100dvh;
     min-height: 0;
     border-radius: 0;
   }
 
-  /*
-   * Body page in portrait: full width, natural document scroll.
-   * overflow: visible so long content scrolls on the page, not inside
-   * a constrained box. Padding gives breathing room on small screens.
-   */
-  .journal-page--body {
-    overflow: visible;
-    width: 100%;
-    border-radius: 2px;
-    padding: 2rem 1rem 4rem;
-  }
-
-  /* Panels narrower on mobile to leave room for text beside them */
+  /* Panels narrower on mobile to not overwhelm narrow columns */
   .inline-panel--left,
   .inline-panel--right {
-    max-width: 40%;
+    max-width: 50%;
   }
 
   .story-content {
+    gap: 0;
     padding: 0 0 4rem;
   }
 
-  /* Page number fixed to viewport bottom in portrait */
+  /* Restore gap + side padding for prose spreads after the cover */
+  .journal-spread:not(:first-child) {
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+
+  /* Page number flush to bottom in portrait */
   .page-number {
     position: fixed;
     bottom: 5px;
-    right: 2.5rem;
   }
+}
+
+/* ============================================================
+   AUTO-PAGINATION â€” PORTRAIT BODY PAGE
+   Full story body in portrait renders in a single page.
+   overflow: visible so long content scrolls naturally.
+   ============================================================ */
+
+.journal-page--portrait-body {
+  overflow: visible;
+  width: 100%;
 }
 
 /* ============================================================
@@ -585,10 +558,12 @@
   .journal-spread {
     break-inside: avoid;
   }
+
   .journal-page {
     background: white;
     background-image: none;
   }
+
   .journal-spine {
     background: #ccc;
   }
@@ -599,8 +574,8 @@
 
 /* ============================================================
    COVER IMAGE â€” ORIENTATION SWITCHING
-   Both landscape and portrait cover images are always in the DOM.
-   CSS shows the appropriate one based on orientation.
+   Landscape shows square cover, portrait shows portrait cover.
+   Both images are always rendered; CSS hides the inactive one.
    ============================================================ */
 
 .cover-image--portrait {
@@ -617,28 +592,30 @@
 }
 
 /* ============================================================
-   RIGHT PAGE / BODY PAGE â€” PADDING ADJUSTMENTS
-   Extra right padding in landscape keeps text within the paper
-   area of the background image (avoids visual overflow at edges).
+   RIGHT PAGE â€” PADDING TO AVOID BACKGROUND OVERLAP
+   The landscape background image has design elements on the
+   far right. Add right padding only to the prose page so text
+   doesn't overlap those elements.
    ============================================================ */
 
 .journal-page--right {
   padding-right: 3rem;
 }
 
-/* Desktop landscape: more right padding at large viewports (1024px+).
-   Mobile landscape (~682px wide) is unaffected by this rule. */
+/* Desktop landscape: extra right padding at large viewports (1024px+).
+   Mobile landscape (~682px) is unaffected. */
 @media (min-width: 1024px) and (orientation: landscape) {
   .journal-page--right {
     padding-right: 9rem;
   }
 
+  /* Shift page number right on desktop landscape */
   .page-number--right {
     right: 8rem;
   }
 }
 
-/* Mobile landscape: page number close to bottom edge */
+/* Mobile landscape: page number flush to bottom so it clears panel thumbnails. */
 @media (max-width: 1023px) and (orientation: landscape) {
   .page-number {
     bottom: 2px;
