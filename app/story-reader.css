@@ -1,12 +1,12 @@
 /**
- * Story Reader â€” Visual Styles
+ * Story Reader — Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw Ã— 100vh and repeats vertically.
+ *   journal background photo fills 100vw × 100vh and repeats vertically.
  *   Inline graphic novel panels float within prose like a magazine layout.
  *
  * Background images (Vercel Blob CDN):
@@ -38,7 +38,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT â€” SCROLL AREA
+   STORY CONTENT — SCROLL AREA
    No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
@@ -53,7 +53,7 @@
 
 /* ============================================================
    JOURNAL SPREAD
-   Full width â€” no max-width constraint so cover fills 50vw.
+   Full width — no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
@@ -61,8 +61,9 @@
 }
 
 /*
- * Base journal book â€” used for all spreads after the first.
- * No box-shadow on the book wrapper â€” pages have their own depth.
+ * Base journal book — used for all spreads.
+ * height: 100vh ensures each spread fills exactly one viewport so
+ * the background image tiles correctly as the user scrolls.
  */
 .journal-book {
   display: grid;
@@ -73,10 +74,7 @@
 }
 
 /*
- * First spread (cover + page 1) gets an explicit height so the
- * cover image fills exactly one viewport without overflow.
- * 100vh since story-content padding is now 0
- * .story-content.
+ * First spread (cover + page 1) — same 100vh height as all spreads.
  */
 .journal-book--cover {
   height: 100vh;
@@ -87,11 +85,21 @@
    JOURNAL PAGES
    ============================================================ */
 
+/*
+ * overflow: hidden creates a Block Formatting Context (BFC) which:
+ *  - Contains floated inline panel images within the page boundary
+ *  - Allows text to wrap correctly around floated panels
+ *  - Does NOT create a scroll box (unlike overflow: auto) which would
+ *    interfere with float layout in fixed-height landscape grid cells
+ *
+ * Portrait body page overrides this with overflow: visible via
+ * .journal-page--portrait-body so long content scrolls naturally.
+ */
 .journal-page {
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
   background-color: transparent;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .journal-page--left {
@@ -189,7 +197,7 @@
    PROSE
    ============================================================ */
 
-/* clearfix â€” contains floated inline panels */
+/* clearfix — contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -267,7 +275,7 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES â€” 150% larger than original baseline
+   INLINE PANEL IMAGES — 150% larger than original baseline
    left/right float: 55% max-width, center: 75%
    ============================================================ */
 
@@ -276,21 +284,21 @@
   padding: 0;
 }
 
-/* Float left â€” text wraps on the right */
+/* Float left — text wraps on the right */
 .inline-panel--left {
   float: left;
   margin: 0.25rem 1.5rem 1.25rem 0;
   max-width: 55%;
 }
 
-/* Float right â€” text wraps on the left */
+/* Float right — text wraps on the left */
 .inline-panel--right {
   float: right;
   margin: 0.25rem 0 1.25rem 1.5rem;
   max-width: 55%;
 }
 
-/* Center â€” no float */
+/* Center — no float */
 .inline-panel--center {
   float: none;
   margin: 1.5rem auto;
@@ -466,7 +474,7 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically â€” one page per row */
+  /* Stack journal book vertically — one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
@@ -521,18 +529,16 @@
   }
 }
 
-
 /* ============================================================
    AUTO-PAGINATION — PORTRAIT BODY PAGE
-   Full story body in portrait renders in a single page.
-   overflow: visible so long content scrolls naturally.
+   Full story body in portrait renders in a single scrolling page.
+   overflow: visible so long content is never clipped.
    ============================================================ */
 
 .journal-page--portrait-body {
   overflow: visible;
   width: 100%;
 }
-
 
 /* ============================================================
    REDUCED MOTION
@@ -623,4 +629,3 @@
     bottom: 2px;
   }
 }
-
