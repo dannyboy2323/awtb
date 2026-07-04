@@ -2,29 +2,29 @@
  * StoryReader unit tests
  *
  * Covers:
- *   - The portrait / default single-spread layout (cover left, body right).
+ *   - normalizeBlocks: unique key generation, field preservation.
+ *   - Portrait / default single-spread layout.
  *   - Cover image orientation variants and placeholder fallback.
- *   - Inline panel alignment classes, captions, and the lightbox.
- *   - Landscape pagination: when orientation is landscape the component
- *     measures the body and renders paginated book spreads.
+ *   - Inline panel alignment classes, captions, lightbox open/close.
+ *   - Lightbox: full-resolution URL (fit=max q=100) assertion.
+ *   - Lightbox keyboard: Escape closes the overlay.
+ *   - Landscape pagination: paginated page class, content presence, cover position.
  *
- * jsdom has no layout engine (offsetHeight is 0), so in the landscape tests all
- * blocks measure to a single page. We assert the paginated structure appears
- * and all content is still present — the measurement math itself is exercised
- * in the browser, not here.
+ * jsdom has no layout engine (getBoundingClientRect returns zeros) so all
+ * blocks measure to a single page in landscape tests. We assert the paginated
+ * structure is present and all content is still rendered — the measurement
+ * arithmetic is exercised in the browser, not here.
  */
 
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import StoryReader from '@/components/public/StoryReader'
+import StoryReader, { normalizeBlocks } from '@/components/public/StoryReader'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Environment shims (jsdom)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// requestAnimationFrame / cancelAnimationFrame are used by the orientation and
-// pagination hooks. Provide deterministic microtask-ish implementations.
 if (typeof globalThis.requestAnimationFrame !== 'function') {
   globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
     setTimeout(() => cb(Date.now()), 0) as unknown as number) as typeof requestAnimationFrame
@@ -35,8 +35,8 @@ if (typeof globalThis.cancelAnimationFrame !== 'function') {
 }
 
 /**
- * Install a matchMedia mock that reports the given orientation.
- * @param landscape true → matches '(orientation: landscape)'.
+ * Install a matchMedia mock for the given orientation.
+ * @param landscape true → query '(orientation: landscape)' returns true.
  */
 function mockMatchMedia(landscape: boolean) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -129,15 +129,42 @@ const TEXT_BLOCK = {
 const SAMPLE_BODY = [PANEL_LEFT, TEXT_BLOCK, PANEL_RIGHT]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Portrait / default layout tests
-// (window.matchMedia is left undefined → orientation is "unknown" → single spread)
+// normalizeBlocks
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('normalizeBlocks', () => {
+  it('generates unique keys even when input has duplicate _key values', () => {
+    const input = [
+      { _type: 'block', _key: 'abc' },
+      { _type: 'block', _key: 'abc' }, // duplicate
+      { _type: 'block', _key: 'def' },
+    ]
+    const result = normalizeBlocks(input)
+    expect(result[0]._key).toBe('blk-0-abc')
+    expect(result[1]._key).toBe('blk-1-abc')
+    expect(result[2]._key).toBe('blk-2-def')
+    expect(new Set(result.map((b) => b._key)).size).toBe(3)
+  })
+
+  it('preserves all non-key fields on each block', () => {
+    const input = [{ _type: 'panelImage', _key: 'k1', alignment: 'left', caption: 'hi' }]
+    const result = normalizeBlocks(input)
+    expect(result[0]._type).toBe('panelImage')
+    expect(result[0].alignment).toBe('left')
+    expect(result[0].caption).toBe('hi')
+    expect(result[0]._key).toBe('blk-0-k1')
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Single spread (portrait / default)
+// matchMedia left undefined → orientation unknown → SingleSpread fallback
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('StoryReader — single spread (portrait / default)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Ensure orientation stays unknown so the component renders the fallback.
-    // @ts-expect-error deliberately removing for the default-layout suite
+    // @ts-expect-error deliberately removing matchMedia for the default-layout suite
     delete window.matchMedia
   })
 
@@ -230,6 +257,17 @@ describe('StoryReader — single spread (portrait / default)', () => {
     expect(document.querySelector('.lightbox-overlay')).toBeTruthy()
   })
 
+  it('lightbox image uses full-resolution URL (fit=max, q=100)', () => {
+    render(
+      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
+    const lb = document.querySelector('.lightbox-image') as HTMLImageElement | null
+    expect(lb).toBeTruthy()
+    expect(lb?.src).toContain('fit=max')
+    expect(lb?.src).toContain('q=100')
+  })
+
   it('closes lightbox when overlay is clicked', () => {
     render(
       <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
@@ -250,7 +288,24 @@ describe('StoryReader — single spread (portrait / default)', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Landscape pagination tests
+// Lightbox keyboard
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('StoryReader — lightbox keyboard', () => {
+  it('closes the lightbox when Escape is pressed', () => {
+    render(
+      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
+    const overlay = document.querySelector('.lightbox-overlay')
+    expect(overlay).toBeTruthy()
+    fireEvent.keyDown(overlay!, { key: 'Escape' })
+    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
+  })
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Landscape pagination
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('StoryReader — landscape pagination', () => {
@@ -260,7 +315,7 @@ describe('StoryReader — landscape pagination', () => {
   })
 
   afterEach(() => {
-    // @ts-expect-error cleanup so the default-layout suite stays orientation-unknown
+    // @ts-expect-error restore undefined so the default-layout suite is unaffected
     delete window.matchMedia
   })
 
@@ -312,25 +367,9 @@ describe('StoryReader — landscape pagination', () => {
 
   it('renders the single-spread fallback for an empty body in landscape', async () => {
     render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[]} />)
-    // Empty body never paginates — placeholder from the fallback spread remains.
     await waitFor(() => {
       expect(screen.getByText('No content yet.')).toBeTruthy()
     })
     expect(document.querySelector('.journal-page--paginated')).toBeFalsy()
-  })
-})
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Lightbox keyboard
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe('StoryReader — lightbox keyboard', () => {
-  it('closes the lightbox when Escape is pressed', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />)
-    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
-    const overlay = document.querySelector('.lightbox-overlay')
-    expect(overlay).toBeTruthy()
-    fireEvent.keyDown(overlay!, { key: 'Escape' })
-    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
   })
 })
