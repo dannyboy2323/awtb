@@ -1,18 +1,13 @@
 /**
- * Story Reader â€” Visual Styles
+ * Story Reader — Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw Ã— 100vh and repeats vertically. Inline
- *   graphic novel panels float within prose like a magazine layout.
- *
- *   In landscape the body is split into discrete book "spreads" (StoryReader.tsx
- *   measures + paginates). Each .journal-book is exactly 100vh so the repeating
- *   background art stays aligned spread to spread. Portrait remains a single
- *   flowing column.
+ *   journal background photo fills 100vw × 100vh (cover) and repeats vertically.
+ *   Inline graphic novel panels float within prose like a magazine layout.
  *
  * Background images (Vercel Blob CDN):
  *   Landscape: https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp
@@ -36,15 +31,15 @@
   min-height: 100vh;
   background-color: #1a1614;
   background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-16_9.webp');
-  background-size: 100vw 100vh;
-  background-position: top center;
+  /* cover scales to fill 100vw × 100vh regardless of aspect ratio */
+  background-size: cover;
+  background-position: center center;
   background-repeat: repeat-y;
   background-attachment: scroll;
 }
 
 /* ============================================================
-   STORY CONTENT â€” SCROLL AREA
-   No horizontal padding so spreads fill edge to edge.
+   STORY CONTENT — SCROLL AREA
    ============================================================ */
 
 .story-content {
@@ -52,39 +47,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
-  gap: 0;
+  padding: 4rem 2rem 6rem;
+  gap: 5rem;
 }
 
 /* ============================================================
    JOURNAL SPREAD
-   Full width â€” no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
   width: 100%;
+  max-width: 1400px;
 }
 
-/*
- * Base journal book â€” used for every spread. Fixed to 100vh so the repeating
- * journal background art tiles once per spread and stays aligned.
- */
 .journal-book {
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
-  height: 100vh;
-  min-height: 0;
+  min-height: 680px;
+  box-shadow:
+    0 4px 6px -2px rgba(0, 0, 0, 0.4),
+    0 20px 60px -10px rgba(0, 0, 0, 0.7),
+    0 40px 80px -20px rgba(0, 0, 0, 0.5),
+    8px 0 20px -8px rgba(0, 0, 0, 0.3) inset;
   border-radius: 2px 4px 4px 2px;
-}
-
-/*
- * First spread (cover + first body page) gets an explicit height so the cover
- * image fills exactly one viewport without overflow. 100vh since .story-content
- * padding is now 0.
- */
-.journal-book--cover {
-  height: 100vh;
-  min-height: 0;
 }
 
 /* ============================================================
@@ -95,30 +80,36 @@
   position: relative;
   padding: 2.5rem 2.5rem 3rem;
   background-color: transparent;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .journal-page--left {
   border-radius: 2px 0 0 2px;
+  box-shadow:
+    inset -12px 0 20px -8px rgba(0, 0, 0, 0.12),
+    inset 2px 0 4px rgba(0, 0, 0, 0.04);
 }
 
 .journal-page--right {
   border-radius: 0 4px 4px 0;
+  box-shadow:
+    inset 12px 0 20px -8px rgba(0, 0, 0, 0.1),
+    inset -2px 0 6px rgba(0, 0, 0, 0.06),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ============================================================
    COVER PAGE
-   padding: 0 !important overrides the base .journal-page padding.
-   position:relative + .cover-image-wrap position:absolute inset:0 allows the
-   Next.js Image fill prop to work within the grid cell.
-   .journal-book--cover provides the explicit height fill needs.
    ============================================================ */
 
 .journal-page--cover {
   position: relative;
-  padding: 0 !important;
+  padding: 0;
   overflow: hidden;
   border-radius: 2px 0 0 2px;
+  box-shadow:
+    inset -12px 0 20px -8px rgba(0, 0, 0, 0.18),
+    inset 2px 0 4px rgba(0, 0, 0, 0.06);
 }
 
 .cover-image-wrap {
@@ -127,8 +118,8 @@
 }
 
 .cover-image {
-  object-fit: fill;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center;
 }
 
 .cover-placeholder {
@@ -162,7 +153,13 @@
    ============================================================ */
 
 .journal-spine {
-  background: linear-gradient(to right, #2a1e10 0%, #0d0b09 40%, #1a1209 60%, #2a1e10 100%);
+  background: linear-gradient(
+    to right,
+    #2a1e10 0%,
+    #0d0b09 40%,
+    #1a1209 60%,
+    #2a1e10 100%
+  );
   box-shadow:
     -2px 0 6px rgba(0, 0, 0, 0.4),
     2px 0 6px rgba(0, 0, 0, 0.4);
@@ -182,18 +179,17 @@
   letter-spacing: 0.05em;
 }
 
-.page-number--left {
-  left: 2.5rem;
-}
-.page-number--right {
-  right: 2.5rem;
-}
+.page-number--left  { left: 2.5rem; }
+.page-number--right { right: 2.5rem; }
 
 /* ============================================================
    PROSE
    ============================================================ */
 
-/* clearfix â€” contains floated inline panels */
+.prose-body {
+  /* clearfix — contains floated inline panels */
+}
+
 .prose-body::after {
   content: '';
   display: table;
@@ -205,8 +201,9 @@
   font-size: 1.0625rem;
   line-height: 1.85;
   color: #1c1a17;
-  text-indent: 0;
+  text-indent: 1.5em;
   margin: 0 0 0.75rem;
+  text-shadow: 0 0 0.5px rgba(28, 26, 23, 0.15);
   hyphens: auto;
   text-align: justify;
 }
@@ -245,13 +242,8 @@
   clear: both;
 }
 
-.prose-strong {
-  font-weight: 700;
-  color: #1c1a17;
-}
-.prose-em {
-  font-style: italic;
-}
+.prose-strong { font-weight: 700; color: #1c1a17; }
+.prose-em     { font-style: italic; }
 
 .prose-placeholder {
   font-family: 'Lora', 'Georgia', serif;
@@ -271,8 +263,7 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES â€” 150% larger than original baseline
-   left/right float: 55% max-width, center: 75%
+   INLINE PANEL IMAGES
    ============================================================ */
 
 .inline-panel {
@@ -280,25 +271,25 @@
   padding: 0;
 }
 
-/* Float left â€” text wraps on the right */
+/* Float left — text wraps on the right */
 .inline-panel--left {
   float: left;
-  margin: 0.25rem 1.5rem 1.25rem 0;
-  max-width: 55%;
+  margin: 0.25rem 1.25rem 1rem 0;
+  max-width: 45%;
 }
 
-/* Float right â€” text wraps on the left */
+/* Float right — text wraps on the left */
 .inline-panel--right {
   float: right;
-  margin: 0.25rem 0 1.25rem 1.5rem;
-  max-width: 55%;
+  margin: 0.25rem 0 1rem 1.25rem;
+  max-width: 45%;
 }
 
-/* Center â€” no float */
+/* Center — no float */
 .inline-panel--center {
   float: none;
-  margin: 1.5rem auto;
-  max-width: 75%;
+  margin: 1.25rem auto;
+  max-width: 60%;
   display: block;
   clear: both;
 }
@@ -306,7 +297,7 @@
 /* Full width */
 .inline-panel--full {
   float: none;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   max-width: 100%;
   display: block;
   clear: both;
@@ -324,9 +315,7 @@
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.15);
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .inline-panel-btn:hover {
@@ -346,7 +335,7 @@
   width: 100%;
   height: auto;
   aspect-ratio: 1 / 1;
-  object-fit: fill;
+  object-fit: cover;
 }
 
 .inline-panel-zoom-hint {
@@ -397,12 +386,8 @@
 }
 
 @keyframes lightbox-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .lightbox-inner {
@@ -414,14 +399,8 @@
 }
 
 @keyframes lightbox-scale-in {
-  from {
-    transform: scale(0.92);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
 
 .lightbox-image {
@@ -448,9 +427,7 @@
   transition: color 0.15s ease;
 }
 
-.lightbox-close:hover {
-  color: #fff;
-}
+.lightbox-close:hover  { color: #fff; }
 
 .lightbox-close:focus-visible {
   outline: 2px solid #c8922a;
@@ -458,63 +435,10 @@
 }
 
 /* ============================================================
-   LANDSCAPE PAGINATION â€” book-style page fragments
-   Applied to every measured/paginated page in landscape.
-   ============================================================ */
-
-/*
- * Clip overflow so a measured page can NEVER spill its content over the cover
- * art or the following spread. Pagination is conservative (blocks are atomic
- * and always fit), so nothing visible is lost â€” this is purely a safety net.
- */
-.journal-page--paginated {
-  overflow: hidden;
-}
-
-/*
- * Cap inline panels so no single panel exceeds one page height in the paginated
- * landscape layout. Panels are square (aspect-ratio 1/1), so bounding width by
- * a vh value bounds height too. These caps are applied to the hidden measurer
- * as well, keeping measured heights identical to the live layout.
- */
-@media (orientation: landscape) {
-  .journal-page--paginated .inline-panel--left,
-  .journal-page--paginated .inline-panel--right {
-    max-width: min(55%, 60vh);
-  }
-  .journal-page--paginated .inline-panel--center {
-    max-width: min(72%, 66vh);
-  }
-  .journal-page--paginated .inline-panel--full {
-    max-width: min(90%, 72vh);
-  }
-}
-
-/* ============================================================
-   HIDDEN MEASURER
-   Off-screen clone used to measure real block heights before pagination.
-   Must inherit page width/padding, so it reuses .journal-page--right, but is
-   visually removed and non-interactive.
-   ============================================================ */
-
-.story-reader--measurer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  min-height: 0;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: -1;
-  background: none;
-}
-
-/* ============================================================
    PORTRAIT / MOBILE LAYOUT
    ============================================================ */
 
-@media (orientation: portrait) {
-  /* Switch to portrait journal background */
+@media (orientation: portrait), (max-width: 768px) {
   .story-reader {
     background-image: url('https://b2kxiuycmq2bqq4c.public.blob.vercel-storage.com/story/bg-story-9_16.webp');
     background-size: cover;
@@ -522,58 +446,37 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically â€” one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
     grid-template-columns: unset;
   }
 
-  /* Cover spread in portrait: auto height so right page flows below cover */
-  .journal-book--cover {
-    height: auto;
-    min-height: 0;
-  }
+  .journal-spine { display: none; }
 
-  /* Hide the spine in portrait */
-  .journal-spine {
-    display: none;
-  }
-
-  /* Each page takes full width */
   .journal-page {
     width: 100%;
     border-radius: 2px;
   }
 
-  /* Cover page fills full viewport height in portrait for 9:16 image */
-  .journal-page--cover {
-    height: 100dvh;
-    min-height: 0;
-    border-radius: 0;
+  .journal-page--left,
+  .journal-page--right {
+    box-shadow: inset 0 -4px 12px rgba(0, 0, 0, 0.06);
   }
 
-  /* Panels narrower on mobile to not overwhelm narrow columns */
+  .journal-page--cover {
+    min-height: 100vw;
+    border-radius: 2px;
+  }
+
   .inline-panel--left,
   .inline-panel--right {
     max-width: 50%;
   }
 
   .story-content {
-    gap: 0;
-    padding: 0 0 4rem;
-  }
-
-  /* Restore gap + side padding for prose spreads after the cover */
-  .journal-spread:not(:first-child) {
-    margin-top: 2rem;
-    padding: 0 1rem;
-  }
-
-  /* Page number flush to bottom in portrait */
-  .page-number {
-    position: fixed;
-    bottom: 5px;
+    gap: 2rem;
+    padding: 2rem 1rem 4rem;
   }
 }
 
@@ -600,75 +503,13 @@
     background-image: none;
   }
 
-  .journal-spread {
-    break-inside: avoid;
-  }
+  .journal-spread { break-inside: avoid; }
 
   .journal-page {
     background: white;
     background-image: none;
   }
 
-  .journal-spine {
-    background: #ccc;
-  }
-  .lightbox-overlay {
-    display: none;
-  }
-}
-
-/* ============================================================
-   COVER IMAGE â€” ORIENTATION SWITCHING
-   Landscape shows square cover, portrait shows portrait cover.
-   Both images are always rendered; CSS hides the inactive one.
-   ============================================================ */
-
-.cover-image--portrait {
-  display: none;
-}
-
-@media (orientation: portrait) {
-  .cover-image--landscape {
-    display: none;
-  }
-  .cover-image--portrait {
-    display: block;
-  }
-}
-
-/* ============================================================
-   PAGE PADDING â€” CLEAR THE JOURNAL ARTWORK
-   The landscape background image has design elements near both outer edges.
-   Add outer padding to the prose pages so text doesn't overlap those elements.
-   ============================================================ */
-
-.journal-page--right {
-  padding-right: 3rem;
-}
-
-/* Desktop landscape (1024px+): extra outer padding at large viewports. Mobile
-   landscape (~682px) is unaffected. Left and right pages get symmetric outer
-   padding so paginated content widths stay equal. */
-@media (min-width: 1024px) and (orientation: landscape) {
-  .journal-page--right {
-    padding-right: 9rem;
-  }
-  .journal-page--left {
-    padding-left: 9rem;
-  }
-
-  /* Shift page numbers inward to match the padded prose columns */
-  .page-number--right {
-    right: 8rem;
-  }
-  .page-number--left {
-    left: 8rem;
-  }
-}
-
-/* Mobile landscape: page number flush to bottom so it clears panel thumbnails. */
-@media (max-width: 1023px) and (orientation: landscape) {
-  .page-number {
-    bottom: 2px;
-  }
+  .journal-spine    { background: #ccc; }
+  .lightbox-overlay { display: none; }
 }

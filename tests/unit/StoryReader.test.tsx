@@ -1,336 +1,233 @@
 /**
- * StoryReader unit tests
+ * Story reader component unit tests.
  *
- * Covers:
- *   - The portrait / default single-spread layout (cover left, body right).
- *   - Cover image orientation variants and placeholder fallback.
- *   - Inline panel alignment classes, captions, and the lightbox.
- *   - Landscape pagination: when orientation is landscape the component
- *     measures the body and renders paginated book spreads.
+ * Tests cover:
+ *   - StoryReader: renders cover + all pages in spreads, lightbox opens/closes
+ *   - StoryPageContent: renders prose text and inline panel images
  *
- * jsdom has no layout engine (offsetHeight is 0), so in the landscape tests all
- * blocks measure to a single page. We assert the paginated structure appears
- * and all content is still present — the measurement math itself is exercised
- * in the browser, not here.
+ * Run with: npm test
  */
 
-import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import StoryReader from '@/components/public/StoryReader'
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import StoryReader, { LightboxContext } from "@/components/public/StoryReader";
+import StoryPageContent from "@/components/public/StoryPage";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Environment shims (jsdom)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// requestAnimationFrame / cancelAnimationFrame are used by the orientation and
-// pagination hooks. Provide deterministic microtask-ish implementations.
-if (typeof globalThis.requestAnimationFrame !== 'function') {
-  globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-    setTimeout(() => cb(Date.now()), 0) as unknown as number) as typeof requestAnimationFrame
-}
-if (typeof globalThis.cancelAnimationFrame !== 'function') {
-  globalThis.cancelAnimationFrame = ((id: number) =>
-    clearTimeout(id as unknown as ReturnType<typeof setTimeout>)) as typeof cancelAnimationFrame
-}
-
-/**
- * Install a matchMedia mock that reports the given orientation.
- * @param landscape true → matches '(orientation: landscape)'.
- */
-function mockMatchMedia(landscape: boolean) {
-  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: landscape && query.includes('landscape'),
-    media: query,
-    onchange: null,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })) as unknown as typeof window.matchMedia
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Mock next/image
-// ─────────────────────────────────────────────────────────────────────────────
-
-vi.mock('next/image', () => ({
-  default: ({
-    src,
-    alt,
-    className,
-    width,
-    height,
-  }: {
-    src: string
-    alt: string
-    className?: string
-    width?: number
-    height?: number
-  }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} width={width} height={height} />
-  ),
-}))
-
-// ─────────────────────────────────────────────────────────────────────────────
+// ----------------------------------------------------------------
 // Fixtures
-// ─────────────────────────────────────────────────────────────────────────────
+// ----------------------------------------------------------------
 
 const COVER_IMAGE = {
-  asset: { _id: 'cover-id', url: 'https://cdn.sanity.io/test/cover.webp' },
-  alt: 'Story cover art',
-}
+  asset: {
+    _id: "asset-cover",
+    url: "https://cdn.sanity.io/images/test/production/cover.webp",
+  },
+  alt: "Story cover art",
+};
 
-const PORTRAIT_COVER = {
-  asset: { _id: 'portrait-id', url: 'https://cdn.sanity.io/test/cover-portrait.webp' },
-  alt: 'Story cover art portrait',
-}
-
-const PANEL_LEFT = {
-  _type: 'panelImage',
-  _key: 'p1',
-  alignment: 'left' as const,
-  alt: 'Left panel',
+const makePanelImageBlock = (id: string, alignment: "left" | "right") => ({
+  _type: "panelImage",
+  _key: `panel-${id}`,
+  alignment,
+  alt: `Panel illustration ${id}`,
   caption: null,
   image: {
     asset: {
-      _id: 'img1',
-      url: 'https://cdn.sanity.io/test/img1.webp',
-      metadata: { dimensions: { width: 280, height: 280 } },
+      _id: `asset-${id}`,
+      url: `https://cdn.sanity.io/images/test/production/${id}.webp`,
+      metadata: { dimensions: { width: 800, height: 800 } },
     },
   },
-}
+});
 
-const PANEL_RIGHT = {
-  _type: 'panelImage',
-  _key: 'p2',
-  alignment: 'right' as const,
-  alt: 'Right panel',
-  caption: 'A caption',
-  image: {
-    asset: {
-      _id: 'img2',
-      url: 'https://cdn.sanity.io/test/img2.webp',
-      metadata: { dimensions: { width: 280, height: 280 } },
-    },
-  },
-}
-
-const TEXT_BLOCK = {
-  _type: 'block',
-  _key: 'b1',
-  style: 'normal',
-  children: [{ _type: 'span', _key: 's1', text: 'Story prose text.', marks: [] }],
+const makeProseBlock = (text: string, key: string) => ({
+  _type: "block",
+  _key: key,
+  style: "normal",
+  children: [{ _type: "span", _key: `span-${key}`, text, marks: [] }],
   markDefs: [],
-}
+});
 
-const SAMPLE_BODY = [PANEL_LEFT, TEXT_BLOCK, PANEL_RIGHT]
+const SAMPLE_PROSE = [
+  makePanelImageBlock("panel-1", "left"),
+  makeProseBlock("The city never sleeps.", "block-1"),
+  makePanelImageBlock("panel-2", "right"),
+  makeProseBlock("He ran, but there was nowhere to hide.", "block-2"),
+];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Portrait / default layout tests
-// (window.matchMedia is left undefined → orientation is "unknown" → single spread)
-// ─────────────────────────────────────────────────────────────────────────────
+const SAMPLE_PAGES = [
+  { _id: "page-1", _key: "key-1", prose: SAMPLE_PROSE },
+  { _id: "page-2", _key: "key-2", prose: [makeProseBlock("The end.", "block-3")] },
+  { _id: "page-3", _key: "key-3", prose: [makeProseBlock("Epilogue.", "block-4")] },
+];
 
-describe('StoryReader — single spread (portrait / default)', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    // Ensure orientation stays unknown so the component renders the fallback.
-    // @ts-expect-error deliberately removing for the default-layout suite
-    delete window.matchMedia
-  })
+// ----------------------------------------------------------------
+// StoryReader tests
+// ----------------------------------------------------------------
 
-  it('renders without crashing', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[]} />)
-    expect(document.querySelector('.story-reader')).toBeTruthy()
-  })
-
-  it('renders accessible main label', () => {
-    render(<StoryReader title="Adventures" coverImage={null} coverImagePortrait={null} body={[]} />)
-    expect(screen.getByRole('main', { name: 'Adventures — story reader' })).toBeTruthy()
-  })
-
-  it('renders exactly one journal-spread', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[]} />)
-    expect(document.querySelectorAll('.journal-spread').length).toBe(1)
-  })
-
-  it('renders landscape cover image', () => {
-    render(<StoryReader title="T" coverImage={COVER_IMAGE} coverImagePortrait={null} body={[]} />)
-    expect(screen.getAllByAltText('Story cover art')[0]).toBeTruthy()
-  })
-
-  it('renders portrait cover image', () => {
+describe("StoryReader", () => {
+  it("renders without crashing", () => {
     render(
       <StoryReader
-        title="T"
+        title="Adventures With The Bull"
         coverImage={COVER_IMAGE}
-        coverImagePortrait={PORTRAIT_COVER}
-        body={[]}
+        pages={SAMPLE_PAGES}
       />
-    )
-    expect(screen.getAllByAltText('Story cover art portrait')[0]).toBeTruthy()
-  })
+    );
+    expect(screen.getByRole("main")).toBeTruthy();
+  });
 
-  it('falls back to landscape cover when no portrait provided', () => {
-    render(<StoryReader title="T" coverImage={COVER_IMAGE} coverImagePortrait={null} body={[]} />)
-    expect(screen.getAllByAltText('Story cover art').length).toBeGreaterThanOrEqual(1)
-  })
-
-  it('renders cover placeholder when no cover image', () => {
-    render(<StoryReader title="No Cover" coverImage={null} coverImagePortrait={null} body={[]} />)
-    expect(document.querySelector('.cover-placeholder')).toBeTruthy()
-    expect(document.querySelector('.cover-title')?.textContent).toBe('No Cover')
-  })
-
-  it('renders body prose text', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={SAMPLE_BODY} />)
-    expect(screen.getByText('Story prose text.')).toBeTruthy()
-  })
-
-  it('renders placeholder when body is empty array', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[]} />)
-    expect(screen.getByText('No content yet.')).toBeTruthy()
-  })
-
-  it('renders placeholder when body is null', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={null} />)
-    expect(screen.getByText('No content yet.')).toBeTruthy()
-  })
-
-  it('renders left-aligned panel with inline-panel--left class', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
-    )
-    expect(document.querySelector('.inline-panel--left')).toBeTruthy()
-    expect(document.querySelector('.inline-panel--right')).toBeFalsy()
-  })
-
-  it('renders right-aligned panel with inline-panel--right class', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_RIGHT]} />
-    )
-    expect(document.querySelector('.inline-panel--right')).toBeTruthy()
-    expect(document.querySelector('.inline-panel--left')).toBeFalsy()
-  })
-
-  it('renders panel caption when present', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_RIGHT]} />
-    )
-    expect(screen.getByText('A caption')).toBeTruthy()
-  })
-
-  it('opens lightbox when panel button is clicked', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
-    expect(document.querySelector('.lightbox-overlay')).toBeTruthy()
-  })
-
-  it('closes lightbox when overlay is clicked', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
-    fireEvent.click(document.querySelector('.lightbox-overlay')!)
-    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
-  })
-
-  it('closes lightbox via close button', () => {
-    render(
-      <StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Close image' }))
-    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
-  })
-})
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Landscape pagination tests
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe('StoryReader — landscape pagination', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockMatchMedia(true)
-  })
-
-  afterEach(() => {
-    // @ts-expect-error cleanup so the default-layout suite stays orientation-unknown
-    delete window.matchMedia
-  })
-
-  it('applies paginated page class in landscape', async () => {
+  it("renders the cover image alt text", () => {
     render(
       <StoryReader
-        title="T"
+        title="Adventures With The Bull"
         coverImage={COVER_IMAGE}
-        coverImagePortrait={null}
-        body={SAMPLE_BODY}
+        pages={SAMPLE_PAGES}
       />
-    )
-    await waitFor(() => {
-      expect(document.querySelector('.journal-page--paginated')).toBeTruthy()
-    })
-  })
+    );
+    expect(screen.getByAltText("Story cover art")).toBeTruthy();
+  });
 
-  it('still renders all body content when paginated', async () => {
+  it("renders cover placeholder when no coverImage provided", () => {
     render(
       <StoryReader
-        title="T"
-        coverImage={COVER_IMAGE}
-        coverImagePortrait={null}
-        body={SAMPLE_BODY}
+        title="No Cover Story"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
       />
-    )
-    await waitFor(() => {
-      expect(screen.getByText('Story prose text.')).toBeTruthy()
-      expect(document.querySelector('.inline-panel--left')).toBeTruthy()
-      expect(document.querySelector('.inline-panel--right')).toBeTruthy()
-    })
-  })
+    );
+    expect(screen.getByText("No Cover Story")).toBeTruthy();
+  });
 
-  it('keeps the cover on the first spread in landscape', async () => {
+  it("renders correct number of spreads", () => {
     render(
       <StoryReader
-        title="T"
-        coverImage={COVER_IMAGE}
-        coverImagePortrait={null}
-        body={SAMPLE_BODY}
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
       />
-    )
-    await waitFor(() => {
-      const firstSpread = document.querySelector('.journal-spread')
-      expect(firstSpread?.querySelector('.journal-book--cover')).toBeTruthy()
-      expect(firstSpread?.querySelector('.cover-image--landscape')).toBeTruthy()
-    })
-  })
+    );
+    // 3 pages → spread 0: cover + page1, spread 1: page2 + page3
+    const spreads = document.querySelectorAll(".journal-spread");
+    expect(spreads.length).toBe(2);
+  });
 
-  it('renders the single-spread fallback for an empty body in landscape', async () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[]} />)
-    // Empty body never paginates — placeholder from the fallback spread remains.
-    await waitFor(() => {
-      expect(screen.getByText('No content yet.')).toBeTruthy()
-    })
-    expect(document.querySelector('.journal-page--paginated')).toBeFalsy()
-  })
-})
+  it("renders prose text from pages", () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
+      />
+    );
+    expect(screen.getByText("The city never sleeps.")).toBeTruthy();
+    expect(screen.getByText("The end.")).toBeTruthy();
+  });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Lightbox keyboard
-// ─────────────────────────────────────────────────────────────────────────────
+  it("renders inline panel images", () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
+      />
+    );
+    expect(screen.getByAltText("Panel illustration panel-1")).toBeTruthy();
+    expect(screen.getByAltText("Panel illustration panel-2")).toBeTruthy();
+  });
 
-describe('StoryReader — lightbox keyboard', () => {
-  it('closes the lightbox when Escape is pressed', () => {
-    render(<StoryReader title="T" coverImage={null} coverImagePortrait={null} body={[PANEL_LEFT]} />)
-    fireEvent.click(screen.getByRole('button', { name: 'View full size: Left panel' }))
-    const overlay = document.querySelector('.lightbox-overlay')
-    expect(overlay).toBeTruthy()
-    fireEvent.keyDown(overlay!, { key: 'Escape' })
-    expect(document.querySelector('.lightbox-overlay')).toBeFalsy()
-  })
-})
+  it("opens lightbox when panel image is clicked", () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
+      />
+    );
+    const panelBtn = screen.getByLabelText("View full size: Panel illustration panel-1");
+    fireEvent.click(panelBtn);
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
+  it("closes lightbox when overlay is clicked", () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("View full size: Panel illustration panel-1"));
+    expect(screen.getByRole("dialog")).toBeTruthy();
+    fireEvent.click(screen.getByRole("dialog"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("closes lightbox when close button is clicked", () => {
+    render(
+      <StoryReader
+        title="Test"
+        coverImage={null}
+        pages={SAMPLE_PAGES}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("View full size: Panel illustration panel-1"));
+    fireEvent.click(screen.getByLabelText("Close image"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+});
+
+// ----------------------------------------------------------------
+// StoryPageContent tests
+// ----------------------------------------------------------------
+
+describe("StoryPageContent", () => {
+  const mockOpenLightbox = vi.fn();
+
+  function renderWithLightbox(ui: React.ReactElement) {
+    return render(
+      <LightboxContext.Provider value={{ openLightbox: mockOpenLightbox }}>
+        {ui}
+      </LightboxContext.Provider>
+    );
+  }
+
+  it("renders prose text", () => {
+    renderWithLightbox(
+      <StoryPageContent prose={[makeProseBlock("Hello world.", "b1")]} />
+    );
+    expect(screen.getByText("Hello world.")).toBeTruthy();
+  });
+
+  it("renders placeholder when prose is null", () => {
+    renderWithLightbox(<StoryPageContent prose={null} />);
+    expect(screen.getByText("[ No content for this page ]")).toBeTruthy();
+  });
+
+  it("renders inline panel image", () => {
+    renderWithLightbox(
+      <StoryPageContent prose={[makePanelImageBlock("test-panel", "left")]} />
+    );
+    expect(screen.getByAltText("Panel illustration test-panel")).toBeTruthy();
+  });
+
+  it("applies correct alignment class to inline panel", () => {
+    renderWithLightbox(
+      <StoryPageContent prose={[makePanelImageBlock("left-panel", "left")]} />
+    );
+    expect(document.querySelector(".inline-panel--left")).toBeTruthy();
+  });
+
+  it("calls openLightbox when panel is clicked", () => {
+    renderWithLightbox(
+      <StoryPageContent prose={[makePanelImageBlock("click-panel", "right")]} />
+    );
+    fireEvent.click(
+      screen.getByLabelText("View full size: Panel illustration click-panel")
+    );
+    expect(mockOpenLightbox).toHaveBeenCalledTimes(1);
+    expect(mockOpenLightbox).toHaveBeenCalledWith(
+      expect.objectContaining({ alt: "Panel illustration click-panel" })
+    );
+  });
+});
