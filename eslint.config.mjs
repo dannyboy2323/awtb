@@ -5,8 +5,10 @@ import nextTs from 'eslint-config-next/typescript'
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Accessibility rules — jsx-a11y plugin is already registered by eslint-config-next.
-  // We just enable the recommended ruleset on top of what Next.js already includes.
+
+  // ─── Accessibility rules ────────────────────────────────────────────────────
+  // jsx-a11y plugin is already registered by eslint-config-next.
+  // We enable the recommended ruleset on top of what Next.js already includes.
   {
     rules: {
       'jsx-a11y/alt-text': 'error',
@@ -34,7 +36,29 @@ const eslintConfig = defineConfig([
       'jsx-a11y/tabindex-no-positive': 'warn',
     },
   },
-  globalIgnores(['.next/**', 'dist/**', 'out/**', 'build/**', 'next-env.d.ts', 'sanity.types.ts', 'sanity/**']),
+
+  // ─── StoryReader dialog override ────────────────────────────────────────────
+  // eslint-plugin-jsx-a11y incorrectly classifies role="dialog" as non-interactive
+  // (tracked: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/932).
+  // The WAI-ARIA spec requires dialogs to handle keyboard events (e.g. Escape to
+  // close), so the warning on the Lightbox inner div is a false positive. We
+  // silence it for this file only, leaving the rule active everywhere else.
+  {
+    files: ['components/public/StoryReader.tsx'],
+    rules: {
+      'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    },
+  },
+
+  globalIgnores([
+    '.next/**',
+    'dist/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    'sanity.types.ts',
+    'sanity/**',
+  ]),
 ])
 
 export default eslintConfig
