@@ -373,3 +373,135 @@ describe('StoryReader — landscape pagination', () => {
     expect(document.querySelector('.journal-page--paginated')).toBeFalsy()
   })
 })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Landscape pagination — geometry-driven splitting (regression)
+//
+// jsdom has no layout engine, so by default every getBoundingClientRect()
+// returns zeros and all blocks land on a single page. To actually exercise the
+// page-splitting math — and lock in the fix for the bug where the whole story
+// crammed onto page 1 and clipped — we stub window.innerHeight and give each
+// measured block a deterministic height via getBoundingClientRect.
+//
+// Regression guard: if the paginator ever again reads the auto-grown measurer
+// height instead of window.innerHeight, `available` becomes enormous and every
+// block collapses onto one page; the multi-page assertions below then fail.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('StoryReader — landscape pagination geometry', () => {
+  const PAGE_HEIGHT = 800 // simulated viewport / page box height (px)
+  const BLOCK_HEIGHT = 100 // simulated height per top-level block (px)
+
+  let originalRect: typeof HTMLElement.prototype.getBoundingClientRect
+  let originalInnerHeight: number
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockMatchMedia(true)
+
+    originalInnerHeight = window.innerHeight
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      writable: true,
+      value: PAGE_HEIGHT,
+    })
+
+    // Stub geometry: each element with a data-key stacks BLOCK_HEIGHT tall in
+    // document order; the prose-body starts at y=0; pages/other elements report
+    // zero-size boxes (their height is not used by the paginator).
+    originalRect = HTMLElement.prototype.getBoundingClientRect
+    let cursor = 0
+    const seen = new Map<Element, { top: number; bottom: number }>()
+    HTMLElement.prototype.getBoundingClientRect = function (): DOMRect {
+      const el = this as HTMLElement
+      if (el.getAttribute && el.getAttribute('data-key')) {
+        if (!seen.has(el)) {
+          const top = cursor
+          cursor += BLOCK_HEIGHT
+          seen.set(el, { top, bottom: top + BLOCK_HEIGHT })
+        }
+        const { top, bottom } = seen.get(el)!
+        return {
+          top,
+          bottom,
+          left: 0,
+          right: 0,
+          width: 0,
+          height: BLOCK_HEIGHT,
+          x: 0,
+          y: top,
+          toJSON: () => ({}),
+        } as DOMRect
+      }
+      // prose-body and page report a zero-origin box.
+      return {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      } as DOMRect
+    }
+  })
+
+  afterEach(() => {
+    HTMLElement.prototype.getBoundingClientRect = originalRect
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      writable: true,
+      value: originalInnerHeight,
+    })
+    // @ts-expect-error restore undefined so other suites are unaffected
+    delete window.matchMedia
+  })
+
+  it('splits a long body across multiple pages (does not cram onto one)', async () => {
+    // 30 text blocks at 100px each = 3000px of content across ~800px pages,
+    // so the story MUST occupy several pages, not a single overflowing one.
+    const longBody = Array.from({ length: 30 }, (_, i) => ({
+      _type: 'block',
+      _key: `p${i}`,
+      style: 'normal',
+      children: [{ _type: 'span', _key: `s${i}`, text: `Paragraph ${i}.`, marks: [] }],
+      markDefs: [],
+    }))
+
+    render(
+      <StoryReader title="T" coverImage={COVER_IMAGE} coverImagePortrait={null} body={longBody} />
+    )
+
+    await waitFor(() => {
+      const pages = document.querySelectorAll('.journal-page--paginated')
+      // With ~7 blocks per 800px page (minus padding + safety buffer), 30 blocks
+      // spread across clearly more than two pages.
+      expect(pages.length).toBeGreaterThan(3)
+    })
+  })
+
+  it('renders every paragraph of a long body somewhere in the paginated output', async () => {
+    const longBody = Array.from({ length: 24 }, (_, i) => ({
+      _type: 'block',
+      _key: `q${i}`,
+      style: 'normal',
+      children: [{ _type: 'span', _key: `t${i}`, text: `Unique line ${i} marker.`, marks: [] }],
+      markDefs: [],
+    }))
+
+    render(
+      <StoryReader title="T" coverImage={COVER_IMAGE} coverImagePortrait={null} body={longBody} />
+    )
+
+    await waitFor(() => {
+      expect(document.querySelectorAll('.journal-page--paginated').length).toBeGreaterThan(3)
+    })
+
+    // No content loss: first, middle, and last paragraphs are all present.
+    expect(screen.getByText('Unique line 0 marker.')).toBeTruthy()
+    expect(screen.getByText('Unique line 12 marker.')).toBeTruthy()
+    expect(screen.getByText('Unique line 23 marker.')).toBeTruthy()
+  })
+})
