@@ -12,7 +12,7 @@
  *   below in one naturally-scrolling column. No pagination, no JS layout work.
  *   CSS (`@media (orientation: portrait)`) stacks the grid vertically.
  *
- * LANDSCAPE (book pagination — re-introduced here)
+ * LANDSCAPE (book pagination)
  *   The body is split into page-height fragments and laid out as discrete
  *   two-page book spreads that each fill exactly 100vh so the repeating
  *   journal background art stays aligned:
@@ -21,9 +21,9 @@
  *     Spread 2: [ body page 2 ][spine][ body page 3 ]
  *     Spread 3: [ body page 4 ][spine][ body page 5 ]  ... etc.
  *
- *   Pages are measured, never estimated (see `useLandscapePagination`), and
- *   each rendered page is `overflow: hidden` so — even if a measurement drifts
- *   by a pixel — content can NEVER spill over the cover art or the next spread.
+ *   Pages are measured, never estimated (see useLandscapePagination), and
+ *   each rendered page is overflow:hidden so content can NEVER spill over
+ *   the cover art or the next spread.
  *
  * PROGRESSIVE ENHANCEMENT
  * ───────────────────────────────────────────────────────────────────────────
@@ -33,14 +33,14 @@
  *
  * INLINE PANELS
  * ───────────────────────────────────────────────────────────────────────────
- * Panel images always use their Sanity `alignment` field (left/right/center/
+ * Panel images always use their Sanity alignment field (left/right/center/
  * full). There is no orientation-based override, so float/text-wrap behaves
- * identically in portrait and landscape — the alignment regression is gone.
+ * identically in portrait and landscape.
  *
  * SCHEMA
  * ───────────────────────────────────────────────────────────────────────────
- * Expects a single flat `body` Portable Text array from Sanity (replaces the
- * legacy `pages[]`). Every top-level block carries a Sanity `_key`, which the
+ * Expects a single flat body Portable Text array from Sanity (replaces the
+ * legacy pages[]). Every top-level block carries a Sanity _key, which the
  * paginator uses to assign blocks to pages without positional index drift.
  */
 
@@ -112,10 +112,23 @@ export function useLightbox() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lightbox overlay
+//
+// Accessibility structure (satisfies jsx-a11y with zero suppressions):
+//
+//   outer div  role="presentation"
+//     Visual backdrop only. Clicking it dismisses the lightbox.
+//     role="presentation" signals to jsx-a11y that this element is purely
+//     decorative/structural, so onClick requires no keyboard equivalent.
+//
+//   inner div  role="dialog"  aria-modal  aria-label  onKeyDown
+//     The interactive dialog panel. role="dialog" is an interactive ARIA role,
+//     so onKeyDown is expected and valid. aria-modal and aria-label belong here.
+//     Escape key closes via both this handler and the window listener below.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: () => void }) {
-  // Close on Escape — accessible alternative to overlay click and close button.
+  // Window-level Escape listener catches keyboard events regardless of which
+  // element currently has focus while the lightbox is open.
   useEffect(() => {
     if (!image) return
     const onKey = (event: KeyboardEvent) => {
@@ -128,15 +141,15 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
   if (!image) return null
 
   return (
-    <div
-      className="lightbox-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label={image.alt}
-      onClick={onClose}
-      onKeyDown={(e) => e.key === 'Escape' && onClose()}
-    >
-      <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
+    <div className="lightbox-overlay" role="presentation" onClick={onClose}>
+      <div
+        className="lightbox-inner"
+        role="dialog"
+        aria-modal="true"
+        aria-label={image.alt}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      >
         <button className="lightbox-close" onClick={onClose} aria-label="Close image">
           ✕
         </button>
@@ -240,9 +253,8 @@ interface PanelImageBlock {
 // PanelImageRenderer
 //
 // Must be a capitalized component so React hook rules are satisfied — useContext
-// is called inside. ALWAYS uses block.alignment with no orientation override,
-// matching how portrait has always worked correctly. The figure carries a
-// data-key so the landscape paginator can map it to a page.
+// is called inside. ALWAYS uses block.alignment with no orientation override.
+// The figure carries a data-key so the landscape paginator can map it to a page.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
@@ -350,7 +362,7 @@ type Spread =
  *   - Remaining pages are paired into subsequent left/right spreads.
  *   - An odd final page leaves a blank right-hand page.
  *
- * @param pages Ordered array of pages, each an ordered array of block `_key`s.
+ * @param pages Ordered array of pages, each an ordered array of block _key values.
  * @returns Ordered array of spreads with running page numbers.
  */
 function buildSpreads(pages: string[][]): Spread[] {
@@ -384,7 +396,7 @@ function buildSpreads(pages: string[][]): Spread[] {
 //   false portrait
 //
 // State updates are deferred to requestAnimationFrame to satisfy the project's
-// `react-hooks/set-state-in-effect` rule and avoid a synchronous render cascade.
+// react-hooks/set-state-in-effect rule and avoid a synchronous render cascade.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useIsLandscape(): boolean | null {
@@ -415,18 +427,17 @@ function useIsLandscape(): boolean | null {
 // ─────────────────────────────────────────────────────────────────────────────
 // useLandscapePagination
 //
-// Measurement-driven pagination for the landscape "book" layout.
+// Measurement-driven pagination for the landscape book layout.
 //
 // 1. A hidden measurer renders the entire body at the exact width and padding
-//    of a real right-hand page (same CSS classes + the paginated panel caps),
+//    of a real right-hand page (same CSS classes + paginated panel caps),
 //    with its height allowed to grow.
 // 2. After web fonts settle and the browser paints, each top-level block is
 //    measured by its data-key and greedily packed into pages whose content
-//    height never exceeds the available page height (viewport height minus the
-//    page's vertical padding).
+//    height never exceeds available page height (viewport height minus padding).
 // 3. The resulting per-page key lists drive the discrete book spreads.
 //
-// Waiting on `document.fonts.ready` before measuring prevents the classic
+// Waiting on document.fonts.ready before measuring prevents the classic
 // "pagination stops partway" bug caused by measuring pre-webfont line heights.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -510,7 +521,6 @@ function useLandscapePagination(
     }
 
     const onResize = () => {
-      // Re-show the measurer with a clean slate, then re-measure at new size.
       setPages(null)
       runAfterFonts()
     }
@@ -528,7 +538,7 @@ function useLandscapePagination(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SingleSpread
-// The non-paginated fallback used for portrait (final) and for landscape before
+// The non-paginated fallback used for portrait and for landscape before
 // pagination has been computed. Cover on the left, all body on the right.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -586,7 +596,7 @@ export default function StoryReader({
   const blocks = useMemo<BodyBlock[]>(() => body ?? [], [body])
   const components = useMemo(() => makeComponents(), [])
 
-  // key → block, used to rebuild pages from measured key-groups.
+  // key to block map — used to rebuild pages from measured key-groups.
   const keyIndex = useMemo(() => {
     const map = new Map<string, BodyBlock>()
     for (const block of blocks) {
