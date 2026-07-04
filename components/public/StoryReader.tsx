@@ -128,13 +128,13 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
   if (!image) return null
 
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="lightbox-overlay"
       role="dialog"
       aria-modal="true"
       aria-label={image.alt}
       onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
     >
       <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
         <button className="lightbox-close" onClick={onClose} aria-label="Close image">
