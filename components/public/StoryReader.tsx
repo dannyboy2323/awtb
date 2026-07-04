@@ -516,13 +516,19 @@ function useLandscapePagination(
       const proseBody = root.querySelector('.prose-body') as HTMLElement | null
       if (!page || !proseBody) return
 
-      // Measure the REAL page box height (the grid cell is 100vh) rather than
-      // relying on window.innerHeight, which drifts with mobile browser chrome.
+      // Page box height MUST be one real, fixed page — the live paginated page is
+      // a grid cell fixed at 100vh, so window.innerHeight is the correct value.
+      //
+      // We deliberately do NOT read the measurer page's own height here: the
+      // measurer renders with height:auto + overflow:visible so it grows to fit
+      // ALL blocks. Reading its getBoundingClientRect().height would return the
+      // full multi-thousand-pixel content height, making `available` enormous and
+      // cramming the entire story onto page 1 (which then clips). Padding is read
+      // from the page's computed style (padding is height-independent).
       const cs = window.getComputedStyle(page)
       const padTop = parseFloat(cs.paddingTop) || 0
       const padBottom = parseFloat(cs.paddingBottom) || 0
-      const pageBoxHeight = page.getBoundingClientRect().height || window.innerHeight
-      const available = pageBoxHeight - padTop - padBottom - PAGE_SAFETY_BUFFER_PX
+      const available = window.innerHeight - padTop - padBottom - PAGE_SAFETY_BUFFER_PX
 
       const proseTop = proseBody.getBoundingClientRect().top
       const children = Array.from(proseBody.children) as HTMLElement[]
