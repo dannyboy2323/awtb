@@ -1,12 +1,12 @@
 /**
- * Story Reader â€” Visual Styles
+ * Story Reader Ã¢â‚¬â€ Visual Styles
  *
  * Import this in app/globals.css:
  *   @import "./story-reader.css";
  *
  * Design direction:
  *   Mike Mignola-inspired graphic novel presentation. Deep charcoal surround,
- *   journal background photo fills 100vw Ã— 100vh and repeats vertically. Inline
+ *   journal background photo fills 100vw Ãƒâ€” 100vh and repeats vertically. Inline
  *   graphic novel panels float within prose like a magazine layout.
  *
  *   In landscape the body is split into discrete book "spreads" (StoryReader.tsx
@@ -43,7 +43,7 @@
 }
 
 /* ============================================================
-   STORY CONTENT â€” SCROLL AREA
+   STORY CONTENT Ã¢â‚¬â€ SCROLL AREA
    No horizontal padding so spreads fill edge to edge.
    ============================================================ */
 
@@ -58,7 +58,7 @@
 
 /* ============================================================
    JOURNAL SPREAD
-   Full width â€” no max-width constraint so cover fills 50vw.
+   Full width Ã¢â‚¬â€ no max-width constraint so cover fills 50vw.
    ============================================================ */
 
 .journal-spread {
@@ -66,7 +66,7 @@
 }
 
 /*
- * Base journal book â€” used for every spread. Fixed to 100vh so the repeating
+ * Base journal book Ã¢â‚¬â€ used for every spread. Fixed to 100vh so the repeating
  * journal background art tiles once per spread and stays aligned.
  */
 .journal-book {
@@ -193,7 +193,7 @@
    PROSE
    ============================================================ */
 
-/* clearfix â€” contains floated inline panels */
+/* clearfix Ã¢â‚¬â€ contains floated inline panels */
 .prose-body::after {
   content: '';
   display: table;
@@ -271,7 +271,7 @@
 }
 
 /* ============================================================
-   INLINE PANEL IMAGES â€” 150% larger than original baseline
+   INLINE PANEL IMAGES Ã¢â‚¬â€ 150% larger than original baseline
    left/right float: 55% max-width, center: 75%
    ============================================================ */
 
@@ -280,21 +280,21 @@
   padding: 0;
 }
 
-/* Float left â€” text wraps on the right */
+/* Float left Ã¢â‚¬â€ text wraps on the right */
 .inline-panel--left {
   float: left;
   margin: 0.25rem 1.5rem 1.25rem 0;
   max-width: 55%;
 }
 
-/* Float right â€” text wraps on the left */
+/* Float right Ã¢â‚¬â€ text wraps on the left */
 .inline-panel--right {
   float: right;
   margin: 0.25rem 0 1.25rem 1.5rem;
   max-width: 55%;
 }
 
-/* Center â€” no float */
+/* Center Ã¢â‚¬â€ no float */
 .inline-panel--center {
   float: none;
   margin: 1.5rem auto;
@@ -407,7 +407,14 @@
 
 .lightbox-inner {
   position: relative;
-  max-width: min(90vw, 90vh);
+  /*
+   * TWEAK 2: allow the enlarged image to use the full viewport (up to 90vw x
+   * 90vh) instead of the previous min(90vw, 90vh) which capped width to 90vh on
+   * landscape screens. Combined with the native width/height passed to the
+   * <Image> and object-fit:contain below, the lightbox now shows the true
+   * full-resolution asset, only scaled down if it exceeds the viewport.
+   */
+  max-width: 90vw;
   max-height: 90vh;
   cursor: default;
   animation: lightbox-scale-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -426,8 +433,16 @@
 
 .lightbox-image {
   display: block;
-  width: 100%;
+  /*
+   * TWEAK 2: render at natural size, bounded only by the viewport. width:auto +
+   * max-width:100% (of the 90vw container) + max-height:90vh means the image is
+   * shown at its true pixels unless larger than the viewport, in which case it
+   * scales down proportionally via object-fit:contain. It is never forced below
+   * the source resolution by the layout.
+   */
+  width: auto;
   height: auto;
+  max-width: 100%;
   max-height: 90vh;
   object-fit: contain;
   border: 3px solid rgba(200, 185, 154, 0.3);
@@ -458,14 +473,14 @@
 }
 
 /* ============================================================
-   LANDSCAPE PAGINATION â€” book-style page fragments
+   LANDSCAPE PAGINATION Ã¢â‚¬â€ book-style page fragments
    Applied to every measured/paginated page in landscape.
    ============================================================ */
 
 /*
  * Clip overflow so a measured page can NEVER spill its content over the cover
  * art or the following spread. Pagination is conservative (blocks are atomic
- * and always fit), so nothing visible is lost â€” this is purely a safety net.
+ * and always fit), so nothing visible is lost Ã¢â‚¬â€ this is purely a safety net.
  */
 .journal-page--paginated {
   overflow: hidden;
@@ -478,15 +493,22 @@
  * as well, keeping measured heights identical to the live layout.
  */
 @media (orientation: landscape) {
+  /*
+   * TWEAK 1: landscape inline panels are halved vs the previous caps.
+   * Panels are square (aspect-ratio 1/1), so halving the width cap halves the
+   * rendered height too. These same caps apply to the hidden measurer, so the
+   * paginator measures the reduced sizes and packs pages accordingly.
+   * Portrait is unaffected â€” its panel sizes live in the portrait media query.
+   */
   .journal-page--paginated .inline-panel--left,
   .journal-page--paginated .inline-panel--right {
-    max-width: min(55%, 60vh);
+    max-width: min(27.5%, 30vh);
   }
   .journal-page--paginated .inline-panel--center {
-    max-width: min(72%, 66vh);
+    max-width: min(36%, 33vh);
   }
   .journal-page--paginated .inline-panel--full {
-    max-width: min(90%, 72vh);
+    max-width: min(45%, 36vh);
   }
 }
 
@@ -522,7 +544,7 @@
     background-repeat: repeat-y;
   }
 
-  /* Stack journal book vertically â€” one page per row */
+  /* Stack journal book vertically Ã¢â‚¬â€ one page per row */
   .journal-book {
     display: flex;
     flex-direction: column;
@@ -618,7 +640,7 @@
 }
 
 /* ============================================================
-   COVER IMAGE â€” ORIENTATION SWITCHING
+   COVER IMAGE Ã¢â‚¬â€ ORIENTATION SWITCHING
    Landscape shows square cover, portrait shows portrait cover.
    Both images are always rendered; CSS hides the inactive one.
    ============================================================ */
@@ -637,7 +659,7 @@
 }
 
 /* ============================================================
-   PAGE PADDING â€” CLEAR THE JOURNAL ARTWORK
+   PAGE PADDING Ã¢â‚¬â€ CLEAR THE JOURNAL ARTWORK
    The landscape background image has design elements near both outer edges.
    Add outer padding to the prose pages so text doesn't overlap those elements.
    ============================================================ */

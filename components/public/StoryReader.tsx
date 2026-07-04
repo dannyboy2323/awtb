@@ -10,7 +10,7 @@
  * PORTRAIT (unchanged, known-good)
  *   A single journal spread: cover fills 100dvh, then the entire body flows
  *   below in one naturally-scrolling column. No pagination, no JS layout work.
- *   CSS (`@media (orientation: portrait)`) stacks the grid vertically.
+ *   CSS (@media (orientation: portrait)) stacks the grid vertically.
  *
  * LANDSCAPE (book pagination)
  *   The body is split into page-height fragments and laid out as discrete
@@ -18,8 +18,7 @@
  *   journal background art stays aligned:
  *
  *     Spread 1: [ cover ][spine][ body page 1 ]
- *     Spread 2: [ body page 2 ][spine][ body page 3 ]
- *     Spread 3: [ body page 4 ][spine][ body page 5 ]  ... etc.
+ *     Spread 2: [ body page 2 ][spine][ body page 3 ]  ... etc.
  *
  *   Pages are measured, never estimated (see useLandscapePagination), and
  *   each rendered page is overflow:hidden so content can NEVER spill over
@@ -35,7 +34,12 @@
  * ───────────────────────────────────────────────────────────────────────────
  * Panel images always use their Sanity alignment field (left/right/center/
  * full). There is no orientation-based override, so float/text-wrap behaves
- * identically in portrait and landscape.
+ * identically in portrait and landscape. Landscape thumbnail SIZE is capped by
+ * the .journal-page--paginated CSS rules; portrait is untouched.
+ *
+ * Inline thumbnails load an optimised WebP (q=90). The lightbox loads the
+ * FULL-RESOLUTION original (fit=max, q=100) at the asset's native pixel
+ * dimensions so the enlarged view is never downscaled below the source.
  *
  * SCHEMA
  * ───────────────────────────────────────────────────────────────────────────
@@ -57,6 +61,19 @@ import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Vertical safety margin (px) subtracted from the available page height when
+ * packing blocks into a landscape page. Absorbs sub-pixel rounding, the panel
+ * bottom-margin, and line-box rounding so the last block on a page can never be
+ * clipped by the page's overflow:hidden. ~28px is roughly one prose line —
+ * invisible to the reader but enough to prevent the clipping seen on pages 6+.
+ */
+const PAGE_SAFETY_BUFFER_PX = 28
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -73,6 +90,26 @@ export interface CoverImageAsset {
 /** A single Portable Text block from the Sanity body field. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BodyBlock = Record<string, any>
+
+/**
+ * normalizeBlocks
+ *
+ * Guarantees every block has a globally unique _key for a given body snapshot.
+ * Sanity's pages[] -> flat body migration can leave duplicate or missing _key
+ * values; because the key -> block Map (keyIndex) is keyed by _key, duplicates
+ * would silently overwrite earlier blocks and drop their content from the
+ * rendered pages. Re-keying as blk-{index}-{original} makes every key unique
+ * and stable, preventing that content loss.
+ *
+ * @param blocks Raw Portable Text blocks from Sanity.
+ * @returns A new array with each _key replaced by blk-{i}-{original}.
+ */
+export function normalizeBlocks(blocks: BodyBlock[]): BodyBlock[] {
+  return blocks.map((block, index) => {
+    const original = typeof block?._key === 'string' ? block._key : 'nokey'
+    return { ...block, _key: `blk-${index}-${original}` }
+  })
+}
 
 /** Props accepted by the StoryReader component. */
 export interface StoryReaderProps {
@@ -113,17 +150,13 @@ export function useLightbox() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Lightbox overlay
 //
-// Accessibility structure (satisfies jsx-a11y with zero suppressions):
+// Accessibility structure:
+//   outer div  role="presentation"  — visual backdrop, click-to-dismiss.
+//   inner div  role="dialog" aria-modal aria-label onKeyDown — the dialog panel.
 //
-//   outer div  role="presentation"
-//     Visual backdrop only. Clicking it dismisses the lightbox.
-//     role="presentation" signals to jsx-a11y that this element is purely
-//     decorative/structural, so onClick requires no keyboard equivalent.
-//
-//   inner div  role="dialog"  aria-modal  aria-label  onKeyDown
-//     The interactive dialog panel. role="dialog" is an interactive ARIA role,
-//     so onKeyDown is expected and valid. aria-modal and aria-label belong here.
-//     Escape key closes via both this handler and the window listener below.
+// The <Image> is rendered at the asset's native width/height (passed in via the
+// LightboxImage payload) with no CSS width cap other than the viewport bound in
+// .lightbox-image, so the enlarged view shows the true full-resolution image.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: () => void }) {
@@ -159,6 +192,8 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
           width={image.width}
           height={image.height}
           className="lightbox-image"
+          quality={100}
+          unoptimized
           priority
         />
       </div>
@@ -255,19 +290,28 @@ interface PanelImageBlock {
 // Must be a capitalized component so React hook rules are satisfied — useContext
 // is called inside. ALWAYS uses block.alignment with no orientation override.
 // The figure carries a data-key so the landscape paginator can map it to a page.
+//
+// Two URLs are derived from the asset:
+//   thumbUrl — optimised WebP (q=90) for fast inline display.
+//   fullUrl  — full-resolution original (fit=max, q=100) for the lightbox, at
+//              the asset's native pixel dimensions (never downscaled).
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
   const { openLightbox } = useContext(LightboxContext)
 
   const asset = block.image?.asset
-  const imageUrl = asset?.url ? `${asset.url}?auto=format&fm=webp&q=90` : null
+  /** Inline thumbnail — optimised WebP. */
+  const thumbUrl = asset?.url ? `${asset.url}?auto=format&fm=webp&q=90` : null
+  /** Lightbox source — full native resolution, uncropped, max quality. */
+  const fullUrl = asset?.url ? `${asset.url}?fit=max&q=100` : null
 
-  if (!imageUrl) return null
+  if (!thumbUrl || !fullUrl) return null
 
   const dims = asset?.metadata?.dimensions
-  const width = dims?.width ?? 280
-  const height = dims?.height ?? 280
+  // Native dimensions drive the lightbox <Image> so it renders at true size.
+  const width = dims?.width ?? 1024
+  const height = dims?.height ?? 1024
   const altText = block.alt ?? 'Panel illustration'
 
   // Always block.alignment — no landscapeMode override ever.
@@ -279,10 +323,10 @@ function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
         className="inline-panel-btn"
         aria-label={`View full size: ${altText}`}
         title="Click to enlarge"
-        onClick={() => openLightbox({ url: imageUrl, alt: altText, width, height })}
+        onClick={() => openLightbox({ url: fullUrl, alt: altText, width, height })}
       >
         <Image
-          src={imageUrl}
+          src={thumbUrl}
           alt={altText}
           width={280}
           height={280}
@@ -432,10 +476,15 @@ function useIsLandscape(): boolean | null {
 // 1. A hidden measurer renders the entire body at the exact width and padding
 //    of a real right-hand page (same CSS classes + paginated panel caps),
 //    with its height allowed to grow.
-// 2. After web fonts settle and the browser paints, each top-level block is
-//    measured by its data-key and greedily packed into pages whose content
-//    height never exceeds available page height (viewport height minus padding).
-// 3. The resulting per-page key lists drive the discrete book spreads.
+// 2. After web fonts settle and the browser paints, each top-level block's TRUE
+//    bottom edge is measured with getBoundingClientRect() relative to the
+//    prose-body top. Using the rect bottom (not offsetTop + offsetHeight)
+//    correctly accounts for floated panels and their bottom margins, which is
+//    what previously caused text and panels to be clipped on later pages.
+// 3. Blocks are greedily packed so each page's content bottom never exceeds
+//    (measured page content height − PAGE_SAFETY_BUFFER_PX). A block taller
+//    than a full page becomes its own page (the CSS panel caps keep panels
+//    within one page, so this only guards pathological cases).
 //
 // Waiting on document.fonts.ready before measuring prevents the classic
 // "pagination stops partway" bug caused by measuring pre-webfont line heights.
@@ -467,19 +516,27 @@ function useLandscapePagination(
       const proseBody = root.querySelector('.prose-body') as HTMLElement | null
       if (!page || !proseBody) return
 
+      // Measure the REAL page box height (the grid cell is 100vh) rather than
+      // relying on window.innerHeight, which drifts with mobile browser chrome.
       const cs = window.getComputedStyle(page)
       const padTop = parseFloat(cs.paddingTop) || 0
       const padBottom = parseFloat(cs.paddingBottom) || 0
-      const available = window.innerHeight - padTop - padBottom
+      const pageBoxHeight = page.getBoundingClientRect().height || window.innerHeight
+      const available = pageBoxHeight - padTop - padBottom - PAGE_SAFETY_BUFFER_PX
 
+      const proseTop = proseBody.getBoundingClientRect().top
       const children = Array.from(proseBody.children) as HTMLElement[]
+
+      // Measure each block's true top and bottom edges relative to the prose
+      // body origin. getBoundingClientRect().bottom captures floated panels and
+      // their margins, unlike offsetTop + offsetHeight.
       const measured = children
-        .map((el) => ({
-          key: el.getAttribute('data-key'),
-          top: el.offsetTop,
-          height: el.offsetHeight,
-        }))
-        .filter((m): m is { key: string; top: number; height: number } => Boolean(m.key))
+        .map((el) => {
+          const rect = el.getBoundingClientRect()
+          const key = el.getAttribute('data-key')
+          return key ? { key, top: rect.top - proseTop, bottom: rect.bottom - proseTop } : null
+        })
+        .filter((m): m is { key: string; top: number; bottom: number } => Boolean(m))
 
       if (measured.length === 0 || available <= 0) {
         setPages([measured.map((m) => m.key)])
@@ -488,13 +545,15 @@ function useLandscapePagination(
 
       // Greedy pack: a block joins the current page while the distance from the
       // page's first-block top to this block's bottom fits the available height.
+      // A block that alone exceeds the available height is placed on its own
+      // page so it is never merged into an overflowing page.
       const result: string[][] = []
       let current: string[] = []
       let startTop = measured[0].top
 
       for (const m of measured) {
-        const bottom = m.top + m.height
-        if (current.length > 0 && bottom - startTop > available) {
+        const wouldOverflow = current.length > 0 && m.bottom - startTop > available
+        if (wouldOverflow) {
           result.push(current)
           current = [m.key]
           startTop = m.top
@@ -593,7 +652,8 @@ export default function StoryReader({
   const openLightbox = useCallback((img: LightboxImage) => setLightboxImage(img), [])
   const closeLightbox = useCallback(() => setLightboxImage(null), [])
 
-  const blocks = useMemo<BodyBlock[]>(() => body ?? [], [body])
+  // Normalize keys first so duplicate Sanity _key values can't drop content.
+  const blocks = useMemo<BodyBlock[]>(() => normalizeBlocks(body ?? []), [body])
   const components = useMemo(() => makeComponents(), [])
 
   // key to block map — used to rebuild pages from measured key-groups.
