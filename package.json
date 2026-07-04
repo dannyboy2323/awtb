@@ -35,6 +35,10 @@
     "type-check": "next typegen && tsc --noEmit",
     "typegen": "cd sanity && sanity schema extract --enforce-required-fields --path ../sanity.schema.json && sanity typegen generate"
   },
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "undici": "^6.27.0"
+  },
   "dependencies": {
     "@clerk/nextjs": "^7.5.6",
     "@flags-sdk/posthog": "^0.2.2",
