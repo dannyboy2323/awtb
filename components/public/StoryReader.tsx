@@ -486,8 +486,9 @@ function useIsLandscape(): boolean | null {
 //   4. A single block taller than a whole page is placed alone on its own page
 //      (it cannot be split further; CSS panel caps keep panels within a page).
 //
-// Waiting on document.fonts.ready before measuring prevents pagination from
-// running against pre-webfont line heights.
+// Measurement waits for BOTH web fonts (line heights) and all measurer panel
+// images (panel heights) to settle first, so measured heights exactly match the
+// final laid-out heights — preventing drift/clipping on later pages.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useLandscapePagination(
@@ -530,6 +531,22 @@ function useLandscapePagination(
         return
       }
 
+      // Available content height inside one page = fixed page height minus the
+      // page's own vertical padding. We compare the probe body's real content
+      // height (scrollHeight) against THIS value. scrollHeight is always the full
+      // laid-out content height regardless of whether the body is itself a scroll
+      // container, so this is unambiguous (the previous scrollHeight-vs-clientHeight
+      // check depended on .prose-body being a scroll container, which it is not —
+      // that mismeasurement is what let later pages overfill and clip).
+      const pageCS = window.getComputedStyle(sourcePage)
+      const padTop = parseFloat(pageCS.paddingTop) || 0
+      const padBottom = parseFloat(pageCS.paddingBottom) || 0
+      const availableContentHeight = pageHeight - padTop - padBottom
+      if (availableContentHeight <= 0) {
+        setPages([sourceNodes.map((n) => n.getAttribute('data-key') as string)])
+        return
+      }
+
       // Build a probe that mirrors the live page geometry exactly. It lives
       // inside the (hidden) measurer root so it inherits the same CSS context.
       const probePage = document.createElement('div')
@@ -539,7 +556,8 @@ function useLandscapePagination(
       probePage.style.position = 'absolute'
       probePage.style.left = '-99999px'
       probePage.style.top = '0'
-      // Match the measurer/source page width so wrapping is identical.
+      // Match the measurer/source page width so wrapping (and float behaviour) is
+      // identical to the live page.
       probePage.style.width = `${sourcePage.getBoundingClientRect().width}px`
 
       const probeBody = document.createElement('div')
@@ -547,7 +565,9 @@ function useLandscapePagination(
       probePage.appendChild(probeBody)
       root.appendChild(probePage)
 
-      const overflows = () => probeBody.scrollHeight > probeBody.clientHeight + 1
+      // A page overflows when its real content height exceeds the available
+      // content box. +1 absorbs sub-pixel rounding.
+      const overflows = () => probeBody.scrollHeight > availableContentHeight + 1
 
       const result: string[][] = []
       let current: string[] = []
@@ -600,20 +620,66 @@ function useLandscapePagination(
       raf = requestAnimationFrame(measure)
     }
 
-    const runAfterFonts = () => {
-      if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(schedule).catch(schedule)
-      } else {
-        schedule()
-      }
+    // Wait for every panel image inside the measurer to finish loading before
+    // measuring. Panel <img> elements use loading="lazy"; although CSS
+    // aspect-ratio reserves their box, we force each into a loaded state and
+    // await it so measured heights exactly match the final laid-out heights.
+    // Without this, lazy images further down the (tall) measurer can report a
+    // pre-load height, making the probe pack too many blocks onto later pages —
+    // the accumulating drift that clipped pages 8+.
+    const IMAGE_WAIT_TIMEOUT_MS = 3000
+
+    const waitForImages = (): Promise<void> => {
+      const root = measurerRef.current
+      if (!root) return Promise.resolve()
+      const imgs = Array.from(root.querySelectorAll('img')) as HTMLImageElement[]
+      if (imgs.length === 0) return Promise.resolve()
+      return Promise.all(
+        imgs.map((img) => {
+          // Opt the image out of lazy loading for measurement.
+          try {
+            img.loading = 'eager'
+          } catch {
+            /* loading is read-only in some engines; ignore */
+          }
+          if (img.complete && img.naturalHeight > 0) return Promise.resolve()
+          // Resolve on load/error, but ALWAYS resolve within a timeout so a slow
+          // or non-loading image (e.g. jsdom in tests, or a broken URL) can never
+          // block pagination indefinitely. CSS aspect-ratio keeps the box height
+          // stable even if the pixels never arrive.
+          return new Promise<void>((resolve) => {
+            let settled = false
+            const done = () => {
+              if (settled) return
+              settled = true
+              resolve()
+            }
+            img.addEventListener('load', done, { once: true })
+            img.addEventListener('error', done, { once: true })
+            setTimeout(done, IMAGE_WAIT_TIMEOUT_MS)
+          })
+        })
+      ).then(() => undefined)
+    }
+
+    const runAfterAssets = () => {
+      const fontsReady =
+        typeof document !== 'undefined' && document.fonts && document.fonts.ready
+          ? document.fonts.ready
+          : Promise.resolve()
+      // Fonts first (line heights), then images (panel heights), then measure.
+      Promise.resolve(fontsReady)
+        .then(() => waitForImages())
+        .then(schedule)
+        .catch(schedule)
     }
 
     const onResize = () => {
       setPages(null)
-      runAfterFonts()
+      runAfterAssets()
     }
 
-    runAfterFonts()
+    runAfterAssets()
     window.addEventListener('resize', onResize)
     return () => {
       cancelAnimationFrame(raf)

@@ -34,6 +34,19 @@ if (typeof globalThis.cancelAnimationFrame !== 'function') {
     clearTimeout(id as unknown as ReturnType<typeof setTimeout>)) as typeof cancelAnimationFrame
 }
 
+// jsdom never loads images, so make every <img> report as already-loaded. This
+// lets the pagination hook's waitForImages() resolve immediately instead of
+// waiting on its production timeout. CSS aspect-ratio keeps panel box heights
+// stable in the browser regardless, so this only affects test timing.
+Object.defineProperty(HTMLImageElement.prototype, 'complete', {
+  configurable: true,
+  get: () => true,
+})
+Object.defineProperty(HTMLImageElement.prototype, 'naturalHeight', {
+  configurable: true,
+  get: () => 280,
+})
+
 /**
  * Install a matchMedia mock for the given orientation.
  * @param landscape true → query '(orientation: landscape)' returns true.
