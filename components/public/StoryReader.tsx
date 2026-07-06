@@ -61,19 +61,6 @@ import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Vertical safety margin (px) subtracted from the available page height when
- * packing blocks into a landscape page. Absorbs sub-pixel rounding, the panel
- * bottom-margin, and line-box rounding so the last block on a page can never be
- * clipped by the page's overflow:hidden. ~28px is roughly one prose line —
- * invisible to the reader but enough to prevent the clipping seen on pages 6+.
- */
-const PAGE_SAFETY_BUFFER_PX = 28
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -469,25 +456,38 @@ function useIsLandscape(): boolean | null {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// useLandscapePagination
+// useLandscapePagination  (Option B — real-page-box probe)
 //
-// Measurement-driven pagination for the landscape book layout.
+// Splits the body into landscape "book" pages by MEASURING against a real,
+// fixed-height page box rather than slicing a single continuous flow.
 //
-// 1. A hidden measurer renders the entire body at the exact width and padding
-//    of a real right-hand page (same CSS classes + paginated panel caps),
-//    with its height allowed to grow.
-// 2. After web fonts settle and the browser paints, each top-level block's TRUE
-//    bottom edge is measured with getBoundingClientRect() relative to the
-//    prose-body top. Using the rect bottom (not offsetTop + offsetHeight)
-//    correctly accounts for floated panels and their bottom margins, which is
-//    what previously caused text and panels to be clipped on later pages.
-// 3. Blocks are greedily packed so each page's content bottom never exceeds
-//    (measured page content height − PAGE_SAFETY_BUFFER_PX). A block taller
-//    than a full page becomes its own page (the CSS panel caps keep panels
-//    within one page, so this only guards pathological cases).
+// Why the probe approach:
+//   This story alternates paragraph -> floated panel -> paragraph -> floated
+//   panel throughout. With float layout, text wraps beside each panel. If a page
+//   boundary is computed from one long continuous flow and then the run is
+//   sliced, the floats re-lay-out differently on each real (shorter) page, so
+//   the real page ends up taller than predicted and its last block is clipped.
+//   The drift accumulates, which is why clipping began around page 5 and worsened.
 //
-// Waiting on document.fonts.ready before measuring prevents the classic
-// "pagination stops partway" bug caused by measuring pre-webfont line heights.
+// How it works:
+//   1. A hidden measurer renders the ENTIRE body once at the exact width/padding
+//      of a real right-hand page so every block (and its image) is laid out and
+//      loaded. These rendered nodes are the source we clone from.
+//   2. A second hidden "probe" element is created with the EXACT live page
+//      geometry: same classes (.journal-page--right.journal-page--paginated),
+//      a fixed height of one page, and overflow hidden — so floats wrap exactly
+//      as they will in production.
+//   3. Blocks are appended (as cloned DOM nodes) into the probe one at a time.
+//      After each append we check whether the probe's content overflows
+//      (scrollHeight > clientHeight of the inner prose body). The first block
+//      that overflows starts the NEXT page; the probe is reset and filling
+//      continues. Because the probe is a true page box, this reproduces live
+//      float wrapping exactly — no drift, no clipping.
+//   4. A single block taller than a whole page is placed alone on its own page
+//      (it cannot be split further; CSS panel caps keep panels within a page).
+//
+// Waiting on document.fonts.ready before measuring prevents pagination from
+// running against pre-webfont line heights.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function useLandscapePagination(
@@ -512,62 +512,85 @@ function useLandscapePagination(
     const measure = () => {
       const root = measurerRef.current
       if (!root) return
-      const page = root.querySelector('.journal-page--right') as HTMLElement | null
-      const proseBody = root.querySelector('.prose-body') as HTMLElement | null
-      if (!page || !proseBody) return
+      const sourcePage = root.querySelector('.journal-page--right') as HTMLElement | null
+      const sourceBody = root.querySelector('.prose-body') as HTMLElement | null
+      if (!sourcePage || !sourceBody) return
 
-      // Page box height MUST be one real, fixed page — the live paginated page is
-      // a grid cell fixed at 100vh, so window.innerHeight is the correct value.
-      //
-      // We deliberately do NOT read the measurer page's own height here: the
-      // measurer renders with height:auto + overflow:visible so it grows to fit
-      // ALL blocks. Reading its getBoundingClientRect().height would return the
-      // full multi-thousand-pixel content height, making `available` enormous and
-      // cramming the entire story onto page 1 (which then clips). Padding is read
-      // from the page's computed style (padding is height-independent).
-      const cs = window.getComputedStyle(page)
-      const padTop = parseFloat(cs.paddingTop) || 0
-      const padBottom = parseFloat(cs.paddingBottom) || 0
-      const available = window.innerHeight - padTop - padBottom - PAGE_SAFETY_BUFFER_PX
+      // Real, fixed page height: the live paginated page is a 100vh grid cell.
+      const pageHeight = window.innerHeight
+      if (pageHeight <= 0) return
 
-      const proseTop = proseBody.getBoundingClientRect().top
-      const children = Array.from(proseBody.children) as HTMLElement[]
-
-      // Measure each block's true top and bottom edges relative to the prose
-      // body origin. getBoundingClientRect().bottom captures floated panels and
-      // their margins, unlike offsetTop + offsetHeight.
-      const measured = children
-        .map((el) => {
-          const rect = el.getBoundingClientRect()
-          const key = el.getAttribute('data-key')
-          return key ? { key, top: rect.top - proseTop, bottom: rect.bottom - proseTop } : null
-        })
-        .filter((m): m is { key: string; top: number; bottom: number } => Boolean(m))
-
-      if (measured.length === 0 || available <= 0) {
-        setPages([measured.map((m) => m.key)])
+      // The rendered top-level block nodes we will clone into the probe. Only
+      // nodes carrying a data-key are real content blocks (1:1 with `blocks`).
+      const sourceNodes = (Array.from(sourceBody.children) as HTMLElement[]).filter((el) =>
+        el.getAttribute('data-key')
+      )
+      if (sourceNodes.length === 0) {
+        setPages([])
         return
       }
 
-      // Greedy pack: a block joins the current page while the distance from the
-      // page's first-block top to this block's bottom fits the available height.
-      // A block that alone exceeds the available height is placed on its own
-      // page so it is never merged into an overflowing page.
+      // Build a probe that mirrors the live page geometry exactly. It lives
+      // inside the (hidden) measurer root so it inherits the same CSS context.
+      const probePage = document.createElement('div')
+      probePage.className = 'journal-page journal-page--right journal-page--paginated'
+      probePage.style.height = `${pageHeight}px`
+      probePage.style.overflow = 'hidden'
+      probePage.style.position = 'absolute'
+      probePage.style.left = '-99999px'
+      probePage.style.top = '0'
+      // Match the measurer/source page width so wrapping is identical.
+      probePage.style.width = `${sourcePage.getBoundingClientRect().width}px`
+
+      const probeBody = document.createElement('div')
+      probeBody.className = 'prose-body'
+      probePage.appendChild(probeBody)
+      root.appendChild(probePage)
+
+      const overflows = () => probeBody.scrollHeight > probeBody.clientHeight + 1
+
       const result: string[][] = []
       let current: string[] = []
-      let startTop = measured[0].top
 
-      for (const m of measured) {
-        const wouldOverflow = current.length > 0 && m.bottom - startTop > available
-        if (wouldOverflow) {
-          result.push(current)
-          current = [m.key]
-          startTop = m.top
-        } else {
-          current.push(m.key)
-        }
+      const resetProbe = () => {
+        probeBody.innerHTML = ''
       }
-      if (current.length > 0) result.push(current)
+
+      try {
+        for (const node of sourceNodes) {
+          const key = node.getAttribute('data-key') as string
+          const clone = node.cloneNode(true) as HTMLElement
+          probeBody.appendChild(clone)
+
+          if (overflows()) {
+            if (current.length === 0) {
+              // Single block taller than a page: it must occupy its own page.
+              result.push([key])
+              resetProbe()
+              current = []
+            } else {
+              // This block belongs to the next page. Remove it from the probe,
+              // close the current page, then start a fresh probe seeded with it.
+              probeBody.removeChild(clone)
+              result.push(current)
+              current = [key]
+              resetProbe()
+              probeBody.appendChild(node.cloneNode(true))
+              // Edge case: the seed block alone overflows a fresh page -> own page.
+              if (overflows()) {
+                result.push(current)
+                current = []
+                resetProbe()
+              }
+            }
+          } else {
+            current.push(key)
+          }
+        }
+        if (current.length > 0) result.push(current)
+      } finally {
+        root.removeChild(probePage)
+      }
 
       setPages(result)
     }
