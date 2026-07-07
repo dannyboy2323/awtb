@@ -2,21 +2,16 @@ import { defineQuery } from 'next-sanity'
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
-const postFields = /* groq */ `
-  _id,
-  "status": select(_originalId in path("drafts.**") => "draft", "published"),
-  "title": coalesce(title, "Untitled"),
-  "slug": slug.current,
-  excerpt,
-  coverImage,
-  "date": coalesce(date, _updatedAt),
-  "author": author->{firstName, lastName, picture},
-`
-
+/**
+ * Link reference projection.
+ *
+ * Dereferences a `link` object's page reference to a slug string. The Sanity
+ * starter also supported linking to `post` documents; that document type has
+ * been removed, so only page links are dereferenced now.
+ */
 const linkReference = /* groq */ `
   _type == "link" => {
-    "page": page->slug.current,
-    "post": post->slug.current
+    "page": page->slug.current
   }
 `
 
@@ -57,42 +52,16 @@ export const getPageQuery = defineQuery(`
   }
 `)
 
+/**
+ * Sitemap source — all published `page` documents. The starter query also
+ * unioned `post`; that document type has been removed.
+ */
 export const sitemapData = defineQuery(`
-  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {
+  *[_type == "page" && defined(slug.current)] | order(_type asc) {
     "slug": slug.current,
     _type,
     _updatedAt,
   }
-`)
-
-export const allPostsQuery = defineQuery(`
-  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {
-    ${postFields}
-  }
-`)
-
-export const morePostsQuery = defineQuery(`
-  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {
-    ${postFields}
-  }
-`)
-
-export const postQuery = defineQuery(`
-  *[_type == "post" && slug.current == $slug] [0] {
-    content[]{
-    ...,
-    markDefs[]{
-      ...,
-      ${linkReference}
-    }
-  },
-    ${postFields}
-  }
-`)
-
-export const postPagesSlugs = defineQuery(`
-  *[_type == "post" && defined(slug.current)]
-  {"slug": slug.current}
 `)
 
 export const pagesSlugs = defineQuery(`
@@ -173,22 +142,11 @@ export const allStorySlugsQuery = defineQuery(`
 /**
  * Story reader query — fetches a full story with all pages and panels.
  *
- * Fetches a complete story by slug, including all ordered pages,
- * each page's 6 panels (with image asset URLs), and rich-text prose.
- *
- * Panels are fetched with asset metadata so we can use urlForImage()
- * to build optimized WebP URLs at render time.
+ * Fetches a complete story by slug, including its cover images and the full
+ * `body` Portable Text array. Panel images embedded in the body are fetched
+ * with asset URL + dimension metadata so urlForImage() can build optimized
+ * WebP URLs at render time.
  */
-/**
- * ADD THIS TO sanity/lib/queries.ts
- * Replace the existing storyBySlugQuery and StoryBySlugQueryResult.
- *
- * Changes from previous version:
- *   - Removed panels[] dereference (panels now live inline in prose)
- *   - Added coverImage with asset URL + metadata
- *   - Simplified pages fetch (just prose, which contains inline panelImage blocks)
- */
-
 export const storyBySlugQuery = defineQuery(`
   *[_type == "story" && slug.current == $slug][0] {
     _id,
