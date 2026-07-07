@@ -1,6 +1,5 @@
 import { person } from './documents/person'
 import { page } from './documents/page'
-import { post } from './documents/post'
 import { callToAction } from './objects/callToAction'
 import { infoSection } from './objects/infoSection'
 import { settings } from './singletons/settings'
@@ -21,7 +20,6 @@ export const schemaTypes = [
   siteSettingsType,
   // Documents
   page,
-  post,
   person,
   storyType,
   // Objects — panelImage must come before storyPage since storyPage references it
