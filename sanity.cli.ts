@@ -1,6 +1,8 @@
 /**
- * Sanity CLI Configuration
- * Configures schema extraction and TypeGen for the combined Next.js + Sanity project.
+ * Sanity CLI Configuration — Adventures with the Bull
+ *
+ * Configures schema extraction and TypeGen for the combined app + Studio
+ * project. Run from the project root.
  * Learn more: https://www.sanity.io/docs/cli
  */
 
