@@ -119,13 +119,17 @@ Run `npx checkly deploy` after adding or updating checks.
 The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push to `main` or
 `staging`, and on every PR targeting either branch:
 
-1. TypeScript check (`npm run type-check`)
-2. ESLint (`npm run lint`)
-3. Unit tests (`npm test`)
-4. Security audit (`npm audit --audit-level=critical`)
-5. Notify Vercel of check status (always runs, even on failure)
+1. Verify Sanity types are up to date (`npm run typegen`, fails if `sanity.schema.json` or `sanity.types.ts` differ from committed versions)
+2. TypeScript check (`npm run type-check`)
+3. ESLint (`npm run lint`)
+4. Unit tests (`npm test`)
+5. Security audit (`npm audit --audit-level=critical`)
+6. Notify Vercel of check status (always runs, even on failure)
 
 Dependencies are installed with `npm install` after pinning npm to version 11.
+
+The Sanity types check guards against pushing stale generated types after a schema or GROQ
+change. If it fails, run `npm run typegen` locally and commit the result before pushing.
 
 E2E tests are not run in CI by default (they require a running server and take longer).
 Run them locally before merging significant UI changes.

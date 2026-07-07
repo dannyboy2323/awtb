@@ -33,7 +33,7 @@ npm run dev
 | ----------------------- | ----------------------------------------- |
 | `npm run dev`           | Start dev server (runs typegen first)     |
 | `npm run typegen`       | Regenerate Sanity TypeScript types        |
-| `npm run type-check`    | TypeScript check                          |
+| `npm run type-check`    | Run typegen, then TypeScript check        |
 | `npm run lint`          | ESLint                                    |
 | `npm run format`        | Prettier (also sorts package.json)        |
 | `npm test`              | Unit tests                                |

@@ -147,15 +147,19 @@ Dashboard: [app.checklyhq.com](https://app.checklyhq.com)
 The CI workflow (`.github/workflows/ci.yml`) runs on pushes to `main` and `staging`, and
 on pull requests targeting either branch. It runs the following steps in order:
 
-1. TypeScript check
-2. Lint
-3. Security audit
-4. Notifies Vercel of the check status via `vercel/repository-dispatch`
+1. Verify Sanity types are up to date (`npm run typegen`, then fail if `sanity.schema.json` or `sanity.types.ts` differ from what is committed)
+2. TypeScript check
+3. Lint
+4. Security audit
+5. Notifies Vercel of the check status via `vercel/repository-dispatch`
 
 The workflow pins npm to version 11 and uses `npm install` rather than `npm ci`.
 
 The workflow requires `NEXT_PUBLIC_SANITY_PROJECT_ID`, `SANITY_WEBHOOK_SECRET`, and
 `GITHUB_TOKEN` to be set as repository secrets.
+
+If `sanity.schema.json` or `sanity.types.ts` are out of date (e.g. after a schema or GROQ
+change), the CI build will fail. Run `npm run typegen` locally and commit the result to fix this.
 
 ---
 

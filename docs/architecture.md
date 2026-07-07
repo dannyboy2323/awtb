@@ -1,5 +1,3 @@
-The diff changes are limited to the CI workflow configuration: CI now runs on the `staging` branch in addition to `main`, npm is pinned to version 11, `npm ci` is replaced with `npm install`, and a Vercel status notification step is added. None of these changes affect the architecture documentation content (stack, data flow, cache invalidation, database, email, AI, or key directories). The doc is already accurate.
-
 # Architecture
 
 ## Stack
@@ -62,6 +60,15 @@ Anthropic Claude is used for automated documentation maintenance via
 `scripts/ai-docs-check.mjs`, which runs on every push to `main` through the
 `ai-docs.yml` GitHub Actions workflow. Claude reviews the git diff and opens
 a PR if any documentation needs updating.
+
+## Sanity Type Generation
+
+`sanity.schema.json` and `sanity.types.ts` are generated files produced by
+`npm run typegen` (extracts the schema and runs `sanity typegen generate`).
+These files must be committed and kept in sync with the schema. The CI
+pipeline regenerates them and fails the build if the committed files are
+out of date. Run `npm run typegen` locally after any schema or GROQ query
+change and commit the result.
 
 ## Key Directories
 

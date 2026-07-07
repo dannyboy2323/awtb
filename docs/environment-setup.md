@@ -143,3 +143,5 @@ The GitHub Actions CI workflow runs on pushes and pull requests targeting the `m
 All other CI steps use hardcoded non-sensitive values (`production` dataset, etc.).
 
 The workflow pins npm to version 11 and notifies Vercel of the check status on completion.
+
+The CI workflow also verifies that the committed Sanity generated files (`sanity.schema.json` and `sanity.types.ts`) are up to date. If a schema or GROQ change is pushed without regenerating these files, the `Verify Sanity types are up to date` step will fail. Run `npm run typegen` locally and commit the result to fix this.
