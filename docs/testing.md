@@ -1,3 +1,5 @@
+The diff removes the `post` document type, `Avatar` component, `Date` component, and related queries/utilities, but none of these are referenced in the testing documentation. The testing guide covers Vitest, Playwright, and Checkly — none of the changed files appear in the test coverage tables or examples. The doc is already accurate.
+
 # Testing Guide
 
 ## Overview

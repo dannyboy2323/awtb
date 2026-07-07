@@ -1,3 +1,7 @@
+The diff shows no changes that affect the deployment guide's content. The changes are all about removing the `post` document type from the codebase (schemas, queries, sitemap, components, config) and removing the `Avatar` and `Date` components. None of these changes touch deployment infrastructure, environment variables, CI pipeline, monitoring, rollback procedures, webhooks, or any other topic covered in this doc.
+
+The doc is already accurate. Returning it unchanged.
+
 # Deployment Guide
 
 ## Overview
