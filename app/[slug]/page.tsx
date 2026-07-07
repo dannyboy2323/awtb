@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
 import Head from 'next/head'
+import { notFound } from 'next/navigation'
 
 import PageBuilderPage from '@/app/components/PageBuilder'
 import { sanityFetch } from '@/sanity/lib/live'
 import { getPageQuery, pagesSlugs } from '@/sanity/lib/queries'
 import { GetPageQueryResult } from '@/sanity.types'
-import { PageOnboarding } from '@/app/components/Onboarding'
+
+/**
+ * Dynamic CMS page route (e.g. /about).
+ *
+ * Renders a Sanity `page` document via the PageBuilder. Unknown slugs return a
+ * 404. (The Sanity starter previously rendered a `PageOnboarding` prompt here;
+ * that starter scaffolding has been removed.)
+ */
 
 /**
  * Generate the static params for the page.
@@ -14,7 +22,7 @@ import { PageOnboarding } from '@/app/components/Onboarding'
 export async function generateStaticParams() {
   const { data } = await sanityFetch({
     query: pagesSlugs,
-    // // Use the published perspective in generateStaticParams
+    // Use the published perspective in generateStaticParams
     perspective: 'published',
     stega: false,
   })
@@ -45,11 +53,7 @@ export default async function Page(props: PageProps<'/[slug]'>) {
   const [{ data: page }] = await Promise.all([sanityFetch({ query: getPageQuery, params })])
 
   if (!page?._id) {
-    return (
-      <div className="py-40">
-        <PageOnboarding />
-      </div>
-    )
+    return notFound()
   }
 
   return (
