@@ -1,3 +1,5 @@
+The diff removes the `Onboarding.tsx` and `Posts.tsx` components and deletes the `app/posts/[slug]/page.tsx` route, and updates `app/[slug]/page.tsx` to return `notFound()` instead of rendering `PageOnboarding`. None of this affects the deployment guide — the doc covers Vercel, environment variables, database migrations, rollbacks, monitoring, CI, and webhook configuration. None of those topics are touched by the diff.
+
 # Deployment Guide
 
 ## Overview

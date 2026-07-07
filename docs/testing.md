@@ -1,3 +1,7 @@
+The diff removes `app/components/Onboarding.tsx`, `app/components/Posts.tsx`, and `app/posts/[slug]/page.tsx`, and updates `app/[slug]/page.tsx` to return `notFound()` instead of rendering `PageOnboarding`. None of these changes affect the testing documentation — no test files were added, removed, or modified, and no CI, pre-push, or Checkly configuration changed.
+
+The current doc is accurate. Returning it unchanged.
+
 # Testing Guide
 
 ## Overview
