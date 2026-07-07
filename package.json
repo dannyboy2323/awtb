@@ -32,7 +32,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
-    "type-check": "next typegen && tsc --noEmit",
+    "type-check": "npm run typegen && next typegen && tsc --noEmit",
     "typegen": "cd sanity && sanity schema extract --enforce-required-fields --path ../sanity.schema.json && sanity typegen generate"
   },
   "overrides": {
