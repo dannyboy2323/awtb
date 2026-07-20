@@ -78,10 +78,10 @@ browser suite.
 
 ### What's tested
 
-| File                        | What it tests                                                 |
-| --------------------------- | ------------------------------------------------------------- |
-| `tests/e2e/landing.spec.ts` | Home/About nav, postcard, story nav, sharing, favorites, EPUB |
-| `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                      |
+| File                        | What it tests                                                        |
+| --------------------------- | -------------------------------------------------------------------- |
+| `tests/e2e/landing.spec.ts` | Home/About nav, About page, postcard, story nav, sharing, favorites, EPUB |
+| `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                             |
 
 ### Writing new E2E tests
 

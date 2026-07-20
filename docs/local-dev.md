@@ -23,6 +23,7 @@ npm run dev
 
 - App: http://localhost:3000
 - Studio: http://localhost:3000/studio
+- About: http://localhost:3000/about
 - Component gallery: http://localhost:3000/dev/components (dev only)
 - Email preview: http://localhost:3001 (run `npm run email:dev`)
 - Drizzle Studio: opens in browser (run `npm run db:studio`)
