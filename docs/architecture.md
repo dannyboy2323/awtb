@@ -1,3 +1,11 @@
+The current doc already accurately describes the FloatingNav behavior: "The bar starts hidden and appears only after its reveal control is clicked or the reader scrolls, then auto-hides after scrolling stops or pointer exit." The diff confirms this behavior but also removes the top-edge hover restore mechanic. The doc doesn't mention top-edge hover, so no change is needed there.
+
+The scroll behavior changed from directional (show on upward scroll, hide on downward scroll) to any-scroll (show on any scroll ≥ SCROLL_DELTA), and scroll detection now uses capture mode to catch events from independently scrollable elements. The doc describes the visible behavior ("appears only after its reveal control is clicked or the reader scrolls") accurately at the right level of abstraction.
+
+The E2E stub body for the featured story page now has 24 paragraphs instead of null — this is an implementation detail not referenced in the architecture doc.
+
+The doc is already accurate.
+
 # Architecture
 
 ## Stack

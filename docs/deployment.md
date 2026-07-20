@@ -1,3 +1,5 @@
+The diff contains no changes relevant to the deployment guide — it only modifies FloatingNav component behavior, E2E test fixtures, unit tests, and coverage metadata. The deployment guide is accurate as written.
+
 # Deployment Guide
 
 ## Overview

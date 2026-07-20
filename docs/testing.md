@@ -90,6 +90,10 @@ Place spec files in `tests/e2e/` using the `.spec.ts` extension. Use
 persistent WebSocket connections (Sanity Live, PostHog, Clerk) that prevent true
 network idle.
 
+The floating nav starts hidden on page load. Tests that interact with nav elements
+must first call a `revealNavigation()` helper (or equivalent) to click the
+"Show navigation" button before asserting nav content or triggering nav actions.
+
 ```typescript
 import { test, expect } from '@playwright/test'
 
