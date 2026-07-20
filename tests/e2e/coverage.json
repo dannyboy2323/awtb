@@ -26,9 +26,14 @@
       "test": "page title is set"
     },
     {
-      "id": "floating-nav-visible",
+      "id": "floating-nav-landing-hidden",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "renders the floating navigation without shifting the page"
+      "test": "does not render the floating navigation on the landing page"
+    },
+    {
+      "id": "floating-nav-story-visible",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "renders the floating navigation on a story without shifting the page"
     },
     {
       "id": "floating-nav-share-widget",
@@ -48,7 +53,7 @@
     {
       "id": "floating-nav-epub-download",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "downloads the featured story as a valid EPUB"
+      "test": "downloads the current story as a valid EPUB"
     },
     {
       "id": "studio-route",
