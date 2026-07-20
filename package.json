@@ -79,6 +79,7 @@
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "flags": "^4.2.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.21.0",
     "next": "^16.2.10",
     "next-sanity": "^13.1.3",

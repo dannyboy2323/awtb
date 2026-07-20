@@ -27,6 +27,13 @@ export default defineConfig({
         branches: 65,
         functions: 77,
         lines: 81,
+        // New floating-navigation and EPUB surfaces are held to complete
+        // coverage independently so their guarantees cannot regress behind
+        // the repository-wide aggregate.
+        'app/api/epub/route.ts': { 100: true },
+        'components/public/FloatingNav.tsx': { 100: true },
+        'lib/epub.ts': { 100: true },
+        'lib/share.ts': { 100: true },
       },
     },
   },
