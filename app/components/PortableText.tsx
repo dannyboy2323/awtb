@@ -11,6 +11,7 @@
 import { PortableText, type PortableTextComponents, type PortableTextBlock } from 'next-sanity'
 import ResolvedLink from '@/app/components/ResolvedLink'
 import Image from '@/app/components/SanityImage'
+import { analyticsEvents } from '@/lib/analytics'
 
 export default function CustomPortableText({
   className,
@@ -48,6 +49,7 @@ export default function CustomPortableText({
           <a
             href={`#${value?._key}`}
             className="absolute top-0 bottom-0 left-0 -ml-6 flex items-center opacity-0 transition-opacity group-hover:opacity-100"
+            data-analytics-event={analyticsEvents.contentAnchorOpened}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -74,6 +76,7 @@ export default function CustomPortableText({
             <a
               href={`#${value?._key}`}
               className="absolute top-0 bottom-0 left-0 -ml-6 flex items-center opacity-0 transition-opacity group-hover:opacity-100"
+              data-analytics-event={analyticsEvents.contentAnchorOpened}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

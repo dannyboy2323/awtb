@@ -16,8 +16,13 @@ interface StoryPageProps {
   params: Promise<{ slug: string }>
 }
 
+/** Builds social and browser metadata for a story reader route. */
 export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
   const { slug } = await params
+  if (process.env.E2E_TEST === 'true' && slug === 'e2e-featured-story') {
+    return { title: 'E2E Featured Story' }
+  }
+
   const { data } = await sanityFetch({ query: storyBySlugQuery, params: { slug } })
   const story = data as StoryBySlugQueryResult
 
@@ -31,11 +36,21 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
 
 export default async function StoryReaderPage({ params }: StoryPageProps) {
   const { slug } = await params
+  if (process.env.E2E_TEST === 'true' && slug === 'e2e-featured-story') {
+    return (
+      <StoryReader
+        title="E2E Featured Story"
+        coverImage={null}
+        coverImagePortrait={null}
+        body={null}
+      />
+    )
+  }
+
   const { data } = await sanityFetch({ query: storyBySlugQuery, params: { slug } })
   const story = data as StoryBySlugQueryResult
 
   if (!story) notFound()
-
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body = (story as any).body ?? null

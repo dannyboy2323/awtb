@@ -16,6 +16,7 @@ import React from 'react'
 import Image from 'next/image'
 import { PortableText } from '@portabletext/react'
 import { useLightbox } from './StoryReader'
+import { analyticsEvents } from '@/lib/analytics'
 
 interface StoryPageContentProps {
   prose: unknown
@@ -65,6 +66,7 @@ function InlinePanelImage({ value }: { value: PanelImageValue }) {
         onClick={handleClick}
         aria-label={`View full size: ${alt}`}
         title="Click to enlarge"
+        data-analytics-event={analyticsEvents.panelOpened}
       >
         <Image
           src={thumbUrl}

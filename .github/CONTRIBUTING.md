@@ -86,16 +86,15 @@ Use one of these branch prefixes:
 
 Write your code. Run the dev server to verify your changes look and work correctly.
 
-### 3. Run the full check before pushing
+### 3. Run the full check before committing
 
 ```bash
-npm run type-check   # TypeScript
-npm run lint         # ESLint
-npm test             # Vitest unit tests
+npm run quality:gate
 ```
 
-All three must pass with zero errors. The pre-push Git hook enforces this automatically —
-if any check fails, the push will be blocked and you'll see the error in the terminal.
+The pre-commit Git hook enforces the complete gate automatically: type generation,
+TypeScript, lint, environment validation, inline docs, observability, unit coverage,
+E2E journeys, production build, and a production-server smoke test.
 
 ### 4. Commit
 

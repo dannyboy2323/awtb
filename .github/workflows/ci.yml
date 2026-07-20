@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, staging]
 
+permissions:
+  contents: read
+  statuses: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -39,32 +43,59 @@ jobs:
             exit 1
           fi
         env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
           NEXT_PUBLIC_SANITY_DATASET: production
           NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
 
       - name: TypeScript check
         run: npm run type-check
         env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
           NEXT_PUBLIC_SANITY_DATASET: production
           NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
 
       - name: Lint
         run: npm run lint
 
+      - name: Validate environment contract
+        run: npm run env:check:ci
+
+      - name: Validate inline documentation
+        run: npm run docs:check
+
+      - name: Validate observability coverage
+        run: npm run observability:check
+
       - name: Unit tests
-        run: npm test
+        run: npm run test:coverage
         env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
           NEXT_PUBLIC_SANITY_DATASET: production
           NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
-          SANITY_WEBHOOK_SECRET: ${{ secrets.SANITY_WEBHOOK_SECRET }}
+          SANITY_WEBHOOK_SECRET: ci-test-webhook-secret
+
+      - name: Build
+        run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: 'true'
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
+          NEXT_PUBLIC_SANITY_DATASET: production
+          NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end journey coverage
+        run: npm run test:e2e:coverage
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
+          NEXT_PUBLIC_SANITY_DATASET: production
+          NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
 
       - name: Security audit
         run: npm audit --audit-level=critical
         env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: d205mlci
           NEXT_PUBLIC_SANITY_DATASET: production
           NEXT_PUBLIC_SANITY_API_VERSION: '2026-06-01'
 

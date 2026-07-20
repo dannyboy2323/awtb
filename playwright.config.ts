@@ -18,11 +18,12 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: process.env.CI
+  webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
         command: 'npm run dev',
         url: 'http://localhost:3000',
+        env: { ...process.env, E2E_TEST: 'true' },
         reuseExistingServer: true,
         timeout: 120 * 1000,
       },

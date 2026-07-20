@@ -14,6 +14,7 @@ type CtaProps = {
   pageId: string
 }
 
+/** Renders a Sanity call-to-action page-builder block. */
 export default function CTA({ block }: CtaProps) {
   const { heading, eyebrow, body = [], button, image, theme, contentAlignment } = block
 

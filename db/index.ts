@@ -18,5 +18,7 @@ import * as schema from '@/db/schema'
 
 const sql = neon(process.env.DATABASE_URL!)
 
+/** Drizzle client backed by the pooled Neon serverless connection. */
 export const db = drizzle(sql, { schema })
+/** Type of the configured application database client. */
 export type DB = typeof db

@@ -17,6 +17,19 @@ import DeskHero from '@/components/public/DeskHero'
 import PostcardGrid from '@/components/public/PostcardGrid'
 
 export default async function LandingPage() {
+  // Keep browser journeys deterministic and independent of CMS availability.
+  // The fixture still exercises the real hero, link, and story-reader route.
+  if (process.env.E2E_TEST === 'true') {
+    return (
+      <DeskHero
+        postcardUrl="/icon.png"
+        postcardAlt="E2E featured story postcard"
+        storySlug="e2e-featured-story"
+        storyTitle="E2E Featured Story"
+      />
+    )
+  }
+
   // Resolve the featured story slug from Edge Config (< 1ms, edge-replicated)
   const featuredSlug = await getFeaturedStorySlug()
 

@@ -9,12 +9,12 @@ const builder = createImageUrlBuilder({
   dataset: dataset || '',
 })
 
-// Create an image URL builder using the client
-// Export a function that can be used to get image URLs
+/** Creates a configured Sanity image URL builder for an image source. */
 export function urlForImage(source: SanityImageSource) {
   return builder.image(source)
 }
 
+/** Produces a cropped Open Graph image descriptor when an image is available. */
 export function resolveOpenGraphImage(
   image?: SanityImageSource | null,
   width = 1200,
@@ -57,6 +57,7 @@ export function linkResolver(link: Link | DereferencedLink | undefined) {
 type DataAttributeConfig = CreateDataAttributeProps &
   Required<Pick<CreateDataAttributeProps, 'id' | 'type' | 'path'>>
 
+/** Builds Visual Editing data attributes for a Sanity document path. */
 export function dataAttr(config: DataAttributeConfig) {
   return createDataAttribute({
     projectId,

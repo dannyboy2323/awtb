@@ -10,6 +10,7 @@
  */
 
 import Link from 'next/link'
+import { analyticsEvents } from '@/lib/analytics'
 import { settingsQuery } from '@/sanity/lib/queries'
 import { sanityFetch } from '@/sanity/lib/live'
 
@@ -22,7 +23,11 @@ export default async function Header() {
     <header className="fixed inset-0 z-50 flex h-24 items-center bg-white/80 backdrop-blur-lg">
       <div className="container px-2 py-6 sm:px-6">
         <div className="flex items-center justify-between gap-5">
-          <Link className="flex items-center gap-2" href="/">
+          <Link
+            className="flex items-center gap-2"
+            href="/"
+            data-analytics-event={analyticsEvents.headerHomeOpened}
+          >
             <span className="pl-2 text-lg font-semibold sm:text-2xl">
               {settings?.title || 'Adventures with the Bull'}
             </span>
@@ -31,7 +36,11 @@ export default async function Header() {
           <nav>
             <ul className="flex items-center gap-4 font-mono text-xs leading-5 tracking-tight sm:text-base md:gap-6">
               <li>
-                <Link href="/about" className="hover:underline">
+                <Link
+                  href="/about"
+                  className="hover:underline"
+                  data-analytics-event={analyticsEvents.headerAboutOpened}
+                >
                   About
                 </Link>
               </li>

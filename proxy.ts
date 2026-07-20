@@ -17,8 +17,12 @@
  * ```
  */
 import { clerkMiddleware } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-export default clerkMiddleware()
+const middleware =
+  process.env.E2E_TEST === 'true' ? () => NextResponse.next() : clerkMiddleware()
+
+export default middleware
 
 export const config = {
   matcher: [

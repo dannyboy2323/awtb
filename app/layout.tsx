@@ -68,30 +68,33 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+/** Provides global auth, analytics, monitoring, fonts, and draft-mode UI. */
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   const { isEnabled: isDraftMode } = await draftMode()
 
-  return (
-    <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-black text-white`}>
-        <body>
-          <section className="min-h-screen">
-            <Toaster />
-            {isDraftMode && (
-              <>
-                <DraftModeToast />
-                <VisualEditing />
-              </>
-            )}
-            <SanityLive onError={handleError} />
-            <PostHogProvider>
-              <main>{children}</main>
-            </PostHogProvider>
-          </section>
-          <SpeedInsights />
-          <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
+  const document = (
+    <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-black text-white`}>
+      <body>
+        <section className="min-h-screen">
+          <Toaster />
+          {isDraftMode && (
+            <>
+              <DraftModeToast />
+              <VisualEditing />
+            </>
+          )}
+          <SanityLive onError={handleError} />
+          <PostHogProvider>
+            <main>{children}</main>
+          </PostHogProvider>
+        </section>
+        <SpeedInsights />
+        <Analytics />
+      </body>
+    </html>
   )
+
+  // Browser tests exercise public journeys without relying on a third-party
+  // Clerk tenant. Every other environment retains the production auth wrapper.
+  return process.env.E2E_TEST === 'true' ? document : <ClerkProvider>{document}</ClerkProvider>
 }

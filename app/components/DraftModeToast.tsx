@@ -4,11 +4,15 @@ import { useIsPresentationTool } from 'next-sanity/hooks'
 import { useRouter } from 'next/navigation'
 import { useEffect, useTransition } from 'react'
 import { toast } from 'sonner'
+import { usePostHog } from 'posthog-js/react'
 import { disableDraftMode } from '@/app/actions'
+import { analyticsEvents } from '@/lib/analytics'
 
+/** Displays the draft-mode status and provides an exit action. */
 export default function DraftModeToast() {
   const isPresentationTool = useIsPresentationTool()
   const router = useRouter()
+  const posthog = usePostHog()
   const [pending, startTransition] = useTransition()
 
   useEffect(() => {
@@ -22,6 +26,7 @@ export default function DraftModeToast() {
         action: {
           label: 'Disable',
           onClick: async () => {
+            posthog.capture(analyticsEvents.draftModeDisabled)
             await disableDraftMode()
             startTransition(() => {
               router.refresh()
@@ -33,7 +38,7 @@ export default function DraftModeToast() {
         toast.dismiss(toastId)
       }
     }
-  }, [router, isPresentationTool])
+  }, [router, isPresentationTool, posthog])
 
   useEffect(() => {
     if (pending) {

@@ -75,6 +75,7 @@ function RenderEmptyState({ page }: { page: GetPageQueryResult }) {
   )
 }
 
+/** Renders and live-updates the ordered page-builder sections for a page. */
 export default function PageBuilder({ page }: PageBuilderPageProps) {
   const pageBuilderSections = useOptimistic<
     PageBuilderSection[] | undefined,

@@ -1,5 +1,6 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { type NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { validateSanityWebhook } from '@/sanity/lib/webhook'
 import { webhookRatelimit } from '@/lib/redis'
 
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     })
   } catch (err) {
+    Sentry.captureException(err)
     const message = err instanceof Error ? err.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 400 })
   }
