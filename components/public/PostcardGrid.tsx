@@ -3,7 +3,8 @@
  * Renders after the user scrolls past the DeskHero section.
  */
 
-interface Story {
+/** Minimal published story data rendered by the postcard grid. */
+export interface Story {
   _id: string
   title: string
   slug: string
@@ -13,7 +14,8 @@ interface Story {
   } | null
 }
 
-interface PostcardGridProps {
+/** Props for the below-the-fold published-story grid. */
+export interface PostcardGridProps {
   stories: Story[]
 }
 

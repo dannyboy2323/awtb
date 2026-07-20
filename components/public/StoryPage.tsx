@@ -18,7 +18,8 @@ import { PortableText } from '@portabletext/react'
 import { useLightbox } from './StoryReader'
 import { analyticsEvents } from '@/lib/analytics'
 
-interface StoryPageContentProps {
+/** Props for one story page's Portable Text content. */
+export interface StoryPageContentProps {
   prose: unknown
 }
 

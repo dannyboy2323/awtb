@@ -15,7 +15,8 @@ import Image from 'next/image'
 import deskUrls from '@/public/desk-image-urls.json'
 import { analyticsEvents } from '@/lib/analytics'
 
-interface DeskHeroProps {
+/** Props required to render the featured postcard over the desk artwork. */
+export interface DeskHeroProps {
   /** The featured story's postcard image URL (from Sanity CDN) */
   postcardUrl: string
   /** Alt text for the postcard */

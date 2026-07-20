@@ -75,7 +75,8 @@ React errors. Vercel Analytics and Speed Insights capture platform-level traffic
 and performance. PostHog provides pageviews, session replay, feature flags,
 autocapture, and stable semantic product events declared in `lib/analytics.ts`.
 The observability gate requires every production link, anchor, form, and button
-to declare `data-analytics-event`.
+to declare `data-analytics-event`, and every stable event in the analytics
+registry must be connected to a production action.
 
 ## Key Directories
 
