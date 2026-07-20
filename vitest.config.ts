@@ -19,6 +19,9 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      // Coverage is a source-code signal; imported fixtures and generated data
+      // must not make thresholds vary between local and CI environments.
+      exclude: ['**/*.json', 'sanity.types.ts'],
       thresholds: {
         statements: 80,
         branches: 65,
