@@ -14,6 +14,7 @@ export const analyticsEvents = {
   headerAboutOpened: 'header_about_opened',
   headerHomeOpened: 'header_home_opened',
   lightboxClosed: 'story_lightbox_closed',
+  navAboutOpened: 'floating_nav_about_opened',
   navHidden: 'floating_nav_hidden',
   navHomeOpened: 'floating_nav_home_opened',
   navRevealed: 'floating_nav_revealed',

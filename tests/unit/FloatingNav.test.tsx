@@ -64,10 +64,14 @@ describe('FloatingNav', () => {
     vi.useRealTimers()
   })
 
-  it('renders a floating logo and the three required actions', () => {
+  it('renders a full-width story bar with a logo and the three required actions', () => {
     render(<FloatingNav />)
 
-    expect(screen.getByRole('navigation', { name: 'Reader navigation' })).toHaveClass('fixed')
+    expect(screen.getByRole('navigation', { name: 'Reader navigation' })).toHaveClass(
+      'fixed',
+      'inset-x-0',
+      'w-screen'
+    )
     expect(screen.getByRole('link', { name: 'Adventures With The Bull home' })).toHaveAttribute(
       'href',
       '/'
@@ -78,20 +82,49 @@ describe('FloatingNav', () => {
       '/api/epub?slug=test-story'
     )
     expect(screen.getByRole('button', { name: 'Add this page to browser favorites' })).toBeVisible()
+    expect(screen.queryByRole('link', { name: 'ABOUT' })).not.toBeInTheDocument()
   })
 
-  it('does not render on the landing page or any other non-story route', () => {
+  it('renders the full-width marketing variant on home and about routes', () => {
     navigation.pathname = '/'
     const { rerender } = render(<FloatingNav />)
-    expect(screen.queryByRole('navigation', { name: 'Reader navigation' })).not.toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Site navigation' })).toHaveClass(
+      'fixed',
+      'inset-x-0',
+      'w-screen',
+      'text-foreground'
+    )
+    expect(screen.getByRole('link', { name: 'Adventures With The Bull home' })).toHaveAttribute(
+      'href',
+      '/'
+    )
+    expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('href', '/about')
+    expect(screen.queryByRole('button', { name: 'Share this page' })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'Download this story as EPUB' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Add this page to browser favorites' })
+    ).not.toBeInTheDocument()
 
-    navigation.pathname = '/studio/structure'
+    navigation.pathname = '/about'
     rerender(<FloatingNav />)
+    expect(screen.getByRole('navigation', { name: 'Site navigation' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'ABOUT' })).toBeVisible()
+  })
+
+  it('does not render on Studio, developer, or other application routes', () => {
+    navigation.pathname = '/studio/structure'
+    const { rerender } = render(<FloatingNav />)
     expect(screen.queryByRole('navigation', { name: 'Reader navigation' })).not.toBeInTheDocument()
 
     navigation.pathname = '/dev/components'
     rerender(<FloatingNav />)
     expect(screen.queryByRole('navigation', { name: 'Reader navigation' })).not.toBeInTheDocument()
+
+    navigation.pathname = '/account'
+    rerender(<FloatingNav />)
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
 
   it('opens every desktop sharing option and runs link, print, and copy actions', async () => {

@@ -151,14 +151,15 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
     ? getShareDestinations(shareSnapshot.url, shareSnapshot.title)
     : []
   const storySlug = pathname.match(/^\/stories\/([^/]+)$/)?.[1]
+  const isMarketingRoute = pathname === '/' || pathname === '/about'
   const shortcut =
     typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘D' : 'Ctrl+D'
 
-  // The toolbar belongs to the immersive reader and must never cover landing,
-  // Studio, developer, or other non-story routes.
-  if (!storySlug) return null
+  // Public marketing and story routes own this chrome. Studio, developer, and
+  // other application routes keep their existing route-specific navigation.
+  if (!isMarketingRoute && !storySlug) return null
 
-  const epubHref = `/api/epub?slug=${encodeURIComponent(storySlug)}`
+  const epubHref = storySlug ? `/api/epub?slug=${encodeURIComponent(storySlug)}` : null
 
   return (
     <>
@@ -171,12 +172,10 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
 
       <nav
         className={cn(
-          'dark bg-background/95 text-foreground border-border fixed top-3 left-1/2 z-100 flex w-[min(92vw,44rem)] -translate-x-1/2 items-center justify-between rounded-2xl border px-2 py-1.5 shadow-2xl backdrop-blur-md transition-[transform,opacity] duration-300',
-          visible
-            ? 'translate-y-0 opacity-100'
-            : 'pointer-events-none -translate-y-[calc(100%+1.25rem)] opacity-0'
+          'dark bg-background/95 text-foreground border-border fixed inset-x-0 top-0 z-100 flex w-screen items-center justify-between border-b px-2 py-1.5 shadow-2xl backdrop-blur-md transition-[transform,opacity] duration-300',
+          visible ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-full opacity-0'
         )}
-        aria-label="Reader navigation"
+        aria-label={storySlug ? 'Reader navigation' : 'Site navigation'}
         aria-hidden={!visible}
         inert={!visible}
         tabIndex={-1}
@@ -194,83 +193,95 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
           </Link>
         </Button>
 
-        <div className="flex items-center gap-1">
-          <DropdownMenu
-            open={shareOpen}
-            onOpenChange={(open: boolean) => {
-              if (!nativeShareAvailable) setShareOpen(open)
-            }}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-lg"
-                aria-label="Share this page"
-                onClick={() => void handleShareClick()}
-                data-analytics-event={analyticsEvents.shareOpened}
-              >
-                <Share2 />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="dark border-border max-h-[min(70vh,30rem)] w-60 border"
+        {storySlug && epubHref ? (
+          <div className="flex items-center gap-1">
+            <DropdownMenu
+              open={shareOpen}
+              onOpenChange={(open: boolean) => {
+                if (!nativeShareAvailable) setShareOpen(open)
+              }}
             >
-              <DropdownMenuLabel>Share this page</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {destinations.map((destination) => (
-                <DropdownMenuItem
-                  key={destination.id}
-                  onSelect={() => selectShareDestination(destination)}
-                  data-analytics-event={analyticsEvents.shareDestinationOpened}
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-lg"
+                  aria-label="Share this page"
+                  onClick={() => void handleShareClick()}
+                  data-analytics-event={analyticsEvents.shareOpened}
                 >
-                  {destination.label}
+                  <Share2 />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="dark border-border max-h-[min(70vh,30rem)] w-60 border"
+              >
+                <DropdownMenuLabel>Share this page</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {destinations.map((destination) => (
+                  <DropdownMenuItem
+                    key={destination.id}
+                    onSelect={() => selectShareDestination(destination)}
+                    data-analytics-event={analyticsEvents.shareDestinationOpened}
+                  >
+                    {destination.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button variant="ghost" size="icon-lg" asChild>
+              <a
+                href={epubHref}
+                download
+                aria-label="Download this story as EPUB"
+                data-analytics-event={analyticsEvents.epubDownloaded}
+              >
+                <BookDown />
+              </a>
+            </Button>
+
+            <DropdownMenu open={favoritesOpen} onOpenChange={setFavoritesOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-lg"
+                  aria-label="Add this page to browser favorites"
+                  data-analytics-event={analyticsEvents.favoriteInstructionsOpened}
+                >
+                  <Star />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="dark border-border w-72 border">
+                <DropdownMenuLabel>Add to browser favorites</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="text-muted-foreground px-2 py-2 text-sm">
+                  Press{' '}
+                  <kbd className="bg-muted text-foreground rounded px-1.5 py-0.5">{shortcut}</kbd>{' '}
+                  to save this page in your browser.
+                </div>
+                <DropdownMenuItem
+                  onSelect={() => void copyCurrentUrl('Link copied.')}
+                  data-analytics-event={analyticsEvents.favoriteLinkCopied}
+                >
+                  Copy page link
                 </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button variant="ghost" size="icon-lg" asChild>
-            <a
-              href={epubHref}
-              download
-              aria-label="Download this story as EPUB"
-              data-analytics-event={analyticsEvents.epubDownloaded}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Button variant="ghost" asChild>
+            <Link
+              href="/about"
+              className="text-foreground font-medium tracking-wide"
+              data-analytics-event={analyticsEvents.navAboutOpened}
             >
-              <BookDown />
-            </a>
+              ABOUT
+            </Link>
           </Button>
-
-          <DropdownMenu open={favoritesOpen} onOpenChange={setFavoritesOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-lg"
-                aria-label="Add this page to browser favorites"
-                data-analytics-event={analyticsEvents.favoriteInstructionsOpened}
-              >
-                <Star />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="dark border-border w-72 border">
-              <DropdownMenuLabel>Add to browser favorites</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <div className="text-muted-foreground px-2 py-2 text-sm">
-                Press{' '}
-                <kbd className="bg-muted text-foreground rounded px-1.5 py-0.5">{shortcut}</kbd> to
-                save this page in your browser.
-              </div>
-              <DropdownMenuItem
-                onSelect={() => void copyCurrentUrl('Link copied.')}
-                data-analytics-event={analyticsEvents.favoriteLinkCopied}
-              >
-                Copy page link
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        )}
 
         <Button
           type="button"
