@@ -1,3 +1,5 @@
+The current doc already accurately describes the `FloatingNav`, `/api/epub`, and all related architecture. No changes are needed.
+
 # Architecture
 
 ## Stack

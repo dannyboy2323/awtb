@@ -1,3 +1,5 @@
+The diff adds a new `/api/epub` endpoint and `FloatingNav` component, but these don't affect the local development guide — no new commands, URLs, prerequisites, or environment variables are introduced that aren't already covered. The doc remains accurate as-is.
+
 # Local Development Guide
 
 ## Prerequisites

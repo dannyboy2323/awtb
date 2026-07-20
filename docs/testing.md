@@ -1,3 +1,5 @@
+The current doc is already accurate — it already documents `FloatingNav.test.tsx`, `epub.test.ts`, `epubRoute.test.ts`, `share.test.ts`, the EPUB route, and the floating nav. No changes are needed.
+
 # Testing Guide
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff adds a new `/api/epub` route and a `FloatingNav` component. Neither of these changes affects anything documented in `docs/deployment.md` — the deployment process, environment variables, CI pipeline, monitoring, rollback procedures, and webhook configuration are all unchanged.
+
 # Deployment Guide
 
 ## Overview

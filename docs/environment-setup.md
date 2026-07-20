@@ -1,3 +1,5 @@
+The diff introduces an `E2E_TEST` environment variable used in `app/api/epub/route.ts` to enable a deterministic fixture for end-to-end testing. This variable is not currently documented. Everything else in the doc remains accurate.
+
 # Environment Variable Setup
 
 ## Overview
@@ -106,6 +108,12 @@ git rm --cached .env.local
 | Variable               | Required | Where to find                                                           |
 | ---------------------- | -------- | ----------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Yes      | `http://localhost:3000` locally, `https://yourdomain.com` in production |
+
+### Testing
+
+| Variable   | Required | Where to find                                                                                                        |
+| ---------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| `E2E_TEST` | No       | Set to `true` in your E2E test environment. Causes `/api/epub` to serve a deterministic fixture instead of Sanity data. |
 
 ---
 
