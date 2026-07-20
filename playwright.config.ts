@@ -23,6 +23,7 @@ export default defineConfig({
     : {
         command: 'npm run dev',
         url: 'http://localhost:3000',
+        env: { ...process.env, E2E_TEST: 'true' },
         reuseExistingServer: true,
         timeout: 120 * 1000,
       },
