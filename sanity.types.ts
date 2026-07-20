@@ -14,7 +14,7 @@
 
 export declare const internalGroqTypeReferenceTo: unique symbol
 
-// Source: sanity.schema.json
+// Source: ../sanity.schema.json
 export type PageReference = {
   _ref: string
   _type: 'reference'
@@ -616,7 +616,7 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: settingsQuery
 // Query: *[_type == "settings"][0]
 export type SettingsQueryResult = {
@@ -658,7 +658,7 @@ export type SettingsQueryResult = {
   }
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: getPageQuery
 // Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },    },  }
 export type GetPageQueryResult = {
@@ -737,7 +737,7 @@ export type GetPageQueryResult = {
   > | null
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: sitemapData
 // Query: *[_type == "page" && defined(slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<{
@@ -746,14 +746,14 @@ export type SitemapDataResult = Array<{
   _updatedAt: string
 }>
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
   slug: string
 }>
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: allStoriesQuery
 // Query: *[_type == "story" && defined(publishedAt)] | order(orderRank asc) {    _id,    title,    "slug": slug.current,    publishedAt,    postcard  }
 export type AllStoriesQueryResult = Array<{
@@ -771,7 +771,7 @@ export type AllStoriesQueryResult = Array<{
   }
 }>
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: featuredStoryQuery
 // Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    postcard  }
 export type FeaturedStoryQueryResult = {
@@ -788,7 +788,7 @@ export type FeaturedStoryQueryResult = {
   }
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: storyCoverQuery
 // Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    "slug": slug.current,    coverImage,    "pageCount": count(pages)  }
 export type StoryCoverQueryResult = {
@@ -806,7 +806,7 @@ export type StoryCoverQueryResult = {
   pageCount: null
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: storyPageQuery
 // Query: *[_type == "story" && slug.current == $slug][0] {    title,    "page": pages[$pageIndex] {      panels[] {        image,        alt,        caption      },      prose    },    "pageCount": count(pages)  }
 export type StoryPageQueryResult = {
@@ -815,7 +815,7 @@ export type StoryPageQueryResult = {
   pageCount: null
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: siteSettingsQuery
 // Query: *[_type == "siteSettings"][0] {    featuredStory-> {      _id, title, "slug": slug.current, postcard    },    deskBackgroundImage  }
 export type SiteSettingsQueryResult = {
@@ -841,7 +841,7 @@ export type SiteSettingsQueryResult = {
   } | null
 } | null
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: allStorySlugsQuery
 // Query: *[_type == "story" && defined(slug.current)] {    "slug": slug.current,    "pageCount": count(pages)  }
 export type AllStorySlugsQueryResult = Array<{
@@ -849,7 +849,7 @@ export type AllStorySlugsQueryResult = Array<{
   pageCount: null
 }>
 
-// Source: sanity/lib/queries.ts
+// Source: lib/queries.ts
 // Variable: storyBySlugQuery
 // Query: *[_type == "story" && slug.current == $slug][0] {    _id,    title,    slug,    publishedAt,    "coverImage": coverImage {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "coverImagePortrait": coverImagePortrait {      alt,      "asset": asset-> {        _id,        url,        metadata { dimensions { width, height } }      }    },    "body": body[] {      ...,      _type == "panelImage" => {        ...,        "image": image {          "asset": asset-> {            _id,            url,            metadata { dimensions { width, height } }          }        }      }    }  }
 export type StoryBySlugQueryResult = {

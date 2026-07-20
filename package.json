@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "analyze": "ANALYZE=true next build --webpack",
-    "prebuild": "sanity typegen generate",
+    "prebuild": "npm run typegen",
     "build": "next build",
     "db:check": "drizzle-kit check",
     "db:generate": "drizzle-kit generate",
