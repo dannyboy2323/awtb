@@ -25,7 +25,8 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 /** Default from address — update to your verified domain in Resend */
 const DEFAULT_FROM = 'noreply@awtb.vercel.app'
 
-interface SendEmailOptions {
+/** Supported fields for one transactional Resend message. */
+export interface SendEmailOptions {
   to: string | string[]
   subject: string
   react?: ReactNode

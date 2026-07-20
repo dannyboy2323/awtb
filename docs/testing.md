@@ -25,14 +25,17 @@ npm run test:ui           # interactive Vitest UI
 
 ### What's tested
 
-| File                               | What it tests                                               |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `tests/unit/imageUrl.test.ts`      | `urlForImage` and `resolveOpenGraphImage` from Sanity utils |
-| `tests/unit/webhook.test.ts`       | Environment variable validation                             |
-| `tests/unit/revalidate.test.ts`    | HMAC webhook validation error handling                      |
-| `tests/unit/DeskHero.test.tsx`     | DeskHero component rendering and link behaviour             |
-| `tests/unit/PostcardGrid.test.tsx` | PostcardGrid rendering with various story counts            |
-| `tests/unit/db.test.ts`            | Drizzle ORM schema type inference                           |
+| File                                  | What it tests                                               |
+| ------------------------------------- | ----------------------------------------------------------- |
+| `tests/unit/AnalyticsActions.test.tsx` | Delegated semantic click and keyboard analytics             |
+| `tests/unit/DeskHero.test.tsx`         | DeskHero component rendering and link behaviour             |
+| `tests/unit/PostHogProvider.test.tsx`  | Initialization privacy settings and semantic pageviews      |
+| `tests/unit/PostcardGrid.test.tsx`     | PostcardGrid rendering with various story counts            |
+| `tests/unit/StoryReader.test.tsx`      | Reader pagination, lightbox, and responsive behaviour       |
+| `tests/unit/db.test.ts`                | Drizzle ORM schema type inference                           |
+| `tests/unit/imageUrl.test.ts`          | Sanity image, link, and Visual Editing helpers              |
+| `tests/unit/revalidate.test.ts`        | Revalidation webhook handling and Sentry capture            |
+| `tests/unit/webhook.test.ts`           | HMAC webhook signature validation                           |
 
 ### Writing new unit tests
 
@@ -131,7 +134,7 @@ The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push to
 2. ESLint
 3. Environment-contract completeness
 4. Exported API inline-documentation coverage
-5. Semantic analytics action coverage
+5. Semantic action and analytics-registry coverage
 6. Unit tests with enforced coverage thresholds
 7. Production build
 8. Critical security audit

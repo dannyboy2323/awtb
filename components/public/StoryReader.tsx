@@ -121,7 +121,8 @@ export interface LightboxImage {
 // PortableText component map.
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface LightboxContextValue {
+/** Public lightbox context contract consumed by nested panel renderers. */
+export interface LightboxContextValue {
   openLightbox: (img: LightboxImage) => void
 }
 

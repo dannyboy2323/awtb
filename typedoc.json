@@ -19,5 +19,10 @@
   "categorizeByGroup": true,
   "hideGenerator": true,
   "searchInComments": true,
-  "skipErrorChecking": true
+  "skipErrorChecking": true,
+  "intentionallyNotExported": [
+    "sanity.types.ts:GetPageQueryResult",
+    "sanity.types.ts:Link"
+  ],
+  "treatValidationWarningsAsErrors": true
 }

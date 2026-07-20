@@ -12,6 +12,7 @@ import { join, relative } from 'node:path'
 import ts from 'typescript'
 
 const roots = ['app', 'components/public']
+const registryPath = 'lib/analytics.ts'
 const ignoredPrefixes = ['app/dev/', 'components/ui/']
 const interactiveTags = new Set(['button', 'a', 'form', 'Link'])
 const manualActions = [
@@ -30,16 +31,18 @@ function collect(directory) {
     const path = join(directory, name)
     const stat = statSync(path)
     if (stat.isDirectory()) return collect(path)
-    return path.endsWith('.tsx') ? [path] : []
+    return path.endsWith('.ts') || path.endsWith('.tsx') ? [path] : []
   })
 }
 
 const interactions = []
+const productionSources = []
 for (const path of roots.flatMap(collect)) {
   const normalized = relative('.', path)
   if (ignoredPrefixes.some((prefix) => normalized.startsWith(prefix))) continue
 
   const source = readFileSync(path, 'utf8')
+  productionSources.push(source)
   const sourceFile = ts.createSourceFile(
     path,
     source,
@@ -69,6 +72,39 @@ for (const path of roots.flatMap(collect)) {
   visit(sourceFile)
 }
 
+const registrySource = readFileSync(registryPath, 'utf8')
+const registryFile = ts.createSourceFile(
+  registryPath,
+  registrySource,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TS
+)
+const eventNames = []
+function visitRegistry(node) {
+  if (
+    ts.isVariableDeclaration(node) &&
+    node.name.getText(registryFile) === 'analyticsEvents' &&
+    node.initializer &&
+    ts.isAsExpression(node.initializer) &&
+    ts.isObjectLiteralExpression(node.initializer.expression)
+  ) {
+    for (const property of node.initializer.expression.properties) {
+      if (ts.isPropertyAssignment(property)) eventNames.push(property.name.getText(registryFile))
+    }
+  }
+  ts.forEachChild(node, visitRegistry)
+}
+visitRegistry(registryFile)
+
+const allProductionSource = productionSources.join('\n')
+const unusedEvents = eventNames.filter(
+  (eventName) => !allProductionSource.includes(`analyticsEvents.${eventName}`)
+)
+if (unusedEvents.length > 0) {
+  throw new Error(`Analytics registry events without a production action: ${unusedEvents.join(', ')}`)
+}
+
 for (const action of manualActions) {
   interactions.push({
     covered: readFileSync(action.path, 'utf8').includes(action.marker),
@@ -87,4 +123,7 @@ if (allUncovered.length > 0) {
   )
 }
 
-console.log(`Semantic action coverage: 100% (${interactions.length}/${interactions.length})`)
+console.log(
+  `Semantic action coverage: 100% (${interactions.length}/${interactions.length}); ` +
+    `analytics registry coverage: 100% (${eventNames.length}/${eventNames.length})`
+)
