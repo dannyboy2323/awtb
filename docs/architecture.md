@@ -29,9 +29,9 @@ Vercel Edge Config via `getFeaturedStorySlug`. Sanity assets are served
 from the Sanity CDN. Database queries go through Drizzle ORM to Neon
 serverless Postgres via the pooled connection in `db/index.ts`.
 
-The global `FloatingNav` is a fixed client-side layer, so it never changes
-landing-page or reader layout. Mobile readers use the native Web Share API when
-available; desktop readers use the shadcn dropdown and AddToAny service links.
+The story-only `FloatingNav` is a fixed client-side layer, so it never changes
+reader layout and is never rendered on the landing page. Mobile readers use the
+native Web Share API when available; desktop readers use the shadcn dropdown and AddToAny service links.
 `/api/epub` resolves the current or featured story, downloads optimized Sanity
 images, and assembles a cached EPUB 3 archive for offline reading.
 

@@ -1,4 +1,9 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+async function openFeaturedStory(page: Page) {
+  await page.locator('.desk-hero a').first().click()
+  await expect(page).toHaveURL(/\/stories\/[^/]+$/)
+}
 
 /**
  * Landing page E2E tests.
@@ -41,19 +46,25 @@ test.describe('Landing page', () => {
     await expect(page).toHaveTitle(/.+/)
   })
 
-  test('renders the floating navigation without shifting the page', async ({ page }) => {
+  test('does not render the floating navigation on the landing page', async ({ page }) => {
+    await expect(page.getByRole('navigation', { name: 'Reader navigation' })).not.toBeAttached()
+  })
+
+  test('renders the floating navigation on a story without shifting the page', async ({ page }) => {
+    await openFeaturedStory(page)
     const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
     await expect(navigation).toBeVisible()
     await expect(navigation).toHaveCSS('position', 'fixed')
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Share this page' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Download featured story as EPUB' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).toBeVisible()
     await expect(
       page.getByRole('button', { name: 'Add this page to browser favorites' })
     ).toBeVisible()
   })
 
   test('opens the complete desktop share widget', async ({ page }) => {
+    await openFeaturedStory(page)
     await page.getByRole('button', { name: 'Share this page' }).click()
 
     await expect(page.getByText('SMS / Messages')).toBeVisible()
@@ -67,6 +78,7 @@ test.describe('Landing page', () => {
   })
 
   test('shows browser favorites guidance', async ({ page }) => {
+    await openFeaturedStory(page)
     await page.getByRole('button', { name: 'Add this page to browser favorites' }).click()
 
     await expect(page.getByText('Add to browser favorites', { exact: true })).toBeVisible()
@@ -75,6 +87,7 @@ test.describe('Landing page', () => {
   })
 
   test('hides and reveals the floating navigation on click', async ({ page }) => {
+    await openFeaturedStory(page)
     const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
     await page.getByRole('button', { name: 'Hide navigation' }).click()
 
@@ -85,9 +98,10 @@ test.describe('Landing page', () => {
     await expect(navigation).toBeVisible()
   })
 
-  test('downloads the featured story as a valid EPUB', async ({ page }) => {
+  test('downloads the current story as a valid EPUB', async ({ page }) => {
+    await openFeaturedStory(page)
     const downloadPromise = page.waitForEvent('download')
-    await page.getByRole('link', { name: 'Download featured story as EPUB' }).click()
+    await page.getByRole('link', { name: 'Download this story as EPUB' }).click()
     const download = await downloadPromise
 
     expect(download.suggestedFilename()).toBe('e2e-featured-story.epub')

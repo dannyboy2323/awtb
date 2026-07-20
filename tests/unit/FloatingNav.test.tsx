@@ -80,19 +80,13 @@ describe('FloatingNav', () => {
     expect(screen.getByRole('button', { name: 'Add this page to browser favorites' })).toBeVisible()
   })
 
-  it('downloads the featured story when the current route is not a story', () => {
+  it('does not render on the landing page or any other non-story route', () => {
     navigation.pathname = '/'
-    render(<FloatingNav />)
-
-    expect(screen.getByRole('link', { name: 'Download featured story as EPUB' })).toHaveAttribute(
-      'href',
-      '/api/epub'
-    )
-  })
-
-  it('does not cover Sanity Studio or developer tooling', () => {
-    navigation.pathname = '/studio/structure'
     const { rerender } = render(<FloatingNav />)
+    expect(screen.queryByRole('navigation', { name: 'Reader navigation' })).not.toBeInTheDocument()
+
+    navigation.pathname = '/studio/structure'
+    rerender(<FloatingNav />)
     expect(screen.queryByRole('navigation', { name: 'Reader navigation' })).not.toBeInTheDocument()
 
     navigation.pathname = '/dev/components'

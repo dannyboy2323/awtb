@@ -151,12 +151,14 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
     ? getShareDestinations(shareSnapshot.url, shareSnapshot.title)
     : []
   const storySlug = pathname.match(/^\/stories\/([^/]+)$/)?.[1]
-  const epubHref = storySlug ? `/api/epub?slug=${encodeURIComponent(storySlug)}` : '/api/epub'
   const shortcut =
     typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘D' : 'Ctrl+D'
 
-  // Public reader controls must not cover Sanity Studio or developer tooling.
-  if (pathname.startsWith('/studio') || pathname.startsWith('/dev')) return null
+  // The toolbar belongs to the immersive reader and must never cover landing,
+  // Studio, developer, or other non-story routes.
+  if (!storySlug) return null
+
+  const epubHref = `/api/epub?slug=${encodeURIComponent(storySlug)}`
 
   return (
     <>
@@ -233,9 +235,7 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
             <a
               href={epubHref}
               download
-              aria-label={
-                storySlug ? 'Download this story as EPUB' : 'Download featured story as EPUB'
-              }
+              aria-label="Download this story as EPUB"
               data-analytics-event={analyticsEvents.epubDownloaded}
             >
               <BookDown />
