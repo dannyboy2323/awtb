@@ -28,7 +28,6 @@ export interface FloatingNavProps {
 
 const DEFAULT_AUTO_HIDE_DELAY = 1800
 const SCROLL_DELTA = 8
-const TOP_THRESHOLD = 24
 
 function pageSnapshot(): { title: string; url: string } {
   return {
@@ -44,12 +43,12 @@ function isCoarsePointer(): boolean {
 /**
  * Renders the global shadcn toolbar without affecting document flow.
  *
- * The toolbar hides while scrolling down or shortly after pointer exit, then
- * reappears on upward scroll, top-edge hover, keyboard focus, or reveal click.
+ * The toolbar starts hidden, appears after a reveal click or meaningful scroll,
+ * and hides shortly after scrolling stops or the pointer exits.
  */
 export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }: FloatingNavProps) {
   const pathname = usePathname()
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [favoritesOpen, setFavoritesOpen] = useState(false)
   const [nativeShareAvailable] = useState(
@@ -57,7 +56,7 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
       typeof window !== 'undefined' && typeof navigator.share === 'function' && isCoarsePointer()
   )
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastScrollY = useRef(0)
+  const scrollPositions = useRef(new WeakMap<EventTarget, number>())
 
   const clearHideTimer = useCallback(() => {
     if (hideTimer.current) {
@@ -76,28 +75,31 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
     hideTimer.current = setTimeout(() => setVisible(false), autoHideDelay)
   }, [autoHideDelay, clearHideTimer])
 
+  const showTemporarily = useCallback(() => {
+    clearHideTimer()
+    setVisible(true)
+    hideTimer.current = setTimeout(() => setVisible(false), autoHideDelay)
+  }, [autoHideDelay, clearHideTimer])
+
   useEffect(() => {
-    lastScrollY.current = window.scrollY
+    const onScroll = (event: Event) => {
+      const target = event.target as EventTarget
+      const nextY = target instanceof Element ? target.scrollTop : window.scrollY
+      const previousY = scrollPositions.current.get(target) ?? 0
+      const delta = nextY - previousY
 
-    const onScroll = () => {
-      const nextY = window.scrollY
-      const delta = nextY - lastScrollY.current
-
-      if (nextY <= TOP_THRESHOLD || delta < -SCROLL_DELTA) {
-        showNavigation()
-      } else if (delta > SCROLL_DELTA) {
-        clearHideTimer()
-        setVisible(false)
-      }
-      lastScrollY.current = nextY
+      scrollPositions.current.set(target, nextY)
+      if (Math.abs(delta) >= SCROLL_DELTA) showTemporarily()
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true })
+    // Capture scrolls from the window and the reader's independently scrollable
+    // journal pages; native scroll events do not bubble.
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => {
       clearHideTimer()
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', onScroll, true)
     }
-  }, [clearHideTimer, showNavigation])
+  }, [clearHideTimer, showTemporarily])
 
   const copyCurrentUrl = useCallback(async (message: string) => {
     try {
@@ -163,13 +165,6 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
 
   return (
     <>
-      {/* The invisible top-edge target restores a hidden toolbar on desktop hover. */}
-      <div
-        className="fixed inset-x-0 top-0 z-90 h-4"
-        aria-hidden="true"
-        onPointerEnter={showNavigation}
-      />
-
       <nav
         className={cn(
           'dark bg-background/95 text-foreground border-border fixed inset-x-0 top-0 z-100 flex w-screen items-center justify-between border-b px-2 py-1.5 shadow-2xl backdrop-blur-md transition-[transform,opacity] duration-300',
@@ -275,7 +270,7 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
           <Button variant="ghost" asChild>
             <Link
               href="/about"
-              className="text-foreground font-medium tracking-wide"
+              className="text-foreground"
               data-analytics-event={analyticsEvents.navAboutOpened}
             >
               ABOUT
@@ -308,7 +303,6 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
           visible ? 'pointer-events-none -translate-y-8 opacity-0' : 'translate-y-0 opacity-100'
         )}
         aria-label="Show navigation"
-        onMouseEnter={showNavigation}
         onClick={showNavigation}
         data-analytics-event={analyticsEvents.navRevealed}
       >

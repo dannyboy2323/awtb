@@ -32,6 +32,8 @@ serverless Postgres via the pooled connection in `db/index.ts`.
 The full-viewport `FloatingNav` is a fixed client-side layer, so it never changes
 page layout. Home and About routes show the bull logo with an About link, while
 story routes show the logo with sharing, EPUB, and browser-favorite controls.
+The bar starts hidden and appears only after its reveal control is clicked or
+the reader scrolls, then auto-hides after scrolling stops or pointer exit.
 Mobile readers use the native Web Share API when available; desktop readers use
 the shadcn dropdown and AddToAny service links.
 `/api/epub` resolves the current or featured story, downloads optimized Sanity

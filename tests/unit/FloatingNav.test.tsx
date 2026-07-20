@@ -43,6 +43,10 @@ async function openShareMenu(user: ReturnType<typeof userEvent.setup>) {
   await screen.findByText('Facebook')
 }
 
+function revealNavigation() {
+  fireEvent.click(screen.getByRole('button', { name: 'Show navigation' }))
+}
+
 describe('FloatingNav', () => {
   beforeEach(() => {
     navigation.pathname = '/stories/test-story'
@@ -64,14 +68,16 @@ describe('FloatingNav', () => {
     vi.useRealTimers()
   })
 
-  it('renders a full-width story bar with a logo and the three required actions', () => {
+  it('starts hidden and reveals the full-width story bar on arrow click', () => {
     render(<FloatingNav />)
+    const nav = screen.getByTestId('floating-nav')
 
-    expect(screen.getByRole('navigation', { name: 'Reader navigation' })).toHaveClass(
-      'fixed',
-      'inset-x-0',
-      'w-screen'
-    )
+    expect(nav).toHaveClass('fixed', 'inset-x-0', 'w-screen', 'opacity-0')
+    expect(nav).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByRole('button', { name: 'Show navigation' })).toBeVisible()
+
+    revealNavigation()
+    expect(nav).toHaveClass('opacity-100')
     expect(screen.getByRole('link', { name: 'Adventures With The Bull home' })).toHaveAttribute(
       'href',
       '/'
@@ -85,9 +91,13 @@ describe('FloatingNav', () => {
     expect(screen.queryByRole('link', { name: 'ABOUT' })).not.toBeInTheDocument()
   })
 
-  it('renders the full-width marketing variant on home and about routes', () => {
+  it('renders the hidden marketing variant with theme-native About typography', () => {
     navigation.pathname = '/'
     const { rerender } = render(<FloatingNav />)
+    const nav = screen.getByTestId('floating-nav')
+
+    expect(nav).toHaveClass('opacity-0')
+    revealNavigation()
     expect(screen.getByRole('navigation', { name: 'Site navigation' })).toHaveClass(
       'fixed',
       'inset-x-0',
@@ -99,6 +109,7 @@ describe('FloatingNav', () => {
       '/'
     )
     expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('href', '/about')
+    expect(screen.getByRole('link', { name: 'ABOUT' })).not.toHaveClass('tracking-wide')
     expect(screen.queryByRole('button', { name: 'Share this page' })).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', { name: 'Download this story as EPUB' })
@@ -131,6 +142,7 @@ describe('FloatingNav', () => {
     const user = userEvent.setup()
     setNavigatorProperty('clipboard', { writeText: clipboardWrite })
     render(<FloatingNav />)
+    revealNavigation()
 
     await openShareMenu(user)
     expect(screen.getByText('SMS / Messages')).toBeVisible()
@@ -164,6 +176,7 @@ describe('FloatingNav', () => {
     clipboardWrite.mockRejectedValue(new Error('blocked'))
     setNavigatorProperty('clipboard', { writeText: clipboardWrite })
     render(<FloatingNav />)
+    revealNavigation()
 
     await openShareMenu(user)
     await user.click(screen.getByText('Copy link'))
@@ -184,6 +197,7 @@ describe('FloatingNav', () => {
     setNavigatorProperty('share', share)
     document.title = ''
     render(<FloatingNav />)
+    revealNavigation()
 
     await user.click(screen.getByRole('button', { name: 'Share this page' }))
 
@@ -204,6 +218,7 @@ describe('FloatingNav', () => {
     setCoarsePointer(true)
     setNavigatorProperty('share', share)
     render(<FloatingNav />)
+    revealNavigation()
 
     const trigger = screen.getByRole('button', { name: 'Share this page' })
     await user.click(trigger)
@@ -215,33 +230,45 @@ describe('FloatingNav', () => {
     )
   })
 
-  it('hides on pointer exit or downward scroll and reveals on click, hover, or upward scroll', () => {
+  it('reveals only on arrow click or meaningful scroll and then auto-hides', () => {
     vi.useFakeTimers()
     render(<FloatingNav autoHideDelay={50} />)
-    const nav = screen.getByRole('navigation', { name: 'Reader navigation' })
+    const nav = screen.getByTestId('floating-nav')
+
+    expect(nav).toHaveClass('opacity-0')
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'Show navigation' }))
+    expect(nav).toHaveClass('opacity-0')
+
+    revealNavigation()
+    expect(nav).toHaveClass('opacity-100')
 
     fireEvent.pointerLeave(nav)
     act(() => vi.advanceTimersByTime(50))
     expect(nav).toHaveClass('opacity-0')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show navigation' }))
-    expect(nav).toHaveClass('opacity-100')
-
+    revealNavigation()
     fireEvent.click(screen.getByRole('button', { name: 'Hide navigation' }))
     expect(nav).toHaveClass('opacity-0')
-    fireEvent.pointerEnter(document.querySelector('[aria-hidden="true"]') as Element)
-    expect(nav).toHaveClass('opacity-100')
 
     window.scrollY = 100
     fireEvent.scroll(window)
+    expect(nav).toHaveClass('opacity-100')
+    act(() => vi.advanceTimersByTime(50))
     expect(nav).toHaveClass('opacity-0')
+
+    const readerScroller = document.createElement('div')
+    readerScroller.scrollTop = 100
+    document.body.append(readerScroller)
+    fireEvent.scroll(readerScroller)
+    expect(nav).toHaveClass('opacity-100')
+    act(() => vi.advanceTimersByTime(50))
+    readerScroller.remove()
+
     window.scrollY = 105
     fireEvent.scroll(window)
     expect(nav).toHaveClass('opacity-0')
+
     window.scrollY = 50
-    fireEvent.scroll(window)
-    expect(nav).toHaveClass('opacity-100')
-    window.scrollY = 0
     fireEvent.scroll(window)
     expect(nav).toHaveClass('opacity-100')
   })
@@ -250,6 +277,7 @@ describe('FloatingNav', () => {
     const user = userEvent.setup()
     setNavigatorProperty('platform', 'Win32')
     const { unmount } = render(<FloatingNav autoHideDelay={100} />)
+    revealNavigation()
     const favorites = screen.getByRole('button', { name: 'Add this page to browser favorites' })
 
     await user.click(favorites)
