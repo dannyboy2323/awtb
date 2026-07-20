@@ -42,7 +42,20 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
         title="E2E Featured Story"
         coverImage={null}
         coverImagePortrait={null}
-        body={null}
+        body={Array.from({ length: 24 }, (_, index) => ({
+          _type: 'block',
+          _key: `e2e-paragraph-${index}`,
+          style: 'normal',
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              _key: `e2e-span-${index}`,
+              marks: [],
+              text: `E2E story paragraph ${index + 1} verifies the complete scrolling reader experience.`,
+            },
+          ],
+        }))}
       />
     )
   }

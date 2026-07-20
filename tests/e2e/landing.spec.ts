@@ -11,6 +11,10 @@ async function expectFullViewportWidth(page: Page, navigation: Locator) {
   expect(box?.width).toBe(await page.evaluate(() => window.innerWidth))
 }
 
+async function revealNavigation(page: Page) {
+  await page.getByRole('button', { name: 'Show navigation' }).click()
+}
+
 /**
  * Landing page E2E tests.
  * Covers the above-the-fold hero and below-the-fold postcard grid.
@@ -52,13 +56,24 @@ test.describe('Landing page', () => {
     await expect(page).toHaveTitle(/.+/)
   })
 
-  test('renders the full-width home navigation with only the About link', async ({ page }) => {
-    const navigation = page.getByRole('navigation', { name: 'Site navigation' })
-    await expect(navigation).toBeVisible()
+  test('starts with a hidden home navigation and reveals only the About link', async ({ page }) => {
+    const navigation = page.getByTestId('floating-nav')
+    await expect(navigation).toHaveAttribute('aria-hidden', 'true')
+    await expect(navigation).toHaveCSS('opacity', '0')
+    await expect(page.getByRole('button', { name: 'Show navigation' })).toBeVisible()
+
+    await revealNavigation(page)
+    await expect(navigation).toHaveAttribute('aria-hidden', 'false')
+    await expect(navigation).toHaveCSS('opacity', '1')
     await expect(navigation).toHaveCSS('position', 'fixed')
     await expectFullViewportWidth(page, navigation)
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('href', '/about')
+    const about = page.getByRole('link', { name: 'ABOUT' })
+    await expect(about).toHaveAttribute('href', '/about')
+    const themeFont = await page
+      .locator('body')
+      .evaluate((body) => getComputedStyle(body).fontFamily)
+    await expect(about).toHaveCSS('font-family', themeFont)
     await expect(page.getByRole('button', { name: 'Share this page' })).not.toBeAttached()
     await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).not.toBeAttached()
     await expect(
@@ -67,6 +82,7 @@ test.describe('Landing page', () => {
   })
 
   test('opens the new About page from the home navigation', async ({ page }) => {
+    await revealNavigation(page)
     await page.getByRole('link', { name: 'ABOUT' }).click()
 
     await expect(page).toHaveURL('/about')
@@ -78,8 +94,13 @@ test.describe('Landing page', () => {
 
   test('renders the full-width story navigation without shifting the page', async ({ page }) => {
     await openFeaturedStory(page)
-    const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
-    await expect(navigation).toBeVisible()
+    const navigation = page.getByTestId('floating-nav')
+    await expect(navigation).toHaveAttribute('aria-hidden', 'true')
+    await expect(navigation).toHaveCSS('opacity', '0')
+
+    await revealNavigation(page)
+    await expect(navigation).toHaveAttribute('aria-hidden', 'false')
+    await expect(navigation).toHaveCSS('opacity', '1')
     await expect(navigation).toHaveCSS('position', 'fixed')
     await expectFullViewportWidth(page, navigation)
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
@@ -93,6 +114,7 @@ test.describe('Landing page', () => {
 
   test('opens the complete desktop share widget', async ({ page }) => {
     await openFeaturedStory(page)
+    await revealNavigation(page)
     await page.getByRole('button', { name: 'Share this page' }).click()
 
     await expect(page.getByText('SMS / Messages')).toBeVisible()
@@ -107,6 +129,7 @@ test.describe('Landing page', () => {
 
   test('shows browser favorites guidance', async ({ page }) => {
     await openFeaturedStory(page)
+    await revealNavigation(page)
     await page.getByRole('button', { name: 'Add this page to browser favorites' }).click()
 
     await expect(page.getByText('Add to browser favorites', { exact: true })).toBeVisible()
@@ -114,20 +137,24 @@ test.describe('Landing page', () => {
     await expect(page.getByText('Copy page link')).toBeVisible()
   })
 
-  test('hides and reveals the floating navigation on click', async ({ page }) => {
+  test('reveals the hidden navigation on arrow click or scroll', async ({ page }) => {
     await openFeaturedStory(page)
-    const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
-    await page.getByRole('button', { name: 'Hide navigation' }).click()
+    const navigation = page.getByTestId('floating-nav')
+    await expect(navigation).toHaveAttribute('aria-hidden', 'true')
+    await expect(navigation).toHaveCSS('opacity', '0')
 
-    await expect(navigation).toBeHidden()
-    const reveal = page.getByRole('button', { name: 'Show navigation' })
-    await expect(reveal).toBeVisible()
-    await reveal.click()
-    await expect(navigation).toBeVisible()
+    await revealNavigation(page)
+    await expect(navigation).toHaveAttribute('aria-hidden', 'false')
+    await page.getByRole('button', { name: 'Hide navigation' }).click()
+    await expect(navigation).toHaveAttribute('aria-hidden', 'true')
+
+    await page.evaluate(() => window.scrollTo(0, 500))
+    await expect(navigation).toHaveAttribute('aria-hidden', 'false')
   })
 
   test('downloads the current story as a valid EPUB', async ({ page }) => {
     await openFeaturedStory(page)
+    await revealNavigation(page)
     const downloadPromise = page.waitForEvent('download')
     await page.getByRole('link', { name: 'Download this story as EPUB' }).click()
     const download = await downloadPromise

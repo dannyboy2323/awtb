@@ -28,7 +28,7 @@
     {
       "id": "floating-nav-home-visible",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "renders the full-width home navigation with only the About link"
+      "test": "starts with a hidden home navigation and reveals only the About link"
     },
     {
       "id": "about-page-navigation",
@@ -53,7 +53,7 @@
     {
       "id": "floating-nav-visibility-toggle",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "hides and reveals the floating navigation on click"
+      "test": "reveals the hidden navigation on arrow click or scroll"
     },
     {
       "id": "floating-nav-epub-download",
