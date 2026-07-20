@@ -109,6 +109,8 @@ describe('FloatingNav', () => {
       '/'
     )
     expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('href', '/about')
+    expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveClass('text-foreground')
+    expect(screen.getByRole('link', { name: 'ABOUT' })).not.toHaveAttribute('aria-current')
     expect(screen.getByRole('link', { name: 'ABOUT' })).not.toHaveClass('tracking-wide')
     expect(screen.queryByRole('button', { name: 'Share this page' })).not.toBeInTheDocument()
     expect(
@@ -121,7 +123,8 @@ describe('FloatingNav', () => {
     navigation.pathname = '/about'
     rerender(<FloatingNav />)
     expect(screen.getByRole('navigation', { name: 'Site navigation' })).toBeVisible()
-    expect(screen.getByRole('link', { name: 'ABOUT' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveClass('text-muted-foreground')
+    expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('aria-current', 'page')
   })
 
   it('does not render on Studio, developer, or other application routes', () => {

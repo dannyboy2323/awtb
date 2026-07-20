@@ -27,6 +27,7 @@ npm run test:ui           # interactive Vitest UI
 
 | File                                   | What it tests                                               |
 | -------------------------------------- | ----------------------------------------------------------- |
+| `tests/unit/AboutPage.test.tsx`        | About copy, semantic structure, metadata, and theme tokens  |
 | `tests/unit/AnalyticsActions.test.tsx` | Delegated semantic click and keyboard analytics             |
 | `tests/unit/DeskHero.test.tsx`         | DeskHero component rendering and link behaviour             |
 | `tests/unit/FloatingNav.test.tsx`      | Floating nav visibility, sharing, EPUB links, and favorites |

@@ -30,6 +30,7 @@ export default defineConfig({
         // New navigation and EPUB surfaces are held to complete
         // coverage independently so their guarantees cannot regress behind
         // the repository-wide aggregate.
+        'app/about/page.tsx': { 100: true },
         'app/api/epub/route.ts': { 100: true },
         'components/public/FloatingNav.tsx': { 100: true },
         'components/public/StoryDrawer.tsx': { 100: true },
