@@ -25,11 +25,11 @@ npm run test:ui           # interactive Vitest UI
 
 ### What's tested
 
-| File                                  | What it tests                                               |
-| ------------------------------------- | ----------------------------------------------------------- |
+| File                                   | What it tests                                               |
+| -------------------------------------- | ----------------------------------------------------------- |
 | `tests/unit/AnalyticsActions.test.tsx` | Delegated semantic click and keyboard analytics             |
 | `tests/unit/DeskHero.test.tsx`         | DeskHero component rendering and link behaviour             |
-| `tests/unit/PostHogProvider.test.tsx`  | Initialization privacy settings and semantic pageviews      |
+| `tests/unit/PostHogProvider.test.tsx`  | Initialization guard when token is absent, privacy settings, and semantic pageviews |
 | `tests/unit/PostcardGrid.test.tsx`     | PostcardGrid rendering with various story counts            |
 | `tests/unit/StoryReader.test.tsx`      | Reader pagination, lightbox, and responsive behaviour       |
 | `tests/unit/db.test.ts`                | Drizzle ORM schema type inference                           |

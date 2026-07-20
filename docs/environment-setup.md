@@ -1,3 +1,5 @@
+The diff contains no changes that affect the environment variable reference or setup instructions. The PostHog initialization change (guarding against a missing token) is an internal code detail, not a documentation-level change to how the variable is obtained or configured. All other changes are interface exports, dependency version bumps, script logic, and test additions — none of which affect this document's content.
+
 # Environment Variable Setup
 
 ## Overview

@@ -74,9 +74,12 @@ Sentry captures browser, server, edge, router-transition, request, and global
 React errors. Vercel Analytics and Speed Insights capture platform-level traffic
 and performance. PostHog provides pageviews, session replay, feature flags,
 autocapture, and stable semantic product events declared in `lib/analytics.ts`.
+PostHog is only initialized when `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` is set,
+so it is safely skipped in test and local environments without the token.
 The observability gate requires every production link, anchor, form, and button
 to declare `data-analytics-event`, and every stable event in the analytics
-registry must be connected to a production action.
+registry must be connected to a production action. The registry coverage check
+also scans `.ts` source files in addition to `.tsx` files.
 
 ## Key Directories
 

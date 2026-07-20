@@ -1,3 +1,15 @@
+The diff contains no changes that affect the deployment guide content. The changes are:
+
+- Interface/type exports in component files (internal refactoring)
+- PostHog initialization guard for missing token (implementation detail, not deployment config)
+- Package version bumps (not documented in deployment guide)
+- `check-observability.mjs` script enhancement (not referenced in deployment guide)
+- New unit test file
+- TypeDoc configuration additions
+- `package.json` overrides additions
+
+None of these affect the deployment guide's documented processes, environment variables, monitoring setup, CI pipeline, or any other section.
+
 # Deployment Guide
 
 ## Overview

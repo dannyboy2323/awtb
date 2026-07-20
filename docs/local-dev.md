@@ -1,3 +1,5 @@
+The diff contains no changes that affect the local development guide — no new commands, no changed URLs, no altered prerequisites, and no modifications to the quality gate workflow that would require updating this document.
+
 # Local Development Guide
 
 ## Prerequisites
