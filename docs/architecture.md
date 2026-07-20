@@ -29,6 +29,12 @@ Vercel Edge Config via `getFeaturedStorySlug`. Sanity assets are served
 from the Sanity CDN. Database queries go through Drizzle ORM to Neon
 serverless Postgres via the pooled connection in `db/index.ts`.
 
+The global `FloatingNav` is a fixed client-side layer, so it never changes
+landing-page or reader layout. Mobile readers use the native Web Share API when
+available; desktop readers use the shadcn dropdown and AddToAny service links.
+`/api/epub` resolves the current or featured story, downloads optimized Sanity
+images, and assembles a cached EPUB 3 archive for offline reading.
+
 ## Cache Invalidation
 
 Content changes in Sanity Studio trigger a webhook to `/api/revalidate`
@@ -76,7 +82,8 @@ and performance. PostHog provides pageviews, session replay, feature flags,
 autocapture, and stable semantic product events declared in `lib/analytics.ts`.
 The observability gate requires every production link, anchor, form, and button
 to declare `data-analytics-event`, and every stable event in the analytics
-registry must be connected to a production action.
+registry must be connected to a production action. Floating-navigation visibility,
+sharing, EPUB, and favorite actions use the same semantic event boundary.
 
 ## Key Directories
 

@@ -40,4 +40,60 @@ test.describe('Landing page', () => {
   test('page title is set', async ({ page }) => {
     await expect(page).toHaveTitle(/.+/)
   })
+
+  test('renders the floating navigation without shifting the page', async ({ page }) => {
+    const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
+    await expect(navigation).toBeVisible()
+    await expect(navigation).toHaveCSS('position', 'fixed')
+    await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Share this page' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Download featured story as EPUB' })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Add this page to browser favorites' })
+    ).toBeVisible()
+  })
+
+  test('opens the complete desktop share widget', async ({ page }) => {
+    await page.getByRole('button', { name: 'Share this page' }).click()
+
+    await expect(page.getByText('SMS / Messages')).toBeVisible()
+    await expect(page.getByText('Email', { exact: true })).toBeVisible()
+    await expect(page.getByText('Print', { exact: true })).toBeVisible()
+    await expect(page.getByText('Facebook')).toBeVisible()
+    await expect(page.getByText('X', { exact: true })).toBeVisible()
+    await expect(page.getByText('Reddit')).toBeVisible()
+    await expect(page.getByText('Instagram (copy link)')).toBeVisible()
+    await expect(page.getByText('More apps & sites')).toBeVisible()
+  })
+
+  test('shows browser favorites guidance', async ({ page }) => {
+    await page.getByRole('button', { name: 'Add this page to browser favorites' }).click()
+
+    await expect(page.getByText('Add to browser favorites', { exact: true })).toBeVisible()
+    await expect(page.getByText(/Ctrl\+D|⌘D/)).toBeVisible()
+    await expect(page.getByText('Copy page link')).toBeVisible()
+  })
+
+  test('hides and reveals the floating navigation on click', async ({ page }) => {
+    const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
+    await page.getByRole('button', { name: 'Hide navigation' }).click()
+
+    await expect(navigation).toBeHidden()
+    const reveal = page.getByRole('button', { name: 'Show navigation' })
+    await expect(reveal).toBeVisible()
+    await reveal.click()
+    await expect(navigation).toBeVisible()
+  })
+
+  test('downloads the featured story as a valid EPUB', async ({ page }) => {
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByRole('link', { name: 'Download featured story as EPUB' }).click()
+    const download = await downloadPromise
+
+    expect(download.suggestedFilename()).toBe('e2e-featured-story.epub')
+    const stream = await download.createReadStream()
+    const chunks: Buffer[] = []
+    for await (const chunk of stream) chunks.push(Buffer.from(chunk))
+    expect(Buffer.concat(chunks).subarray(0, 2).toString()).toBe('PK')
+  })
 })

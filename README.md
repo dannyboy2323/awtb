@@ -2,6 +2,8 @@
 
 > A graphic-novel storytelling platform. Readers enter each story through a postcard;
 > inside, graphic-novel panels and prose are presented side by side, page by page.
+> A floating reader toolbar provides native or cross-platform sharing, offline EPUB
+> downloads, and browser-favorite guidance without shifting the illustrated layout.
 
 [![CI](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml/badge.svg)](https://github.com/dannyboy2323/awtb/actions/workflows/ci.yml)
 [![Docs](https://github.com/dannyboy2323/awtb/actions/workflows/docs.yml/badge.svg)](https://github.com/dannyboy2323/awtb/actions/workflows/docs.yml)

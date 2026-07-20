@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs'
+import FloatingNav from '@/components/public/FloatingNav'
 import { PostHogProvider } from '@/components/shared/PostHogProvider'
 
 import './globals.css'
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
           )}
           <SanityLive onError={handleError} />
           <PostHogProvider>
+            <FloatingNav />
             <main>{children}</main>
           </PostHogProvider>
         </section>
