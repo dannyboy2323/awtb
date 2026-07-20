@@ -107,6 +107,12 @@ git rm --cached .env.local
 | ---------------------- | -------- | ----------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Yes      | `http://localhost:3000` locally, `https://yourdomain.com` in production |
 
+### Testing
+
+| Variable      | Required | Where to find                                                              |
+| ------------- | -------- | -------------------------------------------------------------------------- |
+| `E2E_TEST`    | No       | Set to `true` to enable E2E test mode, which stubs Sanity data with fixed fixtures |
+
 ---
 
 ## Adding a New Variable

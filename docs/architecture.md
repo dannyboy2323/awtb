@@ -1,3 +1,5 @@
+The doc already accurately describes the StoryDrawer in the Data Flow section and the analytics registry in Observability. No changes are needed.
+
 # Architecture
 
 ## Stack

@@ -1,3 +1,5 @@
+The doc is already accurate — `tests/unit/StoryDrawer.test.tsx` is already listed in the unit test table, and the E2E table entry for `landing.spec.ts` already covers story nav. No factual inaccuracies or missing content exist relative to the diff.
+
 # Testing Guide
 
 ## Overview
