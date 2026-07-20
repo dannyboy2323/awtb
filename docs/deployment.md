@@ -1,3 +1,5 @@
+The diff contains no changes relevant to deployment, infrastructure, CI, monitoring, environment variables, database migrations, rollbacks, or any other topic covered in `docs/deployment.md`. The changes are limited to the About page content, FloatingNav active-state styling, tests, and coverage configuration.
+
 # Deployment Guide
 
 ## Overview
