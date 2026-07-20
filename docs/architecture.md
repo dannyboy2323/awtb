@@ -36,6 +36,10 @@ The bar starts hidden and appears only after its reveal control is clicked or
 the reader scrolls, then auto-hides after scrolling stops or pointer exit.
 Mobile readers use the native Web Share API when available; desktop readers use
 the shadcn dropdown and AddToAny service links.
+Story routes also receive the ordered published-story index alongside the active
+story. A client-side shadcn Sheet keeps that navigation hidden until requested,
+then displays postcard-only links in CMS order. Theme-token opacity marks earlier
+stories as read, while border, accent, and ring tokens identify the current story.
 `/api/epub` resolves the current or featured story, downloads optimized Sanity
 images, and assembles a cached EPUB 3 archive for offline reading.
 
@@ -87,7 +91,8 @@ autocapture, and stable semantic product events declared in `lib/analytics.ts`.
 The observability gate requires every production link, anchor, form, and button
 to declare `data-analytics-event`, and every stable event in the analytics
 registry must be connected to a production action. Floating-navigation visibility,
-sharing, EPUB, and favorite actions use the same semantic event boundary.
+sharing, EPUB, favorites, and story-drawer navigation use the same semantic event
+boundary.
 
 ## Key Directories
 
