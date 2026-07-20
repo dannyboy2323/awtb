@@ -26,14 +26,19 @@
       "test": "page title is set"
     },
     {
-      "id": "floating-nav-landing-hidden",
+      "id": "floating-nav-home-visible",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "does not render the floating navigation on the landing page"
+      "test": "renders the full-width home navigation with only the About link"
+    },
+    {
+      "id": "about-page-navigation",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "opens the new About page from the home navigation"
     },
     {
       "id": "floating-nav-story-visible",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "renders the floating navigation on a story without shifting the page"
+      "test": "renders the full-width story navigation without shifting the page"
     },
     {
       "id": "floating-nav-share-widget",

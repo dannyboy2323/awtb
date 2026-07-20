@@ -1,8 +1,14 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Locator, type Page } from '@playwright/test'
 
 async function openFeaturedStory(page: Page) {
   await page.locator('.desk-hero a').first().click()
   await expect(page).toHaveURL(/\/stories\/[^/]+$/)
+}
+
+async function expectFullViewportWidth(page: Page, navigation: Locator) {
+  const box = await navigation.boundingBox()
+  expect(box?.x).toBe(0)
+  expect(box?.width).toBe(await page.evaluate(() => window.innerWidth))
 }
 
 /**
@@ -46,21 +52,43 @@ test.describe('Landing page', () => {
     await expect(page).toHaveTitle(/.+/)
   })
 
-  test('does not render the floating navigation on the landing page', async ({ page }) => {
-    await expect(page.getByRole('navigation', { name: 'Reader navigation' })).not.toBeAttached()
+  test('renders the full-width home navigation with only the About link', async ({ page }) => {
+    const navigation = page.getByRole('navigation', { name: 'Site navigation' })
+    await expect(navigation).toBeVisible()
+    await expect(navigation).toHaveCSS('position', 'fixed')
+    await expectFullViewportWidth(page, navigation)
+    await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('href', '/about')
+    await expect(page.getByRole('button', { name: 'Share this page' })).not.toBeAttached()
+    await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).not.toBeAttached()
+    await expect(
+      page.getByRole('button', { name: 'Add this page to browser favorites' })
+    ).not.toBeAttached()
   })
 
-  test('renders the floating navigation on a story without shifting the page', async ({ page }) => {
+  test('opens the new About page from the home navigation', async ({ page }) => {
+    await page.getByRole('link', { name: 'ABOUT' }).click()
+
+    await expect(page).toHaveURL('/about')
+    await expect(page.getByRole('heading', { name: 'About', level: 1 })).toBeVisible()
+    const navigation = page.getByRole('navigation', { name: 'Site navigation' })
+    await expect(navigation).toBeVisible()
+    await expectFullViewportWidth(page, navigation)
+  })
+
+  test('renders the full-width story navigation without shifting the page', async ({ page }) => {
     await openFeaturedStory(page)
     const navigation = page.getByRole('navigation', { name: 'Reader navigation' })
     await expect(navigation).toBeVisible()
     await expect(navigation).toHaveCSS('position', 'fixed')
+    await expectFullViewportWidth(page, navigation)
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Share this page' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).toBeVisible()
     await expect(
       page.getByRole('button', { name: 'Add this page to browser favorites' })
     ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'ABOUT' })).not.toBeAttached()
   })
 
   test('opens the complete desktop share widget', async ({ page }) => {
