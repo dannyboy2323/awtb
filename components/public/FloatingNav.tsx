@@ -270,7 +270,8 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
           <Button variant="ghost" asChild>
             <Link
               href="/about"
-              className="text-foreground"
+              className={pathname === '/about' ? 'text-muted-foreground' : 'text-foreground'}
+              aria-current={pathname === '/about' ? 'page' : undefined}
               data-analytics-event={analyticsEvents.navAboutOpened}
             >
               ABOUT

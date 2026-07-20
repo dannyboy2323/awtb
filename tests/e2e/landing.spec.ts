@@ -87,10 +87,27 @@ test.describe('Landing page', () => {
     await page.getByRole('link', { name: 'ABOUT' }).click()
 
     await expect(page).toHaveURL('/about', { timeout: 15_000 })
-    await expect(page.getByRole('heading', { name: 'About', level: 1 })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Adventures with the Bull', level: 1 })
+    ).toBeVisible()
+    await expect(
+      page.getByText('A love letter from a father to his son.', { exact: true })
+    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'The Bull', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'When I Went Away', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'How This Began', level: 2 })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'What This Is', level: 2 })).toBeVisible()
+    await expect(page.getByText('Welcome to the adventures. The Bull goes first.')).toBeVisible()
     const navigation = page.getByRole('navigation', { name: 'Site navigation' })
     await expect(navigation).toBeVisible()
     await expectFullViewportWidth(page, navigation)
+    await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toHaveAttribute(
+      'href',
+      '/'
+    )
+    const activeAbout = page.getByRole('link', { name: 'ABOUT' })
+    await expect(activeAbout).toHaveAttribute('aria-current', 'page')
+    await expect(activeAbout).toHaveClass(/text-muted-foreground/)
   })
 
   test('renders the full-width story navigation without shifting the page', async ({ page }) => {
