@@ -1,0 +1,39 @@
+{
+  "journeys": [
+    {
+      "id": "landing-loads",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "loads without errors"
+    },
+    {
+      "id": "landing-hero-visible",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "renders the desk hero section above the fold"
+    },
+    {
+      "id": "landing-featured-link",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "hero contains a clickable postcard link"
+    },
+    {
+      "id": "featured-story-navigation",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "opens the featured story from the hero"
+    },
+    {
+      "id": "landing-metadata",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "page title is set"
+    },
+    {
+      "id": "studio-route",
+      "spec": "tests/e2e/studio.spec.ts",
+      "test": "loads at /studio without a 404 or 500"
+    },
+    {
+      "id": "studio-ui",
+      "spec": "tests/e2e/studio.spec.ts",
+      "test": "renders the Studio UI"
+    }
+  ]
+}

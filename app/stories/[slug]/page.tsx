@@ -16,6 +16,7 @@ interface StoryPageProps {
   params: Promise<{ slug: string }>
 }
 
+/** Builds social and browser metadata for a story reader route. */
 export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
   const { slug } = await params
   const { data } = await sanityFetch({ query: storyBySlugQuery, params: { slug } })
@@ -35,7 +36,6 @@ export default async function StoryReaderPage({ params }: StoryPageProps) {
   const story = data as StoryBySlugQueryResult
 
   if (!story) notFound()
-
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body = (story as any).body ?? null

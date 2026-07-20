@@ -1,5 +1,6 @@
 import { defineQuery } from 'next-sanity'
 
+/** Global site settings used for metadata and shared navigation. */
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]`)
 
 /**
@@ -22,6 +23,7 @@ const linkFields = /* groq */ `
       }
 `
 
+/** Fetches a page and dereferences its page-builder link fields. */
 export const getPageQuery = defineQuery(`
   *[_type == 'page' && slug.current == $slug][0]{
     _id,
@@ -64,6 +66,7 @@ export const sitemapData = defineQuery(`
   }
 `)
 
+/** Returns all published page slugs for static route generation. */
 export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
@@ -185,6 +188,7 @@ export const storyBySlugQuery = defineQuery(`
   }
 `)
 
+/** Fully dereferenced story payload returned by {@link storyBySlugQuery}. */
 export type StoryBySlugQueryResult = {
   _id: string
   title: string | null

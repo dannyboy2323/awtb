@@ -48,6 +48,7 @@ export async function generateMetadata(props: PageProps<'/[slug]'>): Promise<Met
   } satisfies Metadata
 }
 
+/** Renders a Sanity-authored page resolved from its URL slug. */
 export default async function Page(props: PageProps<'/[slug]'>) {
   const params = await props.params
   const [{ data: page }] = await Promise.all([sanityFetch({ query: getPageQuery, params })])

@@ -13,6 +13,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import deskUrls from '@/public/desk-image-urls.json'
+import { analyticsEvents } from '@/lib/analytics'
 
 interface DeskHeroProps {
   /** The featured story's postcard image URL (from Sanity CDN) */
@@ -183,6 +184,7 @@ export default function DeskHero({
           href={`/stories/${storySlug}`}
           className="postcard-container block"
           aria-label={`Read "${storyTitle}"`}
+          data-analytics-event={analyticsEvents.storyOpened}
         >
           <div className="postcard-wrapper">
             <Image

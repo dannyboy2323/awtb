@@ -68,6 +68,7 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+/** Provides global auth, analytics, monitoring, fonts, and draft-mode UI. */
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   const { isEnabled: isDraftMode } = await draftMode()
 

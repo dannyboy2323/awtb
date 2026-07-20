@@ -30,6 +30,13 @@ test.describe('Landing page', () => {
     await expect(link).toHaveAttribute('href', /\/stories\//)
   })
 
+  test('opens the featured story from the hero', async ({ page }) => {
+    const link = page.locator('.desk-hero a').first()
+    await link.click()
+    await expect(page).toHaveURL(/\/stories\/[^/]+$/)
+    await expect(page.getByRole('main', { name: /story reader/i })).toBeVisible()
+  })
+
   test('page title is set', async ({ page }) => {
     await expect(page).toHaveTitle(/.+/)
   })

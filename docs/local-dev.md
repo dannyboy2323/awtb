@@ -48,6 +48,12 @@ npm run dev
 | `npm run db:migrate`    | Apply pending migrations                  |
 | `npm run email:dev`     | Preview email templates at localhost:3001 |
 | `npm run docs`          | Generate TypeDoc API docs                 |
+| `npm run quality:gate`  | Run the complete pre-commit quality gate  |
+
+The Husky pre-commit hook runs `npm run quality:gate`. It validates generated
+types, lint, environment completeness, exported API documentation, semantic
+analytics coverage, unit coverage, every declared E2E journey, the production
+build, and a real `next start` HTTP smoke test.
 
 ## Environment Variables
 

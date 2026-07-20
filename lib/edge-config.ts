@@ -1,4 +1,5 @@
 import { get } from '@vercel/edge-config'
+import * as Sentry from '@sentry/nextjs'
 
 /**
  * Reads the featured story slug from Vercel Edge Config.
@@ -8,7 +9,8 @@ export async function getFeaturedStorySlug(): Promise<string | null> {
   try {
     const slug = await get<string>('featuredStorySlug')
     return slug ?? null
-  } catch {
+  } catch (error) {
+    if (process.env.EDGE_CONFIG) Sentry.captureException(error)
     // Edge Config unavailable in local dev until EDGE_CONFIG is set
     return null
   }

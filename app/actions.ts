@@ -2,6 +2,7 @@
 
 import { draftMode } from 'next/headers'
 
+/** Disables Next.js draft mode and returns the visitor to published content. */
 export async function disableDraftMode() {
   'use server'
   await Promise.allSettled([

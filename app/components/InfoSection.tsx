@@ -11,6 +11,7 @@ type InfoProps = {
   pageType: string
 }
 
+/** Renders a Sanity information-section page-builder block. */
 export default function CTA({ block }: InfoProps) {
   return (
     <div className="container my-12">

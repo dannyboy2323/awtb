@@ -30,5 +30,7 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
+/** Persisted user record inferred from the Drizzle schema. */
 export type User = typeof users.$inferSelect
+/** Insertable user record inferred from the Drizzle schema. */
 export type NewUser = typeof users.$inferInsert

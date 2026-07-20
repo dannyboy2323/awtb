@@ -1,0 +1,3 @@
+echo "Running the full pre-commit quality gate..."
+
+npm run quality:gate

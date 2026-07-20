@@ -59,6 +59,7 @@ import React, {
 } from 'react'
 import Image from 'next/image'
 import { PortableText, PortableTextComponents } from '@portabletext/react'
+import { analyticsEvents } from '@/lib/analytics'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -75,8 +76,7 @@ export interface CoverImageAsset {
 }
 
 /** A single Portable Text block from the Sanity body field. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BodyBlock = Record<string, any>
+export type BodyBlock = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /**
  * normalizeBlocks
@@ -125,6 +125,7 @@ interface LightboxContextValue {
   openLightbox: (img: LightboxImage) => void
 }
 
+/** Shared lightbox controls for story panel renderers. */
 export const LightboxContext = createContext<LightboxContextValue>({
   openLightbox: () => {},
 })
@@ -161,7 +162,12 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
   if (!image) return null
 
   return (
-    <div className="lightbox-overlay" role="presentation" onClick={onClose}>
+    <div
+      className="lightbox-overlay"
+      role="presentation"
+      onClick={onClose}
+      data-analytics-event={analyticsEvents.lightboxClosed}
+    >
       <div
         className="lightbox-inner"
         role="dialog"
@@ -170,7 +176,12 @@ function Lightbox({ image, onClose }: { image: LightboxImage | null; onClose: ()
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
       >
-        <button className="lightbox-close" onClick={onClose} aria-label="Close image">
+        <button
+          className="lightbox-close"
+          onClick={onClose}
+          aria-label="Close image"
+          data-analytics-event={analyticsEvents.lightboxClosed}
+        >
           ✕
         </button>
         <Image
@@ -311,6 +322,7 @@ function PanelImageRenderer({ value: block }: { value: PanelImageBlock }) {
         aria-label={`View full size: ${altText}`}
         title="Click to enlarge"
         onClick={() => openLightbox({ url: fullUrl, alt: altText, width, height })}
+        data-analytics-event={analyticsEvents.panelOpened}
       >
         <Image
           src={thumbUrl}

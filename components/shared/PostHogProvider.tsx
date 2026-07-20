@@ -17,6 +17,7 @@ import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider, usePostHog } from 'posthog-js/react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
+import { AnalyticsActions } from '@/components/shared/AnalyticsActions'
 
 function PostHogPageView() {
   const pathname = usePathname()
@@ -52,6 +53,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       <Suspense fallback={null}>
         <PostHogPageView />
       </Suspense>
+      <AnalyticsActions />
       {children}
     </PHProvider>
   )

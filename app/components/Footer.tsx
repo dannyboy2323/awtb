@@ -8,6 +8,7 @@
  */
 
 import Link from 'next/link'
+import { analyticsEvents } from '@/lib/analytics'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -24,6 +25,7 @@ export default function Footer() {
             <Link
               href="/about"
               className="hover:bg-blue focus:bg-blue flex items-center gap-2 rounded-full bg-black px-6 py-3 font-mono whitespace-nowrap text-white transition-colors duration-200"
+              data-analytics-event={analyticsEvents.footerAboutOpened}
             >
               About
             </Link>

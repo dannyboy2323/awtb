@@ -87,22 +87,23 @@ npm run dev
 
 ## Available Scripts
 
-| Command              | What it does                                       |
-| -------------------- | -------------------------------------------------- |
-| `npm run dev`        | Dev server (Turbopack). Runs `typegen` first.      |
-| `npm run build`      | Production build.                                  |
-| `npm run typegen`    | Regenerate `sanity.types.ts` after schema changes. |
-| `npm run type-check` | TypeScript check.                                  |
-| `npm run lint`       | ESLint.                                            |
-| `npm run format`     | Prettier (sorts `package.json` too).               |
-| `npm test`           | Vitest unit tests.                                 |
-| `npm run test:e2e`   | Playwright E2E tests.                              |
-| `npm run test:all`   | Unit + E2E — full pre-merge check.                 |
-| `npm run analyze`    | Bundle size treemap.                               |
-| `npm run db:push`    | Push schema changes to Neon database.              |
-| `npm run db:studio`  | Open Drizzle Studio.                               |
-| `npm run email:dev`  | Preview email templates at localhost:3001.         |
-| `npm run docs`       | Generate TypeDoc API docs.                         |
+| Command                | What it does                                                                                         |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | Dev server (Turbopack). Runs `typegen` first.                                                        |
+| `npm run build`        | Production build.                                                                                    |
+| `npm run typegen`      | Regenerate `sanity.types.ts` after schema changes.                                                   |
+| `npm run type-check`   | TypeScript check.                                                                                    |
+| `npm run lint`         | ESLint.                                                                                              |
+| `npm run format`       | Prettier (sorts `package.json` too).                                                                 |
+| `npm test`             | Vitest unit tests.                                                                                   |
+| `npm run test:e2e`     | Playwright E2E tests.                                                                                |
+| `npm run quality:gate` | Full local commit gate: types, lint, env, docs, observability, tests, build, and runtime smoke test. |
+| `npm run test:all`     | Unit + E2E — full pre-merge check.                                                                   |
+| `npm run analyze`      | Bundle size treemap.                                                                                 |
+| `npm run db:push`      | Push schema changes to Neon database.                                                                |
+| `npm run db:studio`    | Open Drizzle Studio.                                                                                 |
+| `npm run email:dev`    | Preview email templates at localhost:3001.                                                           |
+| `npm run docs`         | Generate TypeDoc API docs.                                                                           |
 
 ---
 
@@ -153,7 +154,8 @@ Production is monitored by Checkly every 10 minutes from `us-east-1` and `eu-cen
 ## Contributing
 
 All changes go through feature branches and PRs. Direct pushes to `main` are blocked.
-The pre-push hook runs typecheck, lint, and tests automatically.
+The pre-commit hook runs the complete `quality:gate`; the pre-push hook repeats the
+fast typecheck, lint, and unit-test subset.
 
 → **[Contributing guide](.github/CONTRIBUTING.md)**
 
