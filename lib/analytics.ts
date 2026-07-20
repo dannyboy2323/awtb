@@ -23,6 +23,8 @@ export const analyticsEvents = {
   sanityCorsManagementOpened: 'sanity_cors_management_opened',
   shareDestinationOpened: 'share_destination_opened',
   shareOpened: 'share_opened',
+  storyDrawerOpened: 'story_drawer_opened',
+  storyDrawerStoryOpened: 'story_drawer_story_opened',
   storyOpened: 'story_opened',
 } as const
 

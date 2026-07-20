@@ -41,6 +41,11 @@
       "test": "renders the full-width story navigation without shifting the page"
     },
     {
+      "id": "story-drawer-navigation",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "navigates ordered story postcards from the hidden left drawer"
+    },
+    {
       "id": "floating-nav-share-widget",
       "spec": "tests/e2e/landing.spec.ts",
       "test": "opens the complete desktop share widget"

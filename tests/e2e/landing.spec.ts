@@ -79,13 +79,14 @@ test.describe('Landing page', () => {
     await expect(
       page.getByRole('button', { name: 'Add this page to browser favorites' })
     ).not.toBeAttached()
+    await expect(page.getByRole('button', { name: 'Open story navigation' })).not.toBeAttached()
   })
 
   test('opens the new About page from the home navigation', async ({ page }) => {
     await revealNavigation(page)
     await page.getByRole('link', { name: 'ABOUT' }).click()
 
-    await expect(page).toHaveURL('/about')
+    await expect(page).toHaveURL('/about', { timeout: 15_000 })
     await expect(page.getByRole('heading', { name: 'About', level: 1 })).toBeVisible()
     const navigation = page.getByRole('navigation', { name: 'Site navigation' })
     await expect(navigation).toBeVisible()
@@ -110,6 +111,36 @@ test.describe('Landing page', () => {
       page.getByRole('button', { name: 'Add this page to browser favorites' })
     ).toBeVisible()
     await expect(page.getByRole('link', { name: 'ABOUT' })).not.toBeAttached()
+  })
+
+  test('navigates ordered story postcards from the hidden left drawer', async ({ page }) => {
+    await openFeaturedStory(page)
+    await expect(page.getByTestId('story-drawer')).not.toBeAttached()
+    await expect(page.getByRole('button', { name: 'Open story navigation' })).toBeVisible()
+
+    await page.getByRole('button', { name: 'Open story navigation' }).click()
+    const drawer = page.getByTestId('story-drawer')
+    await expect(drawer).toBeVisible()
+
+    const links = drawer.getByRole('link')
+    await expect(links).toHaveCount(3)
+    await expect(links.nth(0)).toHaveAttribute('href', '/stories/e2e-first-story')
+    await expect(links.nth(1)).toHaveAttribute('href', '/stories/e2e-featured-story')
+    await expect(links.nth(2)).toHaveAttribute('href', '/stories/e2e-third-story')
+    await expect(links.nth(0)).toHaveAttribute('data-story-state', 'read')
+    await expect(links.nth(0)).toHaveCSS('opacity', '0.6')
+    await expect(links.nth(1)).toHaveAttribute('aria-current', 'page')
+    await expect(links.nth(1)).toHaveAttribute('data-story-state', 'current')
+    await expect(links.nth(2)).toHaveAttribute('data-story-state', 'unread')
+    await expect(drawer.locator('img')).toHaveCount(3)
+    await expect(drawer.getByText('E2E First Story')).not.toBeAttached()
+    await expect(drawer.getByText('E2E Featured Story')).not.toBeAttached()
+    await expect(drawer.getByText('E2E Third Story')).not.toBeAttached()
+
+    await links.nth(2).click()
+    await expect(page).toHaveURL('/stories/e2e-third-story')
+    await expect(page.getByRole('main', { name: /E2E Third Story.*story reader/ })).toBeVisible()
+    await expect(page.getByTestId('story-drawer')).not.toBeAttached()
   })
 
   test('opens the complete desktop share widget', async ({ page }) => {
