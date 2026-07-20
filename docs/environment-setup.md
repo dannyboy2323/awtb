@@ -134,12 +134,18 @@ When rotating a secret (e.g. after accidental exposure):
 
 ## CI Environment
 
-The GitHub Actions CI workflow runs on pushes and pull requests targeting the `main` and `staging` branches. It has access to these secrets (set in GitHub Settings → Secrets):
+The GitHub Actions CI workflow runs on pushes and pull requests targeting the `main` and `staging` branches. The workflow has `contents: read` and `statuses: write` permissions.
 
-- `NEXT_PUBLIC_SANITY_PROJECT_ID`
-- `SANITY_WEBHOOK_SECRET`
+Non-sensitive values are hardcoded directly in the workflow:
+
+- `NEXT_PUBLIC_SANITY_PROJECT_ID`: `d205mlci`
+- `NEXT_PUBLIC_SANITY_DATASET`: `production`
+- `NEXT_PUBLIC_SANITY_API_VERSION`: `2026-06-01`
+
+The only secret injected from GitHub Settings → Secrets is:
+
 - `ANTHROPIC_API_KEY`
 
-All other CI steps use hardcoded non-sensitive values (`production` dataset, etc.).
+`SANITY_WEBHOOK_SECRET` is set to a fixed CI test value (`ci-test-webhook-secret`) directly in the workflow for the unit test step. It is no longer read from GitHub secrets.
 
 The workflow pins npm to version 11 and notifies Vercel of the check status on completion.

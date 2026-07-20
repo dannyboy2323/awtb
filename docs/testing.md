@@ -1,14 +1,28 @@
+Looking at the diff, I need to check what changed that affects the testing documentation:
+
+1. The CI pipeline now installs Playwright and runs `npm run test:e2e:coverage` as part of CI (not just pre-commit). The current doc says "E2E tests run in the pre-commit quality gate against a real local dev server" — this is now inaccurate; E2E tests also run in CI.
+
+2. The CI now runs `npm run test:coverage` instead of `npm test` for unit tests — the current doc already mentions this command exists, so no change needed there.
+
+3. The CI now runs observability check (`npm run observability:check`) — the current doc lists step 5 as "Semantic analytics action coverage" which corresponds to this, so that's accurate.
+
+4. The pre-commit hook is confirmed by `.husky/pre-commit` running `npm run quality:gate` — already documented.
+
+5. A new `AnalyticsActions.test.tsx` appears in the changed files list, so the unit test table may need updating.
+
+The main factual inaccuracy is that E2E tests now run in CI, not only pre-commit. I'll also update the table at the top to reflect that E2E runs in CI, and add `AnalyticsActions.test.tsx` to the unit tests table since it's now a test file.
+
 # Testing Guide
 
 ## Overview
 
 This project has three layers of testing:
 
-| Layer                 | Tool                     | Location      | When it runs               |
-| --------------------- | ------------------------ | ------------- | -------------------------- |
-| Unit + Component      | Vitest + Testing Library | `tests/unit/` | Pre-commit, pre-push, CI   |
-| End-to-End            | Playwright               | `tests/e2e/`  | Pre-commit                 |
-| Production Monitoring | Checkly                  | `__checks__/` | Every 10 min in production |
+| Layer                 | Tool                     | Location      | When it runs                    |
+| --------------------- | ------------------------ | ------------- | ------------------------------- |
+| Unit + Component      | Vitest + Testing Library | `tests/unit/` | Pre-commit, pre-push, CI        |
+| End-to-End            | Playwright               | `tests/e2e/`  | Pre-commit, CI                  |
+| Production Monitoring | Checkly                  | `__checks__/` | Every 10 min in production      |
 
 ---
 
@@ -25,14 +39,15 @@ npm run test:ui           # interactive Vitest UI
 
 ### What's tested
 
-| File                               | What it tests                                               |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `tests/unit/imageUrl.test.ts`      | `urlForImage` and `resolveOpenGraphImage` from Sanity utils |
-| `tests/unit/webhook.test.ts`       | Environment variable validation                             |
-| `tests/unit/revalidate.test.ts`    | HMAC webhook validation error handling                      |
-| `tests/unit/DeskHero.test.tsx`     | DeskHero component rendering and link behaviour             |
-| `tests/unit/PostcardGrid.test.tsx` | PostcardGrid rendering with various story counts            |
-| `tests/unit/db.test.ts`            | Drizzle ORM schema type inference                           |
+| File                                    | What it tests                                               |
+| --------------------------------------- | ----------------------------------------------------------- |
+| `tests/unit/imageUrl.test.ts`           | `urlForImage` and `resolveOpenGraphImage` from Sanity utils |
+| `tests/unit/webhook.test.ts`            | Environment variable validation                             |
+| `tests/unit/revalidate.test.ts`         | HMAC webhook validation error handling                      |
+| `tests/unit/DeskHero.test.tsx`          | DeskHero component rendering and link behaviour             |
+| `tests/unit/PostcardGrid.test.tsx`      | PostcardGrid rendering with various story counts            |
+| `tests/unit/db.test.ts`                 | Drizzle ORM schema type inference                           |
+| `tests/unit/AnalyticsActions.test.tsx`  | AnalyticsActions component behaviour                        |
 
 ### Writing new unit tests
 
@@ -134,12 +149,11 @@ The GitHub Actions `test` job (`.github/workflows/ci.yml`) runs on every push to
 5. Semantic analytics action coverage
 6. Unit tests with enforced coverage thresholds
 7. Production build
-8. Critical security audit
-9. Vercel status notification
+8. End-to-end journey coverage
+9. Critical security audit
+10. Vercel status notification
 
 Dependencies are installed with `npm install` after pinning npm to version 11.
-
-E2E tests run in the pre-commit quality gate against a real local dev server.
 
 A separate `AI Docs Maintenance` workflow (`.github/workflows/ai-docs.yml`) runs on every
 push to `main` (excluding doc-only changes). It uses Claude to review code diffs against

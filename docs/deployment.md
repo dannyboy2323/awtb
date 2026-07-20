@@ -53,6 +53,8 @@ When an editor clicks **Publish** in the Studio at `/studio`:
 3. `revalidatePath()` purges the ISR cache for affected routes
 4. The production site reflects the new content within seconds
 
+Errors from the revalidate route are captured automatically by Sentry.
+
 No redeploy is needed for content changes.
 
 ---
@@ -126,7 +128,8 @@ point-in-time backup.
 
 ### Error monitoring (Sentry)
 
-Runtime errors in production are captured automatically by Sentry.
+Runtime errors in production are captured automatically by Sentry. This includes
+unhandled App Router errors, Sanity Live client errors, and webhook handler failures.
 Dashboard: [awtb-monitoring.sentry.io](https://awtb-monitoring.sentry.io)
 
 ### Uptime monitoring (Checkly)
@@ -149,13 +152,22 @@ on pull requests targeting either branch. It runs the following steps in order:
 
 1. TypeScript check
 2. Lint
-3. Security audit
-4. Notifies Vercel of the check status via `vercel/repository-dispatch`
+3. Environment contract validation (`npm run env:check:ci`)
+4. Inline documentation validation (`npm run docs:check`)
+5. Observability coverage validation (`npm run observability:check`)
+6. Unit tests with coverage (`npm run test:coverage`)
+7. Build
+8. End-to-end journey coverage (`npm run test:e2e:coverage`)
+9. Security audit
 
 The workflow pins npm to version 11 and uses `npm install` rather than `npm ci`.
 
-The workflow requires `NEXT_PUBLIC_SANITY_PROJECT_ID`, `SANITY_WEBHOOK_SECRET`, and
-`GITHUB_TOKEN` to be set as repository secrets.
+The workflow requires `contents: read` and `statuses: write` permissions. The Sanity
+project ID (`d205mlci`) and dataset are set as inline environment variables in the
+workflow rather than secrets. `SANITY_WEBHOOK_SECRET` is set to a fixed CI test value
+for the unit test step only.
+
+A Husky pre-commit hook runs `npm run quality:gate` before every commit.
 
 ---
 

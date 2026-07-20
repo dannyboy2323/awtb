@@ -32,8 +32,9 @@ serverless Postgres via the pooled connection in `db/index.ts`.
 ## Cache Invalidation
 
 Content changes in Sanity Studio trigger a webhook to `/api/revalidate`
-which calls `revalidatePath()` to purge the ISR cache. Content updates
-are live within seconds of publishing — no redeploy required.
+which calls `revalidatePath()` to purge the ISR cache. Errors in the
+revalidation handler are captured by Sentry. Content updates are live
+within seconds of publishing — no redeploy required.
 
 ## Database
 
@@ -71,24 +72,37 @@ changes either committed artifact.
 ## Observability
 
 Sentry captures browser, server, edge, router-transition, request, and global
-React errors. Vercel Analytics and Speed Insights capture platform-level traffic
-and performance. PostHog provides pageviews, session replay, feature flags,
-autocapture, and stable semantic product events declared in `lib/analytics.ts`.
-The observability gate requires every production link, anchor, form, and button
-to declare `data-analytics-event`.
+React errors — including exceptions thrown in the revalidation webhook and
+Sanity Live client error handlers. Vercel Analytics and Speed Insights capture
+platform-level traffic and performance. PostHog provides pageviews, session
+replay, feature flags, autocapture, and stable semantic product events declared
+in `lib/analytics.ts`. The observability gate requires every production link,
+anchor, form, and button to declare `data-analytics-event`.
+
+## CI Pipeline
+
+The CI workflow runs on pushes and pull requests to `main` and `staging`. Steps
+run in order: environment validation (`npm run env:check:ci`), inline
+documentation validation (`npm run docs:check`), observability coverage
+validation (`npm run observability:check`), unit tests with coverage
+(`npm run test:coverage`), a production build, Playwright E2E journey coverage
+(`npm run test:e2e:coverage`), and a critical-level security audit. The
+`NEXT_PUBLIC_SANITY_PROJECT_ID` is hardcoded in CI as `d205mlci` rather than
+read from a secret. A Husky pre-commit hook runs `npm run quality:gate` before
+every commit.
 
 ## Key Directories
 
 - `app/` — Next.js App Router pages and API routes
 - `components/public/` — Public-facing UI components (DeskHero, PostcardGrid)
-- `components/shared/` — Shared utilities (PostHogProvider)
+- `components/shared/` — Shared utilities (PostHogProvider, AnalyticsActions)
 - `components/ui/` — shadcn/ui components
 - `db/` — Drizzle ORM schema (`schema.ts`) and client (`index.ts`)
 - `emails/` — React Email templates (WelcomeEmail, NotificationEmail)
-- `lib/` — Server-side utilities (env, redis, email, posthog, flags, edge-config)
+- `lib/` — Server-side utilities (env, redis, email, posthog, flags, edge-config, analytics)
 - `sanity/lib/` — Sanity client, queries, utils, webhook validator
 - `sanity/src/` — Sanity schema and Studio configuration
-- `scripts/` — Utility scripts (ai-docs-check, upload-desk-images, init)
+- `scripts/` — Utility scripts (ai-docs-check, check-documentation, check-env, check-observability, check-e2e-coverage, upload-desk-images, init)
 - `tests/unit/` — Vitest unit and component tests
 - `tests/e2e/` — Playwright E2E tests
 - `__checks__/` — Checkly production monitoring checks
