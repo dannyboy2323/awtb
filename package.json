@@ -83,7 +83,7 @@
     "lucide-react": "^1.21.0",
     "next": "^16.2.10",
     "next-sanity": "^13.1.3",
-    "postcss": "^8.5.20",
+    "postcss": "^8.5.21",
     "posthog-js": "^1.404.1",
     "posthog-node": "^5.45.2",
     "radix-ui": "^1.6.0",
