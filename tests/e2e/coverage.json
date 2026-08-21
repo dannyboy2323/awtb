@@ -21,6 +21,11 @@
       "test": "opens the featured story from the hero"
     },
     {
+      "id": "landing-story-postcard-grid",
+      "spec": "tests/e2e/landing.spec.ts",
+      "test": "renders linked story postcards in the below-fold responsive grid"
+    },
+    {
       "id": "landing-metadata",
       "spec": "tests/e2e/landing.spec.ts",
       "test": "page title is set"

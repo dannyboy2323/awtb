@@ -18,31 +18,22 @@ const SAMPLE_STORIES = [
     _id: 'story-1',
     title: 'The Bronze Bull',
     slug: 'the-bronze-bull',
-    publishedAt: '2026-01-15T00:00:00Z',
-    postcard: {
-      alt: 'A vintage postcard featuring a bronze bull statue',
-      asset: null,
-    },
+    postcardUrl: SAMPLE_POSTCARD_URL,
+    postcardAlt: 'A vintage postcard featuring a bronze bull statue',
   },
   {
     _id: 'story-2',
     title: 'Adventures With the Bull',
     slug: 'adventures-with-the-bull',
-    publishedAt: '2026-02-20T00:00:00Z',
-    postcard: {
-      alt: 'A worn travel postcard with handwritten notes',
-      asset: null,
-    },
+    postcardUrl: SAMPLE_POSTCARD_URL,
+    postcardAlt: 'A worn travel postcard with handwritten notes',
   },
   {
     _id: 'story-3',
     title: 'The Train Ticket',
     slug: 'the-train-ticket',
-    publishedAt: '2026-03-10T00:00:00Z',
-    postcard: {
-      alt: 'A vintage train ticket from an unknown destination',
-      asset: null,
-    },
+    postcardUrl: SAMPLE_POSTCARD_URL,
+    postcardAlt: 'A vintage train ticket from an unknown destination',
   },
 ]
 

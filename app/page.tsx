@@ -14,19 +14,42 @@ import { featuredStoryQuery, allStoriesQuery } from '@/sanity/lib/queries'
 import { getFeaturedStorySlug } from '@/lib/edge-config'
 import { urlForImage } from '@/sanity/lib/utils'
 import DeskHero from '@/components/public/DeskHero'
-import PostcardGrid from '@/components/public/PostcardGrid'
+import PostcardGrid, {
+  buildPostcardGridStories,
+  type PostcardGridStory,
+} from '@/components/public/PostcardGrid'
+
+const E2E_GRID_STORIES: PostcardGridStory[] = [
+  {
+    _id: 'e2e-first-story',
+    title: 'E2E First Story',
+    slug: 'e2e-first-story',
+    postcardUrl: '/icon1.png',
+    postcardAlt: 'E2E first story postcard',
+  },
+  {
+    _id: 'e2e-third-story',
+    title: 'E2E Third Story',
+    slug: 'e2e-third-story',
+    postcardUrl: '/icon2.png',
+    postcardAlt: 'E2E third story postcard',
+  },
+]
 
 export default async function LandingPage() {
   // Keep browser journeys deterministic and independent of CMS availability.
   // The fixture still exercises the real hero, link, and story-reader route.
   if (process.env.E2E_TEST === 'true') {
     return (
-      <DeskHero
-        postcardUrl="/icon.png"
-        postcardAlt="E2E featured story postcard"
-        storySlug="e2e-featured-story"
-        storyTitle="E2E Featured Story"
-      />
+      <>
+        <DeskHero
+          postcardUrl="/icon.png"
+          postcardAlt="E2E featured story postcard"
+          storySlug="e2e-featured-story"
+          storyTitle="E2E Featured Story"
+        />
+        <PostcardGrid stories={E2E_GRID_STORIES} />
+      </>
     )
   }
 
@@ -39,16 +62,17 @@ export default async function LandingPage() {
       ? sanityFetch({
           query: featuredStoryQuery,
           params: { slug: featuredSlug },
+          tags: ['stories'],
         })
       : Promise.resolve({ data: null }),
-    sanityFetch({ query: allStoriesQuery }),
+    sanityFetch({ query: allStoriesQuery, tags: ['stories'] }),
   ])
 
   const featured = featuredResult.data
   const allStories = allStoriesResult.data ?? []
 
   // Stories shown in the grid exclude the featured one (it's already above the fold)
-  const gridStories = featured ? allStories.filter((s) => s.slug !== featuredSlug) : allStories
+  const gridStories = buildPostcardGridStories(allStories, featured ? featuredSlug : null)
 
   return (
     <>

@@ -52,6 +52,21 @@ test.describe('Landing page', () => {
     await expect(page.getByRole('main', { name: /story reader/i })).toBeVisible()
   })
 
+  test('renders linked story postcards in the below-fold responsive grid', async ({ page }) => {
+    const grid = page.getByRole('region', { name: 'More stories' })
+    await grid.scrollIntoViewIfNeeded()
+    await expect(grid).toBeVisible()
+
+    const postcard = grid.getByRole('img', { name: 'E2E first story postcard' })
+    const storyLink = grid.getByRole('link', { name: 'Read "E2E First Story"' })
+    await expect(postcard).toBeVisible()
+    await expect(storyLink).toHaveAttribute('href', '/stories/e2e-first-story')
+
+    await storyLink.click()
+    await expect(page).toHaveURL('/stories/e2e-first-story')
+    await expect(page.getByRole('main', { name: /E2E First Story.*story reader/ })).toBeVisible()
+  })
+
   test('page title is set', async ({ page }) => {
     await expect(page).toHaveTitle(/.+/)
   })

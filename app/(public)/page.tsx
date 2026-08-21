@@ -14,7 +14,7 @@ import { featuredStoryQuery, allStoriesQuery } from '@/sanity/lib/queries'
 import { getFeaturedStorySlug } from '@/lib/edge-config'
 import { urlForImage } from '@/sanity/lib/utils'
 import DeskHero from '@/components/public/DeskHero'
-import PostcardGrid from '@/components/public/PostcardGrid'
+import PostcardGrid, { buildPostcardGridStories } from '@/components/public/PostcardGrid'
 
 export default async function LandingPage() {
   // Resolve the featured story slug from Edge Config (< 1ms, edge-replicated)
@@ -26,16 +26,17 @@ export default async function LandingPage() {
       ? sanityFetch({
           query: featuredStoryQuery,
           params: { slug: featuredSlug },
+          tags: ['stories'],
         })
       : Promise.resolve({ data: null }),
-    sanityFetch({ query: allStoriesQuery }),
+    sanityFetch({ query: allStoriesQuery, tags: ['stories'] }),
   ])
 
   const featured = featuredResult.data
   const allStories = allStoriesResult.data ?? []
 
   // Stories shown in the grid exclude the featured one (it's already above the fold)
-  const gridStories = featured ? allStories.filter((s) => s.slug !== featuredSlug) : allStories
+  const gridStories = buildPostcardGridStories(allStories, featured ? featuredSlug : null)
 
   return (
     <>

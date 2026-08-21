@@ -32,6 +32,9 @@ serverless Postgres via the pooled connection in `db/index.ts`.
 The full-viewport `FloatingNav` is a fixed client-side layer, so it never changes
 page layout. Home and About routes show the bull logo with an About link, while
 story routes show the logo with sharing, EPUB, and browser-favorite controls.
+Below the landing hero, published non-featured stories are mapped from Sanity
+assets to optimized CDN URLs and rendered as responsive, linked postcard images.
+Those landing queries carry the `stories` cache tag used by the publish webhook.
 The static About route presents Danny's first-person origin story using the
 installed dark shadcn tokens and marks its navigation link with the muted
 foreground token and `aria-current`.
