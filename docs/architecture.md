@@ -35,6 +35,9 @@ story routes show the logo with sharing, EPUB, and browser-favorite controls.
 The static About route presents Danny's first-person origin story using the
 installed dark shadcn tokens and marks its navigation link with the muted
 foreground token and `aria-current`.
+The embedded Studio uses Sanity 6.10.1, which includes the upstream fix that
+keeps Portable Text block-object dialogs mounted while nested image uploads are
+in flight. Panel images can therefore attach to story-body blocks reliably.
 The bar starts hidden and appears only after its reveal control is clicked or
 the reader scrolls, then auto-hides after scrolling stops or pointer exit.
 Mobile readers use the native Web Share API when available; desktop readers use
