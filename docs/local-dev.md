@@ -1,3 +1,5 @@
+The diff changes are to dependency versions, the typegen command (adding `--force`), the CLI config (disabling auto-updates), and adds a new test file. None of these changes affect the local development guide's content — the commands table, URLs, prerequisites, setup steps, and environment variable guidance remain accurate.
+
 # Local Development Guide
 
 ## Prerequisites
