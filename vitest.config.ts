@@ -33,6 +33,7 @@ export default defineConfig({
         'app/about/page.tsx': { 100: true },
         'app/api/epub/route.ts': { 100: true },
         'components/public/FloatingNav.tsx': { 100: true },
+        'components/public/PostcardGrid.tsx': { 100: true },
         'components/public/StoryDrawer.tsx': { 100: true },
         'lib/epub.ts': { 100: true },
         'lib/share.ts': { 100: true },
