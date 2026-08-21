@@ -106,6 +106,7 @@ git rm --cached .env.local
 | Variable               | Required | Where to find                                                           |
 | ---------------------- | -------- | ----------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Yes      | `http://localhost:3000` locally, `https://yourdomain.com` in production |
+| `E2E_TEST`             | No       | Set to `true` to enable deterministic E2E fixture mode (CI only)        |
 
 ---
 

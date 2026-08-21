@@ -1,3 +1,5 @@
+The current doc already accurately describes the PostcardGrid behavior ("published non-featured stories are mapped from Sanity assets to optimized CDN URLs and rendered as responsive, linked postcard images") and mentions the `stories` cache tag. The diff confirms and implements exactly what the doc describes. No content is inaccurate or missing.
+
 # Architecture
 
 ## Stack
