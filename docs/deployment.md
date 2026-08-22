@@ -1,3 +1,5 @@
+The diff contains only CSS class reordering/additions in `PostcardGrid.tsx` and new E2E test assertions in `landing.spec.ts`. None of this affects the deployment guide's content. The doc is already accurate.
+
 # Deployment Guide
 
 ## Overview

@@ -1,3 +1,10 @@
+The diff shows two changes:
+
+1. `PostcardGrid` now applies the `dark` class to its section element, meaning it uses the dark theme tokens for its background.
+2. The E2E test verifies that the postcard grid's `--background` token matches the floating nav's `--background` token (i.e., they share the same dark theme context).
+
+The architecture doc mentions the postcard grid but doesn't note its dark theming. The About route section mentions "installed dark shadcn tokens" — the postcard grid now also uses dark tokens, which is worth noting for accuracy. I'll add this detail to the data flow paragraph that describes the postcard grid.
+
 # Architecture
 
 ## Stack
@@ -34,7 +41,9 @@ page layout. Home and About routes show the bull logo with an About link, while
 story routes show the logo with sharing, EPUB, and browser-favorite controls.
 Below the landing hero, published non-featured stories are mapped from Sanity
 assets to optimized CDN URLs and rendered as responsive, linked postcard images.
-Those landing queries carry the `stories` cache tag used by the publish webhook.
+The postcard grid section applies the `dark` class, using the same dark shadcn
+`--background` token as the floating navigation. Those landing queries carry the
+`stories` cache tag used by the publish webhook.
 The static About route presents Danny's first-person origin story using the
 installed dark shadcn tokens and marks its navigation link with the muted
 foreground token and `aria-current`.

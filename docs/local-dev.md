@@ -1,3 +1,5 @@
+The diff contains only a CSS class reordering/addition in `PostcardGrid.tsx` (adding the `dark` class and reordering Tailwind classes) and new E2E test assertions. Neither change affects anything documented in `local-dev.md`. The doc is already accurate.
+
 # Local Development Guide
 
 ## Prerequisites

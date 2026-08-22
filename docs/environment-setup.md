@@ -1,3 +1,5 @@
+The diff only contains styling changes to `PostcardGrid.tsx` (CSS class reordering and adding a `dark` class) and new E2E test assertions for visual/token checks. None of this affects environment variables, setup instructions, or any content in `environment-setup.md`.
+
 # Environment Variable Setup
 
 ## Overview
