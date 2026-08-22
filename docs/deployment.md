@@ -1,3 +1,5 @@
+The diff contains no changes relevant to deployment, environment variables, CI pipeline, database migrations, monitoring, or any other topic covered in `docs/deployment.md`. The changes are entirely in UI components, analytics event names, and test files.
+
 # Deployment Guide
 
 ## Overview
