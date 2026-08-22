@@ -78,6 +78,33 @@ test.describe('Landing page', () => {
 
     const postcard = grid.getByRole('img', { name: 'E2E first story postcard' })
     const storyLink = grid.getByRole('link', { name: 'Read "E2E First Story"' })
+
+    const responsiveGrid = grid.locator('.grid')
+    await page.setViewportSize({ width: 390, height: 844 })
+    expect(
+      (
+        await responsiveGrid.evaluate((element) => getComputedStyle(element).gridTemplateColumns)
+      ).split(' ')
+    ).toHaveLength(1)
+
+    await page.setViewportSize({ width: 844, height: 390 })
+    expect(
+      (
+        await responsiveGrid.evaluate((element) => getComputedStyle(element).gridTemplateColumns)
+      ).split(' ')
+    ).toHaveLength(2)
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    expect(
+      (
+        await responsiveGrid.evaluate((element) => getComputedStyle(element).gridTemplateColumns)
+      ).split(' ')
+    ).toHaveLength(3)
+    const desktopPostcardBox = await storyLink.boundingBox()
+    expect(desktopPostcardBox?.width).toBeGreaterThanOrEqual(450)
+    expect(desktopPostcardBox?.width).toBeLessThanOrEqual(456)
+    expect(desktopPostcardBox?.height).toBeGreaterThanOrEqual(300)
+
     await expect(postcard).toBeVisible()
     await expect(storyLink).toHaveAttribute('href', '/stories/e2e-first-story')
 
