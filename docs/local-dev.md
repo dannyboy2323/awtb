@@ -1,3 +1,5 @@
+The diff shows changes to `PostcardGrid.tsx` (styling/visual changes) and `tests/e2e/landing.spec.ts` (new test assertions). Neither of these changes affects anything documented in the local development guide — the available URLs, commands, environment variable setup, and prerequisites are all unaffected.
+
 # Local Development Guide
 
 ## Prerequisites

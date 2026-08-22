@@ -1,3 +1,7 @@
+The diff removes visual styling from postcard cards (border, shadow, background color, hover/scale effects) and adds a Playwright assertion verifying these styles are absent. The documentation doesn't describe these specific styles, so no factual content is inaccurate. The existing description of `landing.spec.ts` and `PostcardGrid.test.tsx` remains accurate at the level of detail the doc maintains.
+
+No changes are needed.
+
 # Testing Guide
 
 ## Overview

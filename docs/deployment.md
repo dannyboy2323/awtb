@@ -1,3 +1,5 @@
+The diff shows UI/styling changes to `PostcardGrid.tsx` (removing border, shadow, background color, and hover effects from postcard cards) and corresponding e2e test assertions. None of this affects the deployment guide content. The deployment guide is accurate as written.
+
 # Deployment Guide
 
 ## Overview
