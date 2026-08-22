@@ -73,15 +73,15 @@ export default function PostcardGrid({ stories }: PostcardGridProps) {
               aria-label={`Read "${story.title}"`}
               data-analytics-event={analyticsEvents.storyOpened}
               data-testid="postcard-grid-item"
-              className="group border-border bg-card ring-offset-background hover:border-ring focus-visible:ring-ring block w-full max-w-[28.5rem] justify-self-center overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="block w-full max-w-[28.5rem] justify-self-center"
             >
-              <div className="bg-muted relative aspect-3/2 w-full overflow-hidden">
+              <div className="relative aspect-3/2 w-full">
                 <Image
                   src={story.postcardUrl}
                   alt={story.postcardAlt}
                   fill
                   sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) calc(50vw - 2rem), 456px"
-                  className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="object-contain"
                 />
               </div>
             </Link>
