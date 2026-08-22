@@ -1,3 +1,5 @@
+The diff only modifies `PostcardGrid.tsx` (CSS layout changes) and `tests/e2e/landing.spec.ts` (responsive grid tests). Neither file has any relation to environment variables, setup instructions, or any content in `environment-setup.md`. The document is already accurate.
+
 # Environment Variable Setup
 
 ## Overview
