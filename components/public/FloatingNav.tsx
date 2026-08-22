@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookDown, ChevronDown, ChevronUp, Share2, Star } from 'lucide-react'
+import { BookDown, Camera, ChevronDown, ChevronUp, Share2, Star, ThumbsUp, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -28,6 +28,25 @@ export interface FloatingNavProps {
 
 const DEFAULT_AUTO_HIDE_DELAY = 1800
 const SCROLL_DELTA = 8
+
+/** Official social profiles rendered exclusively by the marketing navigation. */
+const MARKETING_SOCIAL_LINKS = [
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/profile.php?id=61593009031316',
+    Icon: ThumbsUp,
+  },
+  {
+    label: 'Instagram',
+    href: 'https://www.instagram.com/adventureswiththebull',
+    Icon: Camera,
+  },
+  {
+    label: 'X',
+    href: 'https://x.com/AdvWithTheBull',
+    Icon: X,
+  },
+] as const
 
 function pageSnapshot(): { title: string; url: string } {
   return {
@@ -163,6 +182,44 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
 
   const epubHref = storySlug ? `/api/epub?slug=${encodeURIComponent(storySlug)}` : null
 
+  const shareControl = (
+    <DropdownMenu
+      open={shareOpen}
+      onOpenChange={(open: boolean) => {
+        if (!nativeShareAvailable) setShareOpen(open)
+      }}
+    >
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-lg"
+          aria-label="Share this page"
+          onClick={() => void handleShareClick()}
+          data-analytics-event={analyticsEvents.shareOpened}
+        >
+          <Share2 className="text-foreground size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="dark border-border max-h-[min(70vh,30rem)] w-60 border"
+      >
+        <DropdownMenuLabel>Share this page</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {destinations.map((destination) => (
+          <DropdownMenuItem
+            key={destination.id}
+            onSelect={() => selectShareDestination(destination)}
+            data-analytics-event={analyticsEvents.shareDestinationOpened}
+          >
+            {destination.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
   return (
     <>
       <nav
@@ -190,41 +247,7 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
 
         {storySlug && epubHref ? (
           <div className="flex items-center gap-1">
-            <DropdownMenu
-              open={shareOpen}
-              onOpenChange={(open: boolean) => {
-                if (!nativeShareAvailable) setShareOpen(open)
-              }}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-lg"
-                  aria-label="Share this page"
-                  onClick={() => void handleShareClick()}
-                  data-analytics-event={analyticsEvents.shareOpened}
-                >
-                  <Share2 />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="dark border-border max-h-[min(70vh,30rem)] w-60 border"
-              >
-                <DropdownMenuLabel>Share this page</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {destinations.map((destination) => (
-                  <DropdownMenuItem
-                    key={destination.id}
-                    onSelect={() => selectShareDestination(destination)}
-                    data-analytics-event={analyticsEvents.shareDestinationOpened}
-                  >
-                    {destination.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {shareControl}
 
             <Button variant="ghost" size="icon-lg" asChild>
               <a
@@ -267,16 +290,41 @@ export default function FloatingNav({ autoHideDelay = DEFAULT_AUTO_HIDE_DELAY }:
             </DropdownMenu>
           </div>
         ) : (
-          <Button variant="ghost" asChild>
-            <Link
-              href="/about"
-              className={pathname === '/about' ? 'text-muted-foreground' : 'text-foreground'}
-              aria-current={pathname === '/about' ? 'page' : undefined}
-              data-analytics-event={analyticsEvents.navAboutOpened}
+          <div className="flex items-center gap-2.5">
+            <div
+              className="flex items-center gap-1"
+              role="group"
+              aria-label="Social media"
+              data-testid="marketing-social-links"
             >
-              ABOUT
-            </Link>
-          </Button>
+              {MARKETING_SOCIAL_LINKS.map(({ label, href, Icon }) => (
+                <Button key={label} variant="ghost" size="icon-lg" asChild>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    data-analytics-event={analyticsEvents.socialProfileOpened}
+                  >
+                    <Icon className="text-foreground size-4" />
+                  </a>
+                </Button>
+              ))}
+            </div>
+
+            {shareControl}
+
+            <Button variant="ghost" asChild>
+              <Link
+                href="/about"
+                className={pathname === '/about' ? 'text-muted-foreground' : 'text-foreground'}
+                aria-current={pathname === '/about' ? 'page' : undefined}
+                data-analytics-event={analyticsEvents.navAboutOpened}
+              >
+                ABOUT
+              </Link>
+            </Button>
+          </div>
         )}
 
         <Button

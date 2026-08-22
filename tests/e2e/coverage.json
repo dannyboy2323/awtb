@@ -33,7 +33,7 @@
     {
       "id": "floating-nav-home-visible",
       "spec": "tests/e2e/landing.spec.ts",
-      "test": "starts with a hidden home navigation and reveals only the About link"
+      "test": "reveals home social, share, and About marketing controls"
     },
     {
       "id": "about-page-navigation",

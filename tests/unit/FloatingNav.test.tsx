@@ -83,6 +83,7 @@ describe('FloatingNav', () => {
       '/'
     )
     expect(screen.getByRole('button', { name: 'Share this page' })).toBeVisible()
+    expect(screen.queryByRole('group', { name: 'Social media' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Download this story as EPUB' })).toHaveAttribute(
       'href',
       '/api/epub?slug=test-story'
@@ -91,7 +92,7 @@ describe('FloatingNav', () => {
     expect(screen.queryByRole('link', { name: 'ABOUT' })).not.toBeInTheDocument()
   })
 
-  it('renders the hidden marketing variant with theme-native About typography', () => {
+  it('renders social and share controls only in the theme-native marketing variant', () => {
     navigation.pathname = '/'
     const { rerender } = render(<FloatingNav />)
     const nav = screen.getByTestId('floating-nav')
@@ -112,7 +113,20 @@ describe('FloatingNav', () => {
     expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveClass('text-foreground')
     expect(screen.getByRole('link', { name: 'ABOUT' })).not.toHaveAttribute('aria-current')
     expect(screen.getByRole('link', { name: 'ABOUT' })).not.toHaveClass('tracking-wide')
-    expect(screen.queryByRole('button', { name: 'Share this page' })).not.toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Social media' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'Facebook' })).toHaveAttribute(
+      'href',
+      'https://www.facebook.com/profile.php?id=61593009031316'
+    )
+    expect(screen.getByRole('link', { name: 'Instagram' })).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/adventureswiththebull'
+    )
+    expect(screen.getByRole('link', { name: 'X' })).toHaveAttribute(
+      'href',
+      'https://x.com/AdvWithTheBull'
+    )
+    expect(screen.getByRole('button', { name: 'Share this page' })).toBeVisible()
     expect(
       screen.queryByRole('link', { name: 'Download this story as EPUB' })
     ).not.toBeInTheDocument()
@@ -123,6 +137,8 @@ describe('FloatingNav', () => {
     navigation.pathname = '/about'
     rerender(<FloatingNav />)
     expect(screen.getByRole('navigation', { name: 'Site navigation' })).toBeVisible()
+    expect(screen.getByRole('group', { name: 'Social media' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Share this page' })).toBeVisible()
     expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveClass('text-muted-foreground')
     expect(screen.getByRole('link', { name: 'ABOUT' })).toHaveAttribute('aria-current', 'page')
   })

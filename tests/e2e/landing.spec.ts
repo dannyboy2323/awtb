@@ -142,7 +142,7 @@ test.describe('Landing page', () => {
     await expect(page).toHaveTitle(/.+/)
   })
 
-  test('starts with a hidden home navigation and reveals only the About link', async ({ page }) => {
+  test('reveals home social, share, and About marketing controls', async ({ page }) => {
     const navigation = page.getByTestId('floating-nav')
     await expect(navigation).toHaveAttribute('aria-hidden', 'true')
     await expect(navigation).toHaveCSS('opacity', '0')
@@ -154,13 +154,63 @@ test.describe('Landing page', () => {
     await expect(navigation).toHaveCSS('position', 'fixed')
     await expectFullViewportWidth(page, navigation)
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
+    const socialGroup = page.getByRole('group', { name: 'Social media' })
+    await expect(socialGroup).toBeVisible()
+    const facebook = socialGroup.getByRole('link', { name: 'Facebook' })
+    const instagram = socialGroup.getByRole('link', { name: 'Instagram' })
+    const x = socialGroup.getByRole('link', { name: 'X' })
+    await expect(facebook).toHaveAttribute(
+      'href',
+      'https://www.facebook.com/profile.php?id=61593009031316'
+    )
+    await expect(instagram).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/adventureswiththebull'
+    )
+    await expect(x).toHaveAttribute('href', 'https://x.com/AdvWithTheBull')
+    for (const socialLink of [facebook, instagram, x]) {
+      await expect(socialLink).toHaveAttribute('target', '_blank')
+      await expect(socialLink).toHaveAttribute('rel', 'noopener noreferrer')
+    }
+
+    const share = page.getByRole('button', { name: 'Share this page' })
     const about = page.getByRole('link', { name: 'ABOUT' })
     await expect(about).toHaveAttribute('href', '/about')
+    const [socialBox, shareBox, aboutBox] = await Promise.all([
+      socialGroup.boundingBox(),
+      share.boundingBox(),
+      about.boundingBox(),
+    ])
+    expect(Math.round((shareBox?.x ?? 0) - (socialBox?.x ?? 0) - (socialBox?.width ?? 0))).toBe(10)
+    expect(Math.round((aboutBox?.x ?? 0) - (shareBox?.x ?? 0) - (shareBox?.width ?? 0))).toBe(10)
+
+    const marketingIcons = [
+      facebook.locator('svg'),
+      instagram.locator('svg'),
+      x.locator('svg'),
+      share.locator('svg'),
+    ]
+    const iconPresentations = await Promise.all(
+      marketingIcons.map(async (icon) => ({
+        box: await icon.boundingBox(),
+        color: await icon.evaluate((element) => getComputedStyle(element).color),
+      }))
+    )
+    expect(iconPresentations.map(({ box }) => [box?.width, box?.height])).toEqual([
+      [16, 16],
+      [16, 16],
+      [16, 16],
+      [16, 16],
+    ])
+    expect(new Set(iconPresentations.map(({ color }) => color)).size).toBe(1)
+
     const themeFont = await page
       .locator('body')
       .evaluate((body) => getComputedStyle(body).fontFamily)
     await expect(about).toHaveCSS('font-family', themeFont)
-    await expect(page.getByRole('button', { name: 'Share this page' })).not.toBeAttached()
+    await share.click()
+    await expect(page.getByText('SMS / Messages')).toBeVisible()
+    await page.keyboard.press('Escape')
     await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).not.toBeAttached()
     await expect(
       page.getByRole('button', { name: 'Add this page to browser favorites' })
@@ -194,6 +244,9 @@ test.describe('Landing page', () => {
     const activeAbout = page.getByRole('link', { name: 'ABOUT' })
     await expect(activeAbout).toHaveAttribute('aria-current', 'page')
     await expect(activeAbout).toHaveClass(/text-muted-foreground/)
+    await expect(page.getByRole('group', { name: 'Social media' })).toBeVisible()
+    await page.getByRole('button', { name: 'Share this page' }).click()
+    await expect(page.getByText('SMS / Messages')).toBeVisible()
   })
 
   test('renders the full-width story navigation without shifting the page', async ({ page }) => {
@@ -208,6 +261,7 @@ test.describe('Landing page', () => {
     await expect(navigation).toHaveCSS('position', 'fixed')
     await expectFullViewportWidth(page, navigation)
     await expect(page.getByRole('link', { name: 'Adventures With The Bull home' })).toBeVisible()
+    await expect(page.getByRole('group', { name: 'Social media' })).not.toBeAttached()
     await expect(page.getByRole('button', { name: 'Share this page' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Download this story as EPUB' })).toBeVisible()
     await expect(
