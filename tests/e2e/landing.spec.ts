@@ -57,6 +57,25 @@ test.describe('Landing page', () => {
     await grid.scrollIntoViewIfNeeded()
     await expect(grid).toBeVisible()
 
+    const [heroBackgroundImage, gridBackgroundToken, navigationBackgroundToken] =
+      await page.evaluate(() => {
+        const heroElement = document.querySelector<HTMLElement>('.desk-hero')
+        const gridElement = document.querySelector<HTMLElement>('.postcard-grid')
+        const navigationElement = document.querySelector<HTMLElement>(
+          '[data-testid="floating-nav"]'
+        )
+
+        return [
+          heroElement ? getComputedStyle(heroElement).backgroundImage : null,
+          gridElement ? getComputedStyle(gridElement).getPropertyValue('--background') : null,
+          navigationElement
+            ? getComputedStyle(navigationElement).getPropertyValue('--background')
+            : null,
+        ]
+      })
+    expect(heroBackgroundImage).not.toBe('none')
+    expect(gridBackgroundToken).toBe(navigationBackgroundToken)
+
     const postcard = grid.getByRole('img', { name: 'E2E first story postcard' })
     const storyLink = grid.getByRole('link', { name: 'Read "E2E First Story"' })
     await expect(postcard).toBeVisible()
