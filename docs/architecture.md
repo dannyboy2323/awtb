@@ -30,13 +30,15 @@ from the Sanity CDN. Database queries go through Drizzle ORM to Neon
 serverless Postgres via the pooled connection in `db/index.ts`.
 
 The full-viewport `FloatingNav` is a fixed client-side layer, so it never changes
-page layout. Home and About routes show the bull logo with an About link, while
-story routes show the logo with sharing, EPUB, and browser-favorite controls.
-Below the landing hero, published non-featured stories are mapped from Sanity
-assets to optimized CDN URLs and rendered as responsive, linked postcard images.
-Those landing queries carry the `stories` cache tag used by the publish webhook.
-The static About route presents Danny's first-person origin story using the
-installed dark shadcn tokens and marks its navigation link with the muted
+page layout. Home and About routes show the bull logo with social profile links
+(Facebook, Instagram, X), a share control, and an About link, while story routes
+show the logo with sharing, EPUB, and browser-favorite controls. The social links
+are rendered exclusively in the marketing navigation and are not present on story
+routes. Below the landing hero, published non-featured stories are mapped from
+Sanity assets to optimized CDN URLs and rendered as responsive, linked postcard
+images. Those landing queries carry the `stories` cache tag used by the publish
+webhook. The static About route presents Danny's first-person origin story using
+the installed dark shadcn tokens and marks its navigation link with the muted
 foreground token and `aria-current`.
 The embedded Studio uses Sanity 6.10.1, which includes the upstream fix that
 keeps Portable Text block-object dialogs mounted while nested image uploads are
@@ -100,8 +102,8 @@ autocapture, and stable semantic product events declared in `lib/analytics.ts`.
 The observability gate requires every production link, anchor, form, and button
 to declare `data-analytics-event`, and every stable event in the analytics
 registry must be connected to a production action. Floating-navigation visibility,
-sharing, EPUB, favorites, and story-drawer navigation use the same semantic event
-boundary.
+sharing, EPUB, favorites, story-drawer navigation, and social profile clicks use
+the same semantic event boundary.
 
 ## Key Directories
 

@@ -89,7 +89,7 @@ browser suite.
 
 | File                        | What it tests                                                        |
 | --------------------------- | -------------------------------------------------------------------- |
-| `tests/e2e/landing.spec.ts` | Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB |
+| `tests/e2e/landing.spec.ts` | Home/About nav, social links, postcard drawer, story nav, sharing, favorites, EPUB |
 | `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                             |
 
 ### Writing new E2E tests
