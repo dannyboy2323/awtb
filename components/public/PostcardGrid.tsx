@@ -63,8 +63,9 @@ export function buildPostcardGridStories(
 export default function PostcardGrid({ stories }: PostcardGridProps) {
   return (
     <section className="postcard-grid dark bg-background px-4 py-16" aria-label="More stories">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mx-auto max-w-[90rem]">
+        {/* Scale from phone portrait to landscape/tablet and desktop without shrinking postcards. */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {stories.map((story) => (
             <Link
               key={story._id}
@@ -72,14 +73,14 @@ export default function PostcardGrid({ stories }: PostcardGridProps) {
               aria-label={`Read "${story.title}"`}
               data-analytics-event={analyticsEvents.storyOpened}
               data-testid="postcard-grid-item"
-              className="group border-border bg-card ring-offset-background hover:border-ring focus-visible:ring-ring block overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="group border-border bg-card ring-offset-background hover:border-ring focus-visible:ring-ring block w-full max-w-[28.5rem] justify-self-center overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <div className="bg-muted relative aspect-3/2 w-full overflow-hidden">
                 <Image
                   src={story.postcardUrl}
                   alt={story.postcardAlt}
                   fill
-                  sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) calc(50vw - 2rem), (max-width: 1279px) calc(33vw - 2rem), 304px"
+                  sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) calc(50vw - 2rem), 456px"
                   className="object-contain transition-transform duration-300 group-hover:scale-[1.02]"
                 />
               </div>
