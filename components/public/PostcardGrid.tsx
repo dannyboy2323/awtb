@@ -62,7 +62,7 @@ export function buildPostcardGridStories(
 /** Renders each published story as a linked, responsive postcard image. */
 export default function PostcardGrid({ stories }: PostcardGridProps) {
   return (
-    <section className="postcard-grid bg-background px-4 py-16" aria-label="More stories">
+    <section className="postcard-grid dark bg-background px-4 py-16" aria-label="More stories">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {stories.map((story) => (
@@ -72,9 +72,9 @@ export default function PostcardGrid({ stories }: PostcardGridProps) {
               aria-label={`Read "${story.title}"`}
               data-analytics-event={analyticsEvents.storyOpened}
               data-testid="postcard-grid-item"
-              className="group block overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-offset-background transition hover:border-ring hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="group border-border bg-card ring-offset-background hover:border-ring focus-visible:ring-ring block overflow-hidden rounded-xl border shadow-sm transition hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
-              <div className="relative aspect-3/2 w-full overflow-hidden bg-muted">
+              <div className="bg-muted relative aspect-3/2 w-full overflow-hidden">
                 <Image
                   src={story.postcardUrl}
                   alt={story.postcardAlt}
