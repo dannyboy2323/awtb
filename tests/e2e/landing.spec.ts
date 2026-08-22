@@ -105,6 +105,31 @@ test.describe('Landing page', () => {
     expect(desktopPostcardBox?.width).toBeLessThanOrEqual(456)
     expect(desktopPostcardBox?.height).toBeGreaterThanOrEqual(300)
 
+    const presentation = await storyLink.evaluate((link) => {
+      const image = link.querySelector('img')
+      const imageWrapper = image?.parentElement
+      const linkStyle = getComputedStyle(link)
+      const imageStyle = image ? getComputedStyle(image) : null
+      const wrapperStyle = imageWrapper ? getComputedStyle(imageWrapper) : null
+
+      return {
+        borderWidth: linkStyle.borderWidth,
+        borderRadius: linkStyle.borderRadius,
+        boxShadow: linkStyle.boxShadow,
+        backgroundColor: linkStyle.backgroundColor,
+        imageTransform: imageStyle?.transform,
+        wrapperBackgroundColor: wrapperStyle?.backgroundColor,
+      }
+    })
+    expect(presentation).toEqual({
+      borderWidth: '0px',
+      borderRadius: '0px',
+      boxShadow: 'none',
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+      imageTransform: 'none',
+      wrapperBackgroundColor: 'rgba(0, 0, 0, 0)',
+    })
+
     await expect(postcard).toBeVisible()
     await expect(storyLink).toHaveAttribute('href', '/stories/e2e-first-story')
 
