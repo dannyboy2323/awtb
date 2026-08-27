@@ -32,7 +32,7 @@ npm run test:ui           # interactive Vitest UI
 | `tests/unit/DeskHero.test.tsx`         | DeskHero component rendering and link behaviour             |
 | `tests/unit/FloatingNav.test.tsx`      | Floating nav visibility, sharing, EPUB links, and favorites |
 | `tests/unit/PostHogProvider.test.tsx`  | Initialization privacy settings and semantic pageviews      |
-| `tests/unit/PostcardGrid.test.tsx`     | PostcardGrid rendering with various story counts            |
+| `tests/unit/PostcardGrid.test.tsx`     | PostcardGrid rendering, linked postcard images, and `buildPostcardGridStories` data mapping |
 | `tests/unit/StoryDrawer.test.tsx`      | Drawer order, visibility, read state, and story selection   |
 | `tests/unit/StoryReader.test.tsx`      | Reader pagination, lightbox, and responsive behaviour       |
 | `tests/unit/db.test.ts`                | Drizzle ORM schema type inference                           |
@@ -64,7 +64,9 @@ to Sanity 6.10.1 and compatible integrations. This protects Portable Text panel
 uploads from the upstream dialog-unmount regression fixed in Sanity 6.9.2.
 
 `PostcardGrid.test.tsx` and the landing-page browser journey verify that every
-below-fold story renders a postcard image whose link opens the matching slug.
+below-fold story renders a linked postcard image and that `buildPostcardGridStories`
+correctly excludes the featured story, resolves Sanity image assets to optimized
+WebP URLs, and supplies accessible text fallbacks for incomplete data.
 
 ---
 
@@ -89,7 +91,7 @@ browser suite.
 
 | File                        | What it tests                                                        |
 | --------------------------- | -------------------------------------------------------------------- |
-| `tests/e2e/landing.spec.ts` | Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB |
+| `tests/e2e/landing.spec.ts` | Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB, and below-fold postcard grid |
 | `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                             |
 
 ### Writing new E2E tests
