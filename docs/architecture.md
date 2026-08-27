@@ -1,3 +1,5 @@
+The diff removes card-style presentation from postcard grid items (border, shadow, rounded corners, background, hover scale effect) — the postcards now render as plain linked images with no decoration. The architecture doc mentions "responsive, linked postcard images" which remains accurate, but does not describe the card styling specifically, so nothing in the doc is made inaccurate by this change. The doc is already accurate.
+
 # Architecture
 
 ## Stack
