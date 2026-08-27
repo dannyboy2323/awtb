@@ -1,3 +1,5 @@
+The diff changes are related to package versions, the `typegen` script flag, `autoUpdates` configuration, and a new test file. None of these changes affect the deployment guide's content (Vercel deployment, database migrations, rollbacks, monitoring, CI pipeline, webhooks, etc.). The doc remains accurate as-is.
+
 # Deployment Guide
 
 ## Overview
