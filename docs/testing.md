@@ -1,3 +1,14 @@
+The diff shows two changes:
+
+1. `PostcardGrid.tsx` — the `dark` class was added to the section element, and some class ordering was changed (purely cosmetic Tailwind reordering).
+2. `tests/e2e/landing.spec.ts` — a new assertion was added to the landing page E2E test that checks the hero background image is set, and that the postcard grid's `--background` CSS token matches the floating nav's `--background` token.
+
+The second change is meaningful for the docs: the landing spec now also verifies that the postcard grid and floating nav share the same background token (i.e., consistent theming/dark mode). The existing doc mentions the landing spec covers "Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB" — it doesn't mention this visual/theming assertion. The existing prose in the unit test section mentions "PostcardGrid.test.tsx and the landing-page browser journey verify that every below-fold story renders a postcard image whose link opens the matching slug" — this could be extended to note the background token check, but it's a minor internal detail. The table entry for `landing.spec.ts` could be updated to reflect this.
+
+The class reordering in `PostcardGrid.tsx` (including adding `dark`) is a styling change and doesn't affect any documented behavior.
+
+I'll update the `landing.spec.ts` table row to reflect the added visual consistency check, and update the relevant prose sentence.
+
 # Testing Guide
 
 ## Overview
@@ -64,7 +75,9 @@ to Sanity 6.10.1 and compatible integrations. This protects Portable Text panel
 uploads from the upstream dialog-unmount regression fixed in Sanity 6.9.2.
 
 `PostcardGrid.test.tsx` and the landing-page browser journey verify that every
-below-fold story renders a postcard image whose link opens the matching slug.
+below-fold story renders a postcard image whose link opens the matching slug. The
+landing-page journey also asserts that the postcard grid and floating nav share
+the same `--background` CSS token, keeping their theming consistent.
 
 ---
 
@@ -87,10 +100,10 @@ browser suite.
 
 ### What's tested
 
-| File                        | What it tests                                                        |
-| --------------------------- | -------------------------------------------------------------------- |
-| `tests/e2e/landing.spec.ts` | Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB |
-| `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                             |
+| File                        | What it tests                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `tests/e2e/landing.spec.ts` | Home/About nav, postcard drawer, story nav, sharing, favorites, EPUB, and postcard grid background theming |
+| `tests/e2e/studio.spec.ts`  | Studio loads at `/studio` without errors                                                                   |
 
 ### Writing new E2E tests
 
