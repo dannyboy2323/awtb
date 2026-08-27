@@ -1,3 +1,5 @@
+The diff contains only UI layout changes to `PostcardGrid.tsx` (grid breakpoints, max-width, column counts, postcard sizing) and new E2E test assertions for those responsive breakpoints. None of this affects the local development guide's content — prerequisites, setup steps, URLs, commands, or environment variable information are all unchanged.
+
 # Local Development Guide
 
 ## Prerequisites

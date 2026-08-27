@@ -1,3 +1,5 @@
+The diff changes the PostcardGrid responsive layout (breakpoints, max columns, max-width constraints), but nothing in `architecture.md` describes those specific grid breakpoints or column counts. The existing description — "published non-featured stories are mapped from Sanity assets to optimized CDN URLs and rendered as responsive, linked postcard images" — remains accurate. No other architectural facts are affected.
+
 # Architecture
 
 ## Stack

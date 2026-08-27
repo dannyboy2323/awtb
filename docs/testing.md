@@ -1,3 +1,5 @@
+The diff changes the responsive grid breakpoints in `PostcardGrid.tsx` (from `sm`/`lg`/`xl` to `md`/`xl`, and from 4 columns max to 3 columns max) and adds responsive grid layout assertions to the E2E landing test. The existing doc text doesn't describe the grid's breakpoints or column counts in any testable detail, so nothing in the doc is factually wrong. The E2E coverage table entry for `landing.spec.ts` remains accurate. No changes are needed.
+
 # Testing Guide
 
 ## Overview

@@ -1,3 +1,5 @@
+The diff only changes the `PostcardGrid` component's responsive grid layout and breakpoints, and adds e2e tests for that layout. None of this information is covered in `deployment.md`, so the document remains accurate as-is.
+
 # Deployment Guide
 
 ## Overview
