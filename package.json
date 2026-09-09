@@ -52,7 +52,7 @@
     "typeid-js": {
       "uuid": "^11.1.1"
     },
-    "undici": "^6.27.0"
+    "undici": "^6.28.1"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.5.20",
